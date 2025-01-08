@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel='stylesheet' type='text/css' href='{% static 'finance/style.css' %}'>
+        <title>FINANCE: Home</title>
+    </head>
+
+    <body>
+        <div class='wlt_container'>
+
+            <div class='nav_H'>
+                <h1>Wallets</h1>
+                <button class="nav_btn" onclick="location.href='{% url 'create_wlt' %}'">Add</button>
+            </div>
+
+            {% for wlt in wlts %}
+            <p><button class="wlt_btn" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">{{wlt.w_name}}<br>balance - </button></p>
+            {% endfor %}
+
+        </div>
+    </body>
+</html>

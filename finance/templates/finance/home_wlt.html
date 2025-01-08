@@ -1,0 +1,191 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} {{current_wlt.w_name}} {% endblock %}
+{% block menu %}
+    <div class = 'nav'>
+        <a href="{% url 'home' %}" class="icon-container">
+            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
+            <span class="icon-text">Wallets</span>
+        </a>
+
+        <a href="{% url 'update_wlt' current_wlt.pk %}" class="icon-container">
+            <img src="{% static 'finance/edit_1x.gif' %}" alt="Edit" height="40">
+            <span class="icon-text">Edit</span>
+        </a>
+
+        <a href="{% url 'delete_wlt' current_wlt.pk %}" class="icon-container">
+            <img src="{% static 'finance/del_1x.gif' %}" alt="Delete" height="40">
+            <span class="icon-text">Delete</span>
+        </a>
+
+        <a href="{% url  'add_income' current_wlt.pk %}" class="icon-container">
+            <img src="{% static 'finance/add_income_1x.gif' %}" alt="Add income" height="40">
+            <span class="icon-text">Add In</span>
+        </a>
+
+        <a href="{% url  'add_spending' current_wlt.pk %}" class="icon-container">
+            <img src="{% static 'finance/add_spending_1x.gif' %}" alt="Add spending" height="40">
+            <span class="icon-text">Add Out</span>
+        </a>
+
+    </div>
+{% endblock %}
+
+{% block header %}
+    <div class='header'>
+        <h1>{{current_wlt.w_name}}</h1>
+    </div>
+{% endblock %}
+
+
+{% block left_side_content %}
+    <form method="post" action="{% url 'calendar' current_wlt.pk %}">
+        {% csrf_token %}
+        <!-- DATE -->
+        <input type="radio" name="choice" value="date" id="choose-date" onclick="toggleFields()" checked>
+        <label>Date:<input type="text" name="single_date" id="single_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d"></label>
+        <!-- PERIOD -->
+        <p><input type="radio" name="choice" value="period" id="choose-period" onclick="toggleFields()">
+        <label>From:</label>
+        <input type="text" name="start_date" id="start_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" disabled></p>
+        <p><label style="margin-left: 25px;">to:</label>
+        <input type="text" name="end_date" id="end_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" disabled></p>
+        <!-- MONTH, YEAR -->
+        <p><input type="radio" name="choice" value="month_year" id="choose-month-year" onclick="toggleFields()">
+        <label>Month:</label>
+        <select name="month" id="month" disabled>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select></p>
+        <label style="margin-left: 25px;">Year:</label>
+        <input type="number" name="year" id="year" min="1900" max="2100" disabled>
+        <!-- ONLY YEAR -->
+        <p><input type="radio" name="choice" value="year_only" id="choose-year-only" onclick="toggleFields()">
+        <label>Year:</label>
+        <input type="number" name="year_only" id="year_only" min="1900" max="2100" disabled></p>
+        <p><button class='nav_btn' type='submit' >Apply</button></p>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+    // Initialize flatpickr
+    document.addEventListener("DOMContentLoaded", function() {
+        flatpickr(".flatpickr", {
+            allowInput: true
+        });
+    });
+
+    // Function to toggle fields and set default values
+    function toggleFields() {
+        const singleDate = document.getElementById("single_date");
+        const startDate = document.getElementById("start_date");
+        const endDate = document.getElementById("end_date");
+        const month = document.getElementById("month");
+        const year = document.getElementById("year");
+        const yearOnly = document.getElementById("year_only");
+        const isDate = document.getElementById("choose-date").checked;
+        const isPeriod = document.getElementById("choose-period").checked;
+        const isMonthYear = document.getElementById("choose-month-year").checked;
+        const isYearOnly = document.getElementById("choose-year-only").checked;
+
+        // Get current date, month, year
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1; // Months are 0-based
+        const currentYear = currentDate.getFullYear();
+        const currentDay = currentDate.getDate();
+        const formattedDate = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+
+        // Clear previous inputs
+        singleDate.value = "";
+        startDate.value = "";
+        endDate.value = "";
+        month.value = "";
+        year.value = "";
+        yearOnly.value = "";
+
+        // Enable/disable fields and set defaults
+        singleDate.disabled = !isDate;
+        startDate.disabled = !isPeriod;
+        endDate.disabled = !isPeriod;
+        month.disabled = !isMonthYear;
+        year.disabled = !isMonthYear;
+        yearOnly.disabled = !isYearOnly;
+
+        if (isDate) {
+            singleDate.value = formattedDate; // Set current date
+        }
+        if (isPeriod) {
+            startDate.value = formattedDate; // Set current date for 'from'
+            endDate.value = ""; // Keep 'to' empty
+        }
+        if (isMonthYear) {
+            month.value = currentMonth; // Set current month
+            year.value = currentYear;  // Set current year
+        }
+        if (isYearOnly) {
+            yearOnly.value = currentYear; // Set current year
+        }
+    }
+
+    // Add event listeners for radio buttons
+    document.querySelectorAll('input[name="choice"]').forEach((radio) => {
+        radio.addEventListener("change", toggleFields);
+    });
+
+    // Run toggleFields on page load
+    document.addEventListener("DOMContentLoaded", toggleFields);
+    </script>
+{% endblock %}
+
+
+
+
+
+
+
+{% block right_side_content %}
+    <div class='content' style="color: white; font-family: Arial, sans-serif; font-size: 12px; margin: 20px">
+        <div>
+            <p>initial balance: {{ initial_balance }}</p>
+            <p>debit turnover: {{ filtered_sum }}</p>
+            <p>final balance: {{ final_balance }}</p>
+            {{ period }}
+        </div>
+
+        <table style="margin:10px; border-collapse: collapse; width: 100%; background-color: transparent;line-height: 1; Arial, sans-serif; font-size: 12px;">
+            <thead>
+                <tr>
+                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Sum</th>
+                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Source</th>
+                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Comment</th>
+                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Income type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rec in filtered %}
+                <tr>
+                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: right;">{{ rec.debit }}</td>
+                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: left;">{{ rec.source }}</td>
+                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: left;">{{ rec.comment }}</td>
+                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: left;">{{ rec.income_type }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td style="border: 1px solid yellow; padding: 5px; text-align: right;">{{ filtered_sum }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+{% endblock%}

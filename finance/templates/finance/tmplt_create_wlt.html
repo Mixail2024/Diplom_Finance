@@ -1,0 +1,21 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block menu %}
+    <div class = 'nav'>
+        <a href="{% url 'home' %}" class="icon-container">
+            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
+            <span class="icon-text">Wallets</span>
+        </a>
+    </div>
+{% endblock %}
+{% block title %} Creating {% endblock %}
+{% block header %} <h1> Creating new wallet </h1>{% endblock %}
+
+{% block left_side_content %}
+    <form method='POST'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class='nav_btn' type='submit'>Create</button>
+    </form>
+{% endblock %}
