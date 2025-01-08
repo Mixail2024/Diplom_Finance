@@ -6,7 +6,7 @@ from django.urls import reverse_lazy, reverse
 from django.db.models import Sum
 from .models import Wallet, Income, Income_type, Spending, Spending_type
 from .forms import Form_create_wlt, Form_delete_wlt, Form_add_income, Form_add_income_type, Form_add_spending
-
+from decimal import Decimal
 from django.utils.timezone import datetime
 
 def home(request):
@@ -49,25 +49,25 @@ class Delete_wlt(DeleteView):
         context['pk'] = self.kwargs.get('pk')  # Извлекаем параметр pk
         return context
 
+from decimal import Decimal
+from django.db.models import Sum
+
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
     initial_balance = current_wlt.initial_balance
     filtered = None
-    filtered_sum = 0.00
+    filtered_sum = Decimal('0.00')  # Инициализируем как строку для точности
     period = ""
 
     context = {}
 
-
-
     if request.method == 'POST':
-
         choice = request.POST.get("choice")
         if choice == "date":
             single_date = request.POST.get("single_date")
             context['single_date'] = single_date
             filtered = Income.objects.filter(wallet=current_wlt, date=single_date)
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum']
+            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
             period = f"{single_date[8:10]}.{single_date[5:7]}.{single_date[:4]}"
 
         elif choice == "period":
@@ -76,7 +76,7 @@ def calendar_view(request, pk):
             context['start_date'] = start_date
             context['end_date'] = end_date
             filtered = Income.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum']
+            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
             period = f"{start_date[8:10]}.{start_date[5:7]}.{start_date[:4]} - {end_date[8:10]}.{end_date[5:7]}.{end_date[:4]}"
 
         elif choice == "month_year":
@@ -85,29 +85,28 @@ def calendar_view(request, pk):
             context['month'] = month
             context['year'] = year
             filtered = Income.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum']
+            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
             period = f"{month}/{year}"
 
         elif choice == "year_only":
             year_only = request.POST.get("year_only")
             context['year_only'] = year_only
             filtered = Income.objects.filter(wallet=current_wlt, date__year=year_only)
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum']
+            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
             period = f"{year_only}"
 
-    filtered_sum = round(filtered_sum, 2) if filtered_sum is not None else 0.00
     context['current_wlt'] = current_wlt
     context['initial_balance'] = initial_balance
-    context['pk'] = pk  # Remove the trailing comma here
+    context['pk'] = pk
     context['period'] = period
     context['filtered'] = filtered
-    context['filtered_sum'] = filtered_sum
-    context['final_balance'] =  initial_balance + filtered_sum
-
+    context['filtered_sum'] = Decimal(filtered_sum)
+    context['final_balance'] = initial_balance + Decimal(filtered_sum)
 
     print('request', request.POST)
     print('context', context)
     return render(request, 'finance/home_wlt.html', context)
+
 
 def add_income(request, pk):
     message = ''
