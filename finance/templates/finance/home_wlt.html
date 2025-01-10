@@ -40,8 +40,8 @@
 
 
 {% block left_side_bar %}
-    <form method="post" action="{% url 'calendar' current_wlt.pk %}">
-        {% csrf_token %}
+    <form method="get" action="{% url 'calendar' current_wlt.pk %}">
+
 
         <!-- DATE -->
         <input type="radio" name="choice" value="date" id="choose-date" onclick="toggleFields()" {% if single_date %}checked{% endif %}>

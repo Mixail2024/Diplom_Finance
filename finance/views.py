@@ -61,18 +61,18 @@ def calendar_view(request, pk):
 
     context = {}
 
-    if request.method == 'POST':
-        choice = request.POST.get("choice")
+    if request.method == 'GET':
+        choice = request.GET.get("choice")
         if choice == "date":
-            single_date = request.POST.get("single_date")
+            single_date = request.GET.get("single_date")
             context['single_date'] = single_date
             filtered_dt = Income.objects.filter(wallet=current_wlt, date=single_date)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
 
 
         elif choice == "period":
-            start_date = request.POST.get("start_date")
-            end_date = request.POST.get("end_date")
+            start_date = request.GET.get("start_date")
+            end_date = request.GET.get("end_date")
             context['start_date'] = start_date
             context['end_date'] = end_date
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
@@ -80,8 +80,8 @@ def calendar_view(request, pk):
 
 
         elif choice == "month_year":
-            month = request.POST.get("month")
-            year = request.POST.get("year")
+            month = request.GET.get("month")
+            year = request.GET.get("year")
             context['month'] = month
             context['year'] = year
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
@@ -89,7 +89,7 @@ def calendar_view(request, pk):
 
 
         elif choice == "year_only":
-            year_only = request.POST.get("year_only")
+            year_only = request.GET.get("year_only")
             context['year_only'] = year_only
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
@@ -101,7 +101,7 @@ def calendar_view(request, pk):
     context['filtered_dt_sum'] = Decimal(filtered_dt_sum)
     context['final_balance'] = initial_balance + Decimal(filtered_dt_sum)
 
-    print('request', request.POST)
+    print('request', request.GET)
     print('context', context)
     return render(request, 'finance/home_wlt.html', context)
 
