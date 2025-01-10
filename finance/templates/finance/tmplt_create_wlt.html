@@ -12,7 +12,7 @@
 {% block title %} Creating {% endblock %}
 {% block header %} <h1> Creating new wallet </h1>{% endblock %}
 
-{% block left_side_content %}
+{% block left_side_bar %}
     <form method='POST'>
         {% csrf_token %}
         {{ form.as_p }}

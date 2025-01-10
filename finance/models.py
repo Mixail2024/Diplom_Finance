@@ -10,7 +10,7 @@ class Wallet(models.Model):
     w_ticker = models.CharField(max_length=3, verbose_name = 'Currency ticker')
     w_type = models.CharField(max_length=1, choices=W_TYPES, verbose_name = 'Type')
     w_bank = models.CharField(max_length=20, verbose_name = 'Bank name', blank=True)
-    initial_balance = models.DecimalField(max_digits=9, decimal_places=2, verbose_name = 'Debit', default=0.00)
+    initial_balance = models.DecimalField(max_digits=9, decimal_places=2, verbose_name = 'Initial balance', default=0.00)
 
     def __str__(self):
         return self.w_name

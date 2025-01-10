@@ -12,7 +12,7 @@
 {% block title %} Updating {% endblock %}
 {% block header %} <h1> Wallet updating </h1>{% endblock %}
 
-{% block left_side_content %}
+{% block left_side_bar %}
    <form method='POST'>
         {% csrf_token %}
         {{ form.as_p }}

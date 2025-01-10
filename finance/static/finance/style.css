@@ -52,8 +52,7 @@ input[type="text"], input[type="email"], input[type="password"], textarea {
    }
 
 input:disabled, select:disabled {
-    background-color: rgba(0, 139, 139, 0.3);/*darkcyan*/
-    color: rgb(0, 139, 139);/*darkcyan*/
+    background-color: rgba(0, 0, 0, 0.3);
     border: none;
     }
 
@@ -92,23 +91,20 @@ select:focus {
     }
 
 .flex-container > .left_side_bar {
-    margin: 5px 0px 5px 5px; /*внешний отступ*/
-    padding: 0px 0px 0px 0px; /*внутренний отступ*/
+    margin: 5px 0px 5px 5px;
+    padding: 0px 0px 0px 0px;
     width: auto;
-    /*background-color: rgba(0, 0, 0, 0.3); /* Полупрозрачный фон для читаемости */
-    /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);*/
     }
 
 .flex-container > .content {
-    margin: 5px 0px 5px 25px; /*внешний отступ*/
+    margin: 0px 0px 5px 25px; /*внешний отступ*/
     padding: 10px; /*внутренний отступ*/
     width: auto;
-
     }
 
 
 .wlt_btn{
-    background-color: rgba(0, 139, 139, 0.0); /*darkcyan*/
+    background-color: rgba(0, 139, 139, 0.0);
     border: none;/*1px solid white*/
     width: 150px;
     margin: 0px 5px 0px 10px; /*top, right, bottom, left*/
@@ -191,5 +187,75 @@ select:focus {
     content: url('red_wallet.png'); /* Меняем изображение */
     }
 
+/* Стили для таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    text-align: left;
+    color: white;
+    font-family: Arial, sans-serif;
+}
 
+/* Стили для заголовков таблицы */
+table th {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-bottom: 2px solid #87ceeb; /*light blue*/;
+    color: #ffe4e1;
+}
+
+/* Стили для ячеек таблицы */
+table td {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Чередование цвета строк */
+table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для ховера строк */
+table tr:hover {
+    background-color: #f1f1f1;
+    color: black;
+}
+
+/* Стили для изменения цвета текста в заголовках при наведении на строки */
+table tr:hover th {
+    color: black; /* Изменение цвета текста заголовков */
+}
+
+/* Стили для заголовка таблицы */
+table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+}
+
+/* Стили для заголовка таблицы в шапке */
+table thead th {
+    position: sticky;
+    top: 0;
+}
+
+
+.bal {
+    font-weight: bold;
+    color:yellow;
+    font-size: 12px;
+}
+
+.dt {
+    font-weight: bold;
+    color: #87ceeb; /*light blue*/
+    font-size: 11px;
+}
+.ct {
+    font-weight: bold;
+    color: red;
+    font-size: 11px;
+}
 

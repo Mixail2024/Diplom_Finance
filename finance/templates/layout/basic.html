@@ -1,16 +1,13 @@
 {% load static %}
 
-<!DOCTYPE html>
+
 <html lang="en">
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-
-
+        <link rel='stylesheet' type='text/css' href="{% static 'finance/style.css' %}">
         <meta charset='UTF-8'>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel='stylesheet' type='text/css' href='{% static 'finance/style.css' %}'>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <title>{% block title %}{% endblock%}</title>
     </head>
 
@@ -21,11 +18,6 @@
                     <img src="{% static 'finance/wallet_gold_50.png' %}" height="40" class='wallets_image'>
                     <span class="icon-text">Wallets</span>
                 </a>
-
-                <!--<a href="{% url 'home' %}" class="icon-container">-->
-                <!--    <img src="{% static 'finance/wallet_gold_animation.gif' %}" alt="Wallets" height="40">-->
-                <!--    <span class="icon-text">Wallets</span>-->
-                <!--</a>-->
             </div>
         {% endblock %}
 
@@ -34,14 +26,12 @@
 
         <div class='flex-container'>
             <div class='left_side_bar'>
-                <!--<div class="line"></div>-->
-                {% block left_side_content %}
+                {% block left_side_bar %}
                 {% endblock%}
-
             </div>
 
-
-                {% block right_side_content %}
+            <div class='content'>
+                {% block content %}
                 {% endblock%}
             </div>
         </div>

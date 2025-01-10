@@ -66,42 +66,40 @@ def calendar_view(request, pk):
         if choice == "date":
             single_date = request.POST.get("single_date")
             context['single_date'] = single_date
-            filtered = Income.objects.filter(wallet=current_wlt, date=single_date)
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            period = f"{single_date[8:10]}.{single_date[5:7]}.{single_date[:4]}"
+            filtered_dt = Income.objects.filter(wallet=current_wlt, date=single_date)
+            filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+
 
         elif choice == "period":
             start_date = request.POST.get("start_date")
             end_date = request.POST.get("end_date")
             context['start_date'] = start_date
             context['end_date'] = end_date
-            filtered = Income.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            period = f"{start_date[8:10]}.{start_date[5:7]}.{start_date[:4]} - {end_date[8:10]}.{end_date[5:7]}.{end_date[:4]}"
+            filtered_dt = Income.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
+            filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+
 
         elif choice == "month_year":
             month = request.POST.get("month")
             year = request.POST.get("year")
             context['month'] = month
             context['year'] = year
-            filtered = Income.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            period = f"{month}/{year}"
+            filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
+            filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+
 
         elif choice == "year_only":
             year_only = request.POST.get("year_only")
             context['year_only'] = year_only
-            filtered = Income.objects.filter(wallet=current_wlt, date__year=year_only)
-            filtered_sum = filtered.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            period = f"{year_only}"
+            filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year_only)
+            filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
 
+    context['pk'] = pk
     context['current_wlt'] = current_wlt
     context['initial_balance'] = initial_balance
-    context['pk'] = pk
-    context['period'] = period
-    context['filtered'] = filtered
-    context['filtered_sum'] = Decimal(filtered_sum)
-    context['final_balance'] = initial_balance + Decimal(filtered_sum)
+    context['filtered_dt'] = filtered_dt
+    context['filtered_dt_sum'] = Decimal(filtered_dt_sum)
+    context['final_balance'] = initial_balance + Decimal(filtered_dt_sum)
 
     print('request', request.POST)
     print('context', context)

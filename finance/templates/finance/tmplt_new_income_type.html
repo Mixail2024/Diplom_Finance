@@ -42,7 +42,7 @@
     <!--</div>-->
 {% endblock %}
 
-{% block left_side_content %}
+{% block left_side_bar %}
     <form method='POST'>
         {% csrf_token %}
         {{ form.choices.label_tag }}<br>
@@ -62,7 +62,7 @@
 
 {% endblock%}
 
-{% block right_side_content %}
+{% block content %}
     <div class='content'>
         <div class="line"></div>
         ltrgleigeligmelibkeml

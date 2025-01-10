@@ -39,7 +39,7 @@
 {% endblock %}
 
 
-{% block left_side_content %}
+{% block left_side_bar %}
     <form method="post" action="{% url 'calendar' current_wlt.pk %}">
         {% csrf_token %}
 
@@ -162,38 +162,45 @@
 {% endblock %}
 
 
-{% block right_side_content %}
-    <div class='content' style="color: white; font-family: Arial, sans-serif; font-size: 12px; margin: 20px">
-        <div>
-            <p>initial balance: {{ initial_balance }}</p>
-            <p>debit turnover: {{ filtered_sum }}</p>
-            <p>final balance: {{ final_balance }}</p>
-            {{ period }}
+{% block content %}
+    {% if filtered_dt_sum > 0 %}
+    <div>
+        <div style="color: white; line-height: 0.8; font-family: Arial, sans-serif;
+        font-size: 10px;">
+            <p>initial balance: <span class="bal">{{ initial_balance }}</span></p>
+            <p>turnover: <span class="dt">{{ filtered_dt_sum }}</span> </p>
+            <p>final balance: <span class="bal">{{ final_balance }}</span></p>
+            <p class="dt" style="font-size: 14px; margin: 20px 0px 0px 0px">Incomes</p>
         </div>
 
-        <table style="margin:10px; border-collapse: collapse; width: 100%; background-color: transparent;line-height: 1; Arial, sans-serif; font-size: 12px;">
+        <table>
             <thead>
                 <tr>
-                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Sum</th>
-                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Source</th>
-                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Comment</th>
-                    <th style="border: 0.5px solid yellow; padding: 5px; text-align: center; color:red">Income type</th>
+                    <th>Sum</th>
+                    <th>Source</th>
+                    <th>Comment</th>
+                    <th>Income type</th>
                 </tr>
             </thead>
             <tbody>
-                {% for rec in filtered %}
+                {% for rec in filtered_dt %}
                 <tr>
-                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: right;">{{ rec.debit }}</td>
-                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: left;">{{ rec.source }}</td>
-                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: left;">{{ rec.comment }}</td>
-                    <td style="border: 0.5px solid yellow; padding: 5px; text-align: left;">{{ rec.income_type }}</td>
+                    <td>>{{ rec.debit }}</td>
+                    <td>{{ rec.source }}</td>
+                    <td>{{ rec.comment }}</td>
+                    <td>{{ rec.income_type }}</td>
                 </tr>
                 {% endfor %}
                 <tr>
-                    <td style="border: 1px solid yellow; padding: 5px; text-align: right;">{{ filtered_sum }}</td>
+                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb; color:#87ceeb; font-size:12px;">{{ filtered_dt_sum }}</td>
+                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
+                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
+                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
                 </tr>
             </tbody>
         </table>
     </div>
-
+    {% else %}
+        <p>no data</p>
+    {% endif %}
 {% endblock%}
