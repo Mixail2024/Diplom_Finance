@@ -1,6 +1,8 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 
+{% block title %}Wallet deleting{% endblock %}
+
 {% block menu %}
     <div class = 'nav'>
         <a href="{% url 'home' %}" class="icon-container">
@@ -14,7 +16,7 @@
     <h1>Deleting wallet: <i>"{{ object.w_name }}"?</i></h1>
 {% endblock %}
 
-{% block left_side_bar %}
+{% block left_side %}
     {% if not deleted %}
         <!-- Форма для отправки POST-запроса -->
         <form method="post">
@@ -23,7 +25,6 @@
             <button class='nav_btn' type='button' onclick="location.href='{% url 'home_wlt' pk %}'">Cancel</button>
         </form>
     {% else %}
-
         <p style='color:#ffe4e1; margin:10px 10px;'>Wallet was successfully deleted!</p>
         <button class="nav_btn" onclick="location.href='{% url 'home' %}'">Exit</button>
     {% endif %}

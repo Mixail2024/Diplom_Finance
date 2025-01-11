@@ -90,13 +90,13 @@ select:focus {
     flex-direction: row;
     }
 
-.flex-container > .left_side_bar {
+.flex-container > .left_side {
     margin: 5px 0px 5px 5px;
     padding: 0px 0px 0px 0px;
     width: auto;
     }
 
-.flex-container > .content {
+.flex-container > .right_side {
     margin: 0px 0px 5px 25px; /*внешний отступ*/
     padding: 10px; /*внутренний отступ*/
     width: auto;

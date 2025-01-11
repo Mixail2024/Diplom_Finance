@@ -1,6 +1,8 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 
+{% block title %} income updating {% endblock %}
+
 {% block menu %}
     <div class = 'nav'>
         <a href="{% url 'home' %}" class="icon-container">
@@ -9,14 +11,38 @@
         </a>
     </div>
 {% endblock %}
-{% block title %} Updating {% endblock %}
-{% block header %} <h1> Wallet updating </h1>{% endblock %}
 
-{% block left_side_bar %}
-   <form method='POST'>
+{% block header %}
+    <h1>Income updating</h1>
+{% endblock %}
+
+{% block left_side %}
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type='submit' class="nav_btn">Update</button>
+        <p><button class='nav_btn' type='submit'>Update</button></p>
+
     </form>
+
+{% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
 {% endblock %}
+
+{% block right_side %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

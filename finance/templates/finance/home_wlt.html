@@ -2,35 +2,6 @@
 {% load static %}
 
 {% block title %} {{current_wlt.w_name}} {% endblock %}
-{% block menu %}
-    <div class = 'nav'>
-        <a href="{% url 'home' %}" class="icon-container">
-            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
-            <span class="icon-text">Wallets</span>
-        </a>
-
-        <a href="{% url 'update_wlt' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/edit_1x.gif' %}" alt="Edit" height="40">
-            <span class="icon-text">Edit</span>
-        </a>
-
-        <a href="{% url 'delete_wlt' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/del_1x.gif' %}" alt="Delete" height="40">
-            <span class="icon-text">Delete</span>
-        </a>
-
-        <a href="{% url  'add_income' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/add_income_1x.gif' %}" alt="Add income" height="40">
-            <span class="icon-text">Add In</span>
-        </a>
-
-        <a href="{% url  'add_spending' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/add_spending_1x.gif' %}" alt="Add spending" height="40">
-            <span class="icon-text">Add Out</span>
-        </a>
-
-    </div>
-{% endblock %}
 
 {% block header %}
     <div class='header'>
@@ -38,10 +9,8 @@
     </div>
 {% endblock %}
 
-
-{% block left_side_bar %}
+{% block left_side %}
     <form method="get" action="{% url 'calendar' current_wlt.pk %}">
-
 
         <!-- DATE -->
         <input type="radio" name="choice" value="date" id="choose-date" onclick="toggleFields()" {% if single_date %}checked{% endif %}>
@@ -162,7 +131,7 @@
 {% endblock %}
 
 
-{% block content %}
+{% block right_side %}
     {% if filtered_dt_sum > 0 %}
     <div>
         <div style="color: white; line-height: 0.8; font-family: Arial, sans-serif;
@@ -176,6 +145,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Date</th>
                     <th>Sum</th>
                     <th>Source</th>
                     <th>Comment</th>
@@ -185,13 +155,17 @@
             <tbody>
                 {% for rec in filtered_dt %}
                 <tr>
-                    <td>{{ rec.debit }}</td>
+                    <td>{{ rec.date|date:"d.m.y" }}</td>
+                    <td>
+                        <a href="{% url 'update_income' rec.pk %}">{{ rec.debit }}</a>
+                    </td>
                     <td>{{ rec.source }}</td>
                     <td>{{ rec.comment }}</td>
                     <td>{{ rec.income_type }}</td>
                 </tr>
                 {% endfor %}
                 <tr>
+                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
                     <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb; color:#87ceeb; font-size:12px;">{{ filtered_dt_sum }}</td>
                     <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
                     <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
@@ -203,4 +177,4 @@
     {% else %}
         <p>no data</p>
     {% endif %}
-{% endblock%}
+{% endblock %}

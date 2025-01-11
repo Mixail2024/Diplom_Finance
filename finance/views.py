@@ -5,7 +5,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormVi
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum
 from .models import Wallet, Income, Income_type, Spending, Spending_type
-from .forms import Form_create_wlt, Form_delete_wlt, Form_add_income, Form_add_income_type, Form_add_spending
+from .forms import Form_create_wlt, Form_delete_wlt, Form_add_income, Form_add_income_type, Form_add_spending, Form_update_income
 from decimal import Decimal
 from django.utils.timezone import datetime
 
@@ -55,9 +55,9 @@ from django.db.models import Sum
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
     initial_balance = current_wlt.initial_balance
-    filtered = None
-    filtered_sum = Decimal('0.00')  # Инициализируем как строку для точности
-    period = ""
+    # filtered = None
+    # filtered_sum = Decimal('0.00')  # Инициализируем как строку для точности
+
 
     context = {}
 
@@ -158,6 +158,22 @@ class Delete_income_type(FormView):
 
 class Add_spending(CreateView):
     pass
+
+class Update_income(UpdateView):
+    model = Income
+    form_class = Form_update_income
+    template_name = 'finance/tmplt_update_income.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Вы можете добавить дополнительные данные в контекст, если нужно
+        return context
+
+
+
+    # def get_success_url(self):
+    #     pk = self.kwargs['pk']  # Получаем pk текущей записи из URL
+    #     return reverse_lazy('home_wlt', kwargs={'pk': pk})
 
 
 

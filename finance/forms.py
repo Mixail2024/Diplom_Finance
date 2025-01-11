@@ -33,3 +33,8 @@ class Form_add_spending(forms.ModelForm):
     class Meta:
         model = Spending
         fields = ['date', 'credit', 'destination', 'comment', 'spending_type']
+
+class Form_update_income(forms.ModelForm):
+    class Meta:
+        model = Income
+        fields = ['date', 'debit', 'source', 'comment', 'income_type']

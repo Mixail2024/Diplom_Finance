@@ -1,36 +1,9 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 
-{% block title %} {{current_wlt.w_name}} {% endblock %}
-{% block menu %}
-    <div class = 'nav'>
-        <a href="{% url 'home' %}" class="icon-container">
-            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
-            <span class="icon-text">Wallets</span>
-        </a>
+{% block title %} {{current_wlt.w_name}} :: income adding {% endblock %}
 
-        <a href="{% url 'update_wlt' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/edit_1x.gif' %}" alt="Edit" height="40">
-            <span class="icon-text">Edit</span>
-        </a>
 
-        <a href="{% url 'delete_wlt' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/del_1x.gif' %}" alt="Delete" height="40">
-            <span class="icon-text">Delete</span>
-        </a>
-
-        <a href="{% url  'add_income' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/add_income_1x.gif' %}" alt="Add income" height="40">
-            <span class="icon-text">Add In</span>
-        </a>
-
-        <a href="{% url  'add_spending' current_wlt.pk %}" class="icon-container">
-            <img src="{% static 'finance/add_spending_1x.gif' %}" alt="Add spending" height="40">
-            <span class="icon-text">Add Out</span>
-        </a>
-
-    </div>
-{% endblock %}
 {% block header %}
     <!--<div class='header'>-->
     <!--    <h1>{{current_wlt.w_name}}</h1>-->
@@ -39,12 +12,12 @@
     <!--    <button class='nav_btn' onclick="location.href='{% url  'add_income' pk %}'">+Dt</button>-->
     <!--    <button class='nav_btn' onclick="location.href='{% url  'add_income' pk %}'">+Ct</button>-->
     <!--</div>-->
+    <h1>Adding new income</h1>
 {% endblock %}
 
-{% block left_side_bar %}
+{% block left_side %}
     <form method='POST' action="">
         {% csrf_token %}
-        <label style="margin: 0px 5px 10px 0px; font-size:14px; color:red">Adding new income</label>
 
         <div style="margin: 10px 0px 0px 0px">
             <label style="margin: 10px 0px 10px 0px" for="{{ form_income.date.id_for_label }}">{{ form_income.date.label }}</label>
@@ -100,16 +73,7 @@
         </div>
         <button class='nav_btn' type='submit' name="form_income">Save</button>
     </form>
-
-
-
-
-
 {% endblock%}
 
-{% block right_side_content %}
-    <div class='content'>
-        <div class="line"></div>
-        ltrgleigeligmelibkeml
-    </div>
+{% block right_side %}
 {% endblock%}

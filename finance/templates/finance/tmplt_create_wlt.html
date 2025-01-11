@@ -1,6 +1,8 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 
+{% block title %}Wallet creating{% endblock %}
+
 {% block menu %}
     <div class = 'nav'>
         <a href="{% url 'home' %}" class="icon-container">
@@ -9,10 +11,12 @@
         </a>
     </div>
 {% endblock %}
-{% block title %} Creating {% endblock %}
-{% block header %} <h1> Creating new wallet </h1>{% endblock %}
 
-{% block left_side_bar %}
+{% block header %}
+    <h1>Wallet creating</h1>
+{% endblock %}
+
+{% block left_side %}
     <form method='POST'>
         {% csrf_token %}
         {{ form.as_p }}
