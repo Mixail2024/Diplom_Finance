@@ -5,10 +5,7 @@
 
 {% block menu %}
     <div class = 'nav'>
-        <a href="{% url 'home' %}" class="icon-container">
-            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
-            <span class="icon-text">Wallets</span>
-        </a>
+        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
     </div>
 {% endblock %}
 
@@ -21,12 +18,12 @@
         {% csrf_token %}
         {{ form.choices.label_tag }}<br>
         {{ form.choices }}
-        <button type="submit" name="delete">Delete</button>
+        <button class='btn nav_btn' type="submit" name="delete">Delete</button>
         <br><br>
         {{ form.new_value.label_tag }}<br>
         {{ form.new_value }}<br><br>
-        <button type="submit" name="add">Add</button>
-        <button type="submit" name="add_exit">Add and exit</button>
+        <button class='btn nav_btn' type="submit" name="add">Add</button>
+        <button class='btn nav_btn' type="submit" name="add_exit">Add and exit</button>
     </form>
     {% if message %}
         <p>{{ message }}</p>

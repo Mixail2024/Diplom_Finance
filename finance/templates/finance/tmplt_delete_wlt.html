@@ -5,12 +5,10 @@
 
 {% block menu %}
     <div class = 'nav'>
-        <a href="{% url 'home' %}" class="icon-container">
-            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
-            <span class="icon-text">Wallets</span>
-        </a>
+        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">🚩Wallets</button>
     </div>
 {% endblock %}
+
 
 {% block header %}
     <h1>Deleting wallet: <i>"{{ object.w_name }}"?</i></h1>
@@ -18,7 +16,6 @@
 
 {% block left_side %}
     {% if not deleted %}
-        <!-- Форма для отправки POST-запроса -->
         <form method="post">
             {% csrf_token %}
             <button class='nav_btn' type="submit">Confirm deleting</button>

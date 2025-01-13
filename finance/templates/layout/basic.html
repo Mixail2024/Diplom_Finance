@@ -13,44 +13,13 @@
     <body>
         {% block menu %}
             <div class = 'nav'>
-                <a href="{% url 'home' %}" class="icon-container">
-                    <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
-                    <span class="icon-text">Wallets</span>
-                </a>
-
-                <a href="{% url 'update_wlt' current_wlt.pk %}" class="icon-container">
-                    <img src="{% static 'finance/edit_1x.gif' %}" alt="Edit" height="40">
-                    <span class="icon-text">Edit</span>
-                </a>
-
-                <a href="{% url 'delete_wlt' current_wlt.pk %}" class="icon-container">
-                    <img src="{% static 'finance/del_1x.gif' %}" alt="Delete" height="40">
-                    <span class="icon-text">Delete</span>
-                </a>
-
-                <a id="addIncomeLink" href="#" class="icon-container">
-                    <img src="{% static 'finance/add_income_1x.gif' %}" alt="Add income" height="40">
-                    <span class="icon-text">Add In</span>
-                </a>
-                    <script>
-                        const currentUrl = window.location.pathname;
-                        const segments = currentUrl.split('/');
-                        const dynamicParam = segments[segments.length - 1];
-                        const currentUrlParams = new URLSearchParams(window.location.search);
-                        const newUrl = `/finance/home_wlt/add_income/${dynamicParam}/?${currentUrlParams.toString()}`;
-                        document.getElementById('addIncomeLink').setAttribute('href', newUrl);
-                    </script>
-
-                <a href="{% url  'add_spending' current_wlt.pk %}" class="icon-container">
-                    <img src="{% static 'finance/add_spending_1x.gif' %}" alt="Add spending" height="40">
-                    <span class="icon-text">Add Out</span>
-                </a>
-
+                <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
+                <button class="btn nav_btn" onclick="location.href='{% url 'update_wlt' current_wlt.pk %}'">Edit wallet</button>
+                <button class="btn nav_btn" onclick="location.href='{% url 'delete_wlt' current_wlt.pk %}'">Delete wallet</button>
             </div>
         {% endblock %}
 
-        {% block header %}
-        {% endblock %}
+        {% block header %}{% endblock %}
 
         <div class='flex-container'>
             <div class='left_side'>
@@ -63,7 +32,5 @@
                 {% endblock%}
             </div>
         </div>
-
-
     </body>
 </html>

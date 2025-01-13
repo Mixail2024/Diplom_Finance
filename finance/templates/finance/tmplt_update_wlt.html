@@ -3,10 +3,7 @@
 
 {% block menu %}
     <div class = 'nav'>
-        <a href="{% url 'home' %}" class="icon-container">
-            <img src="{% static 'finance/gold_wallet.png' %}" height="40" class='wallets_image'>
-            <span class="icon-text">Wallets</span>
-        </a>
+        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
     </div>
 {% endblock %}
 

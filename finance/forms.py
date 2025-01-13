@@ -6,6 +6,13 @@ class Form_create_wlt(forms.ModelForm):
         model = Wallet
         fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'initial_balance']
 
+    def __init__(self, *args, **kwargs):
+        super(Form_create_wlt, self).__init__(*args, **kwargs)
+        # Установка стиля для конкретного поля
+        self.fields['w_name'].widget.attrs.update({'style': 'width: 200px;'})
+        self.fields['w_ticker'].widget.attrs.update({'style': 'width: 50px;'})
+        self.fields['w_bank'].widget.attrs.update({'style': 'width: 200;'})
+
 class Form_delete_wlt(forms.ModelForm):
     class Meta:
         model = Wallet

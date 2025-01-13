@@ -5,141 +5,152 @@
 
 {% block header %}
     <div class='header'>
-        <h1>{{current_wlt.w_name}}</h1>
+        <h1>{{current_wlt.f_name}}</h1>
+            <button class="btn nav_btn btn_add_income" id="addIncomeLink">Add income</button>
+                <script>
+                    document.getElementById('addIncomeLink').addEventListener('click', function () {
+                       const currentUrl = window.location.pathname;
+                       const segments = currentUrl.split('/');
+                       const dynamicParam = segments[segments.length - 1];
+                       const currentUrlParams = new URLSearchParams(window.location.search);
+                       const newUrl = `/finance/home_wlt/add_income/${dynamicParam}/?${currentUrlParams.toString()}`;
+                       window.location.href = newUrl; // Перенаправление на новый URL
+                       });
+                </script>
+            <button class="btn nav_btn btn_add_spending" onclick="location.href='{% url 'add_spending' current_wlt.pk %}'">Add spending</button>
     </div>
 {% endblock %}
 
 {% block left_side %}
-    <form method="get" action="{% url 'calendar' current_wlt.pk %}">
+    <div class="container_dark">
+        <form method="get" action="{% url 'calendar' current_wlt.pk %}">
 
-        <!-- DATE -->
-        <input type="radio" name="choice" value="date" id="choose-date" onclick="toggleFields()" {% if single_date %}checked{% endif %}>
-        <label>Date:<input type="text" name="single_date" id="single_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ single_date }}"></label>
+            <!-- DATE -->
+            <input type="radio" name="choice" value="date" id="choose-date" onclick="toggleFields()" {% if single_date %}checked{% endif %}>
+            <label>Date:<input type="text" name="single_date" id="single_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ single_date }}"></label>
 
-        <!-- PERIOD -->
-        <p><input type="radio" name="choice" value="period" id="choose-period" onclick="toggleFields()" {% if start_date or end_date %}checked{% endif %}>
-        <label>From:</label>
-        <input type="text" name="start_date" id="start_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ start_date }}" {% if not start_date %}disabled{% endif %}></p>
-        <p><label style="margin-left: 25px;">to:</label>
-        <input type="text" name="end_date" id="end_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ end_date }}" {% if not start_date %}disabled{% endif %}></p>
+            <!-- PERIOD -->
+            <p><input type="radio" name="choice" value="period" id="choose-period" onclick="toggleFields()" {% if start_date or end_date %}checked{% endif %}>
+            <label>From:</label>
+            <input type="text" name="start_date" id="start_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ start_date }}" {% if not start_date %}disabled{% endif %}></p>
+            <p><label style="margin-left: 25px;">to:</label>
+            <input type="text" name="end_date" id="end_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ end_date }}" {% if not start_date %}disabled{% endif %}></p>
 
-        <!-- MONTH, YEAR -->
-        <p><input type="radio" name="choice" value="month_year" id="choose-month-year" onclick="toggleFields()" {% if month and year %}checked{% endif %}>
-        <label>Month:</label>
-        <select name="month" id="month" {% if not month and not year %}disabled{% endif %}>
-            <option value="1" {% if month == "1" %}selected{% endif %}>January</option>
-            <option value="2" {% if month == "2" %}selected{% endif %}>February</option>
-            <option value="3" {% if month == "3" %}selected{% endif %}>March</option>
-            <option value="4" {% if month == "4" %}selected{% endif %}>April</option>
-            <option value="5" {% if month == "5" %}selected{% endif %}>May</option>
-            <option value="6" {% if month == "6" %}selected{% endif %}>June</option>
-            <option value="7" {% if month == "7" %}selected{% endif %}>July</option>
-            <option value="8" {% if month == "8" %}selected{% endif %}>August</option>
-            <option value="9" {% if month == "9" %}selected{% endif %}>September</option>
-            <option value="10" {% if month == "10" %}selected{% endif %}>October</option>
-            <option value="11" {% if month == "11" %}selected{% endif %}>November</option>
-            <option value="12" {% if month == "12" %}selected{% endif %}>December</option>
-        </select></p>
-        <label style="margin-left: 25px;">Year:</label>
-        <input type="number" name="year" id="year" min="1900" max="2100" value="{{ year }}" {% if not month and not year %}disabled{% endif %}>
+            <!-- MONTH, YEAR -->
+            <p><input type="radio" name="choice" value="month_year" id="choose-month-year" onclick="toggleFields()" {% if month and year %}checked{% endif %}>
+            <label>Month:</label>
+            <select name="month" id="month" {% if not month and not year %}disabled{% endif %}>
+                <option value="1" {% if month == "1" %}selected{% endif %}>January</option>
+                <option value="2" {% if month == "2" %}selected{% endif %}>February</option>
+                <option value="3" {% if month == "3" %}selected{% endif %}>March</option>
+                <option value="4" {% if month == "4" %}selected{% endif %}>April</option>
+                <option value="5" {% if month == "5" %}selected{% endif %}>May</option>
+                <option value="6" {% if month == "6" %}selected{% endif %}>June</option>
+                <option value="7" {% if month == "7" %}selected{% endif %}>July</option>
+                <option value="8" {% if month == "8" %}selected{% endif %}>August</option>
+                <option value="9" {% if month == "9" %}selected{% endif %}>September</option>
+                <option value="10" {% if month == "10" %}selected{% endif %}>October</option>
+                <option value="11" {% if month == "11" %}selected{% endif %}>November</option>
+                <option value="12" {% if month == "12" %}selected{% endif %}>December</option>
+            </select></p>
+            <label style="margin-left: 25px;">Year:</label>
+            <input type="number" name="year" id="year" min="1900" max="2100" value="{{ year }}" {% if not month and not year %}disabled{% endif %}>
 
-        <!-- ONLY YEAR -->
-        <p><input type="radio" name="choice" value="year_only" id="choose-year-only" onclick="toggleFields()" {% if year_only %}checked{% endif %}>
-        <label>Year:</label>
-        <input type="number" name="year_only" id="year_only" min="1900" max="2100" value="{{ year_only }}" {% if not year_only %}disabled{% endif %}></p>
+            <!-- ONLY YEAR -->
+            <p><input type="radio" name="choice" value="year_only" id="choose-year-only" onclick="toggleFields()" {% if year_only %}checked{% endif %}>
+            <label>Year:</label>
+            <input type="number" name="year_only" id="year_only" min="1900" max="2100" value="{{ year_only }}" {% if not year_only %}disabled{% endif %}></p>
 
-        <p><button class='nav_btn' type='submit'>Apply</button></p>
-    </form>
+            <p><button class='btn nav_btn' type='submit'>Apply</button></p>
+        </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-    // Initialize flatpickr
-    document.addEventListener("DOMContentLoaded", function() {
-        flatpickr(".flatpickr", {
-            allowInput: true,
-            dateFormat: "Y-m-d"  // Формат для flatpickr
-        });
-    });
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            // Initialize flatpickr
+            document.addEventListener("DOMContentLoaded", function() {
+                flatpickr(".flatpickr", {
+                    allowInput: true,
+                    dateFormat: "Y-m-d"  // Формат для flatpickr
+                });
+            });
+                // Function to toggle fields and set default values
+                function toggleFields() {
+                const singleDate = document.getElementById("single_date");
+                const startDate = document.getElementById("start_date");
+                const endDate = document.getElementById("end_date");
+                const month = document.getElementById("month");
+                const year = document.getElementById("year");
+                const yearOnly = document.getElementById("year_only");
+                const isDate = document.getElementById("choose-date").checked;
+                const isPeriod = document.getElementById("choose-period").checked;
+                const isMonthYear = document.getElementById("choose-month-year").checked;
+                const isYearOnly = document.getElementById("choose-year-only").checked;
 
-    // Function to toggle fields and set default values
-    function toggleFields() {
-        const singleDate = document.getElementById("single_date");
-        const startDate = document.getElementById("start_date");
-        const endDate = document.getElementById("end_date");
-        const month = document.getElementById("month");
-        const year = document.getElementById("year");
-        const yearOnly = document.getElementById("year_only");
-        const isDate = document.getElementById("choose-date").checked;
-        const isPeriod = document.getElementById("choose-period").checked;
-        const isMonthYear = document.getElementById("choose-month-year").checked;
-        const isYearOnly = document.getElementById("choose-year-only").checked;
+                // Get current date, month, year
+                const currentDate = new Date();
+                const currentMonth = currentDate.getMonth() + 1; // Months are 0-based
+                const currentYear = currentDate.getFullYear();
+                const currentDay = currentDate.getDate();
+                const formattedDate = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
 
-        // Get current date, month, year
-        const currentDate = new Date();
-        const currentMonth = currentDate.getMonth() + 1; // Months are 0-based
-        const currentYear = currentDate.getFullYear();
-        const currentDay = currentDate.getDate();
-        const formattedDate = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+                // Clear all fields before setting values
+                singleDate.value = "";
+                startDate.value = "";
+                endDate.value = "";
+                month.value = "";
+                year.value = "";
+                yearOnly.value = "";
 
-        // Clear all fields before setting values
-        singleDate.value = "";
-        startDate.value = "";
-        endDate.value = "";
-        month.value = "";
-        year.value = "";
-        yearOnly.value = "";
+                // Enable/disable fields based on selection
+                singleDate.disabled = !isDate;
+                startDate.disabled = !isPeriod;
+                endDate.disabled = !isPeriod;
+                month.disabled = !isMonthYear;
+                year.disabled = !isMonthYear;
+                yearOnly.disabled = !isYearOnly;
 
-        // Enable/disable fields based on selection
-        singleDate.disabled = !isDate;
-        startDate.disabled = !isPeriod;
-        endDate.disabled = !isPeriod;
-        month.disabled = !isMonthYear;
-        year.disabled = !isMonthYear;
-        yearOnly.disabled = !isYearOnly;
+                // If "Date" is selected, display selected date or current date
+                if (isDate) {
+                    singleDate.value = "{{ single_date }}" ? "{{ single_date }}" : formattedDate; // Show selected date or current date
+                }
 
-        // If "Date" is selected, display selected date or current date
-        if (isDate) {
-            singleDate.value = "{{ single_date }}" ? "{{ single_date }}" : formattedDate; // Show selected date or current date
-        }
+                // If "Period" is selected, display selected period or current date
+                if (isPeriod) {
+                    startDate.value = "{{ start_date }}" ? "{{ start_date }}" : formattedDate; // Show selected start date or current date
+                    endDate.value = "{{ end_date }}" ? "{{ end_date }}" : formattedDate; // Show selected end date or current date
+                }
 
-        // If "Period" is selected, display selected period or current date
-        if (isPeriod) {
-            startDate.value = "{{ start_date }}" ? "{{ start_date }}" : formattedDate; // Show selected start date or current date
-            endDate.value = "{{ end_date }}" ? "{{ end_date }}" : formattedDate; // Show selected end date or current date
-        }
+                // If "Month and Year" is selected, show current month and year
+                if (isMonthYear) {
+                    month.value = "{{ month }}" ? "{{ month }}" : currentMonth;  // Show selected month or current month
+                    year.value = "{{ year }}" ? "{{ year }}" : currentYear;  // Show selected year or current year
+                }
 
-        // If "Month and Year" is selected, show current month and year
-        if (isMonthYear) {
-            month.value = "{{ month }}" ? "{{ month }}" : currentMonth;  // Show selected month or current month
-            year.value = "{{ year }}" ? "{{ year }}" : currentYear;  // Show selected year or current year
-        }
+                // If "Year Only" is selected, show current year
+                if (isYearOnly) {
+                    yearOnly.value = "{{ year_only }}" ? "{{ year_only }}" : currentYear; // Show selected year or current year
+                }
+            }
 
-        // If "Year Only" is selected, show current year
-        if (isYearOnly) {
-            yearOnly.value = "{{ year_only }}" ? "{{ year_only }}" : currentYear; // Show selected year or current year
-        }
-    }
+            // Trigger toggleFields on page load and on radio button change
+            document.querySelectorAll('input[name="choice"]').forEach((radio) => {
+                radio.addEventListener("change", toggleFields);
+            });
 
-    // Trigger toggleFields on page load and on radio button change
-    document.querySelectorAll('input[name="choice"]').forEach((radio) => {
-        radio.addEventListener("change", toggleFields);
-    });
-
-    document.addEventListener("DOMContentLoaded", toggleFields);
-</script>
-
+            document.addEventListener("DOMContentLoaded", toggleFields);
+        </script>
+    </div>
 {% endblock %}
 
 
 {% block right_side %}
     {% if filtered_dt_sum > 0 %}
-    <div>
-        <div style="color: white; line-height: 0.8; font-family: Arial, sans-serif;
-        font-size: 10px;">
+
+        <div class="info_txt">
             <p>initial balance: <span class="bal">{{ initial_balance }}</span></p>
             <p>turnover: <span class="dt">{{ filtered_dt_sum }}</span> </p>
             <p>final balance: <span class="bal">{{ final_balance }}</span></p>
-            <p class="dt" style="font-size: 14px; margin: 20px 0px 0px 0px">Incomes</p>
+            <p class="dt">Incomes</p>
         </div>
 
         <table>
@@ -156,8 +167,8 @@
                 {% for rec in filtered_dt %}
                 <tr>
                     <td>{{ rec.date|date:"d.m.y" }}</td>
-                    <td>
-                        <a href="{% url 'update_income' rec.pk %}">{{ rec.debit }}</a>
+                    <td style="text-align: right; padding: 5px 20px 5px 20px; font-weight: bold;">
+                        <a href="{% url 'update_income' rec.pk %}" >{{ rec.debit }}</a>
                     </td>
                     <td>{{ rec.source }}</td>
                     <td>{{ rec.comment }}</td>
@@ -165,15 +176,15 @@
                 </tr>
                 {% endfor %}
                 <tr>
-                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
-                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb; color:#87ceeb; font-size:12px;">{{ filtered_dt_sum }}</td>
-                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
-                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
-                    <td style="border-top: 2px solid #87ceeb; border-bottom: 2px solid #87ceeb;"></td>
+                    <td ></td>
+                    <td style="text-align: right; padding: 5px 20px 5px 20px;" class="dt">{{ filtered_dt_sum }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
-    </div>
+
     {% else %}
         <p>no data</p>
     {% endif %}

@@ -7,16 +7,14 @@
         <link rel='stylesheet' type='text/css' href="{% static 'finance/style.css' %}">
         <title>Wallets</title>
     </head>
-
     <body>
-<
-        <div class='wlt_container'>
+        <div>
             <div class='nav_H'>
-                <h1>Wallets</h1>
-                <button class="nav_btn" onclick="location.href='{% url 'create_wlt' %}'">Add</button>
+                <div class="wallet">Wallets</div>
+                <button class="btn btn_add_wlt" onclick="location.href='{% url 'create_wlt' %}'">Add new</button>
             </div>
             {% for wlt in wlts %}
-            <p><button class="wlt_btn" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">{{wlt.w_name}}<br>balance - </button></p>
+                <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">{{wlt.f_name}}<br>balance - </button></p>
             {% endfor %}
         </div>
     </body>
