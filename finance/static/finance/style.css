@@ -29,14 +29,14 @@ body {
 .header {
     display: flex;
     flex-direction: row;
-    margin: 0px 0px 0px 10px; /*внешний отступ*/
+    margin: 0px 0px 0px 10px;
     text-align: left;
     align-items: center;
 }
 
 h1 {
     font-size: 20px;
-    margin: 10px 30px 5px 10px; /*top, right, bottom, left*/
+    margin: 15px 30px 0px 15px;
 }
 
 .wallet {
@@ -65,7 +65,7 @@ h1 {
     text-decoration: none;
     word-wrap: break-word;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 8px;
 }
 .btn:hover {
     transform: scale(1.1);
@@ -78,11 +78,12 @@ h1 {
     width: 150px;
     font-size: 12px;
     text-align: left;
-
+    border-radius: 15px;
 }
 .btn_wlts:hover {
     background-color: #a52a2a; /*red*/
     color:#ffe4e1; /* mintrose*/
+    border-radius: 25px;
 }
 
 .btn_add_wlt {
@@ -109,17 +110,17 @@ h1 {
 .nav_btn:hover {
     background-color: rgb(212, 172, 13); /*yellow dark */
 }
-.btn_add_income{
+.btn_blue{
     background-color: rgb(133, 193, 233); /*blue light*/
 }
-.btn_add_income:hover {
+.btn_blue:hover {
     background-color: rgb(40, 116, 166); /*blue dark*/
     color: #ffe4e1;
 }
-.btn_add_spending{
+.btn_red{
     background-color: #f08080;  /*Light Coral */
 }
-.btn_add_spending:hover {
+.btn_red:hover {
     background-color: #a52a2a; /* red*/
     color: #ffe4e1;
 }
@@ -128,8 +129,8 @@ h1 {
 /* -------------------------------F O R M S ---------------------- */
 form {
     font-size: 14px;
-    padding: 15px 10px 15px 10px;
-    margin: 0px 0px 0px 0px;;
+    padding: 10px 10px 15px 10px;
+    margin: 0px 0px 0px 0px;
 
 }
 input[type="text"], [type="number"], textarea {
@@ -154,10 +155,7 @@ select {
     cursor: pointer;
     border-radius: 5px;
     height: 22px;
-    /* Убрать стандартные стрелки браузера */
-    appearance: none; /* Для большинства браузеров */
-    -webkit-appearance: none; /* Safari/Chrome */
-    -moz-appearance: none; /* Firefox */
+
 }
 select:focus {
     outline: none;
@@ -177,7 +175,7 @@ select:focus {
 }
 
 .flex-container > .right_side {
-    margin: -10px 5px 5px 20px; /*внешний отступ*/
+    margin: 0px 5px 5px 20px;
     width: auto;
 }
 
@@ -231,12 +229,16 @@ table tr:hover th {
 
 
 
-
-
+/* ------------------- other ------------------*/
+.msg {
+     margin: 15px;
+     font-size: 14px;
+}
 
 .info_txt{
-    font-size: 12px;
-    line-height: 0.8;
+     margin: 15px;
+     font-size: 12px;
+     line-height: 0.1
 }
 
 .bal {
@@ -248,7 +250,6 @@ table tr:hover th {
     font-weight: bold;
     color: blue;
     font-size: 11px;
-
 }
 
 .ct {
@@ -256,4 +257,5 @@ table tr:hover th {
     color: red;
     font-size: 11px;
 }
+
 

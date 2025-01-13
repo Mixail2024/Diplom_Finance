@@ -6,7 +6,7 @@
 {% block header %}
     <div class='header'>
         <h1>{{current_wlt.f_name}}</h1>
-            <button class="btn nav_btn btn_add_income" id="addIncomeLink">Add income</button>
+            <button class="btn nav_btn btn_blue" id="addIncomeLink">Add income</button>
                 <script>
                     document.getElementById('addIncomeLink').addEventListener('click', function () {
                        const currentUrl = window.location.pathname;
@@ -17,7 +17,7 @@
                        window.location.href = newUrl; // Перенаправление на новый URL
                        });
                 </script>
-            <button class="btn nav_btn btn_add_spending" onclick="location.href='{% url 'add_spending' current_wlt.pk %}'">Add spending</button>
+            <button class="btn nav_btn btn_red" onclick="location.href='{% url 'add_spending' current_wlt.pk %}'">Add spending</button>
     </div>
 {% endblock %}
 

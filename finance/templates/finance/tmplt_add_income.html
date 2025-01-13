@@ -5,14 +5,7 @@
 
 
 {% block header %}
-    <!--<div class='header'>-->
-    <!--    <h1>{{current_wlt.w_name}}</h1>-->
-    <!--    <button style='margin: 0px 5px 0px 10px;' class='nav_btn' onclick="location.href='{% url 'update_wlt' pk %}'">Edit</button>-->
-    <!--    <button class='nav_btn' onclick="location.href='{% url 'delete_wlt' pk %}'">Del</button>-->
-    <!--    <button class='nav_btn' onclick="location.href='{% url  'add_income' pk %}'">+Dt</button>-->
-    <!--    <button class='nav_btn' onclick="location.href='{% url  'add_income' pk %}'">+Ct</button>-->
-    <!--</div>-->
-    <h1>Adding new income</h1>
+   <h1>Adding new income to: <span style="color:blue">{{current_wlt.f_name}}</span></h1>
 {% endblock %}
 
 {% block left_side %}
@@ -65,13 +58,13 @@
         <div>
             <label for="{{ form_income.income_type.id_for_label }}">{{ form_income.income_type.label }}</label>
             <div style="margin: 0px 0px 10px 0px; height:22px;">{{ form_income.income_type }}
-                <button class='nav_btn' onclick="location.href='{% url  'add_income_type' pk %}'">Edit types</button>
+                <button class='btn nav_btn' onclick="location.href='{% url  'add_income_type' w_pk %}'">Edit types</button>
         </div>
             {% if form_income.income_type.errors %}
                 <div style="color: red;">{{ form_income.income_type.errors }}</div>
             {% endif %}
         </div>
-        <button class='nav_btn' type='submit' name="form_income">Save</button>
+        <button class='btn nav_btn' type='submit' name="form_income">Save</button>
     </form>
 {% endblock%}
 
