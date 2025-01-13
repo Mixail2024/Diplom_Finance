@@ -121,7 +121,7 @@ class Update_income_type(UpdateView):
     def get_success_url(self):
         w_pk = self.kwargs['w_pk']
         current_wlt = Wallet.objects.get(pk=w_pk)
-        return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk, 'current_wlt':current_wlt})
+        return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
 
 
 
