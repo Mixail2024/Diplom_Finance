@@ -42,6 +42,7 @@ class Spending(models.Model):
     destination = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'To')
     comment = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'Comment')
     spending_type = models.ForeignKey('Spending_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Spending Type')
+    wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.PROTECT, verbose_name='Wallet')
     class Meta:
         verbose_name = 'spending'
         verbose_name_plural = 'spendings'

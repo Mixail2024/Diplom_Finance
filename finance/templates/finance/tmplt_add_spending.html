@@ -1,0 +1,72 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} {{current_wlt.w_name}} :: spending adding {% endblock %}
+
+
+{% block header %}
+   <h1>Adding new spending to: <span style="color:blue">{{current_wlt.f_name}}</span></h1>
+{% endblock %}
+
+{% block left_side %}
+    <form method='POST' action="">
+        {% csrf_token %}
+
+        <div style="margin: 10px 0px 0px 0px">
+            <label style="margin: 10px 0px 10px 0px" for="{{ form_spending.date.id_for_label }}">{{ form_spending.date.label }}</label>
+            <div style="margin: 0px 0px 10px 0px; height:22px;">{{ form_spending.date }}</div>
+            {% if form_spending.date.errors %}
+                <div style="color: red;">{{ form_spending.date.errors }}</div>
+            {% endif %}
+        </div>
+        <!-- Подключение Flatpickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            flatpickr("#datepicker", {
+                dateFormat: "d-m-Y",
+            });
+        </script>
+
+        <div>
+            <label style="margin: 10px 5px 0px 0px; height:22px;" for="{{ form_spending.credit.id_for_label }}">
+                {{ form_spending.credit.label }}
+            </label>
+            <div style="margin: 0px 0px 10px 0px; height:22px;">{{ form_spending.credit }}</div>
+            {% if form_spending.credit.errors %}
+                <div style="color: red; font-size: 12px;">
+                    {{ form_spending.credit.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <div>
+            <label for="{{ form_spending.destination.id_for_label }}">{{ form_spending.destination.label }}</label>
+            <div style="margin: 0px 0px 10px 0px; height:22px;">{{ form_spending.destination }}</div>
+            {% if form_spending.destination.errors %}
+                <div style="color: red;">{{ form_spending.destination.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="{{ form_spending.comment.id_for_label }}">{{ form_spending.comment.label }}</label>
+            <div style="margin: 0px 0px 10px 0px; height:22px;">{{ form_spending.comment }}</div>
+            {% if form_spending.comment.errors %}
+                <div style="color: red;">{{ form_spending.comment.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div>
+            <label for="{{ form_spending.spending_type.id_for_label }}">{{ form_spending.spending_type.label }}</label>
+            <div style="margin: 0px 0px 10px 0px; height:22px;">{{ form_spending.spending_type }}
+                <button class='btn nav_btn' onclick="location.href='{% url  'add_spending_type' w_pk %}'">Edit types</button>
+        </div>
+            {% if form_spending.spending_type.errors %}
+                <div style="color: red;">{{ form_spending.spending_type.errors }}</div>
+            {% endif %}
+        </div>
+        <button class='btn nav_btn' type='submit' name="form_spending">Save</button>
+    </form>
+{% endblock%}
+
+{% block right_side %}
+{% endblock%}

@@ -1,13 +1,13 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
 
-{% block title %} income updating {% endblock %}
+{% block title %} spending updating {% endblock %}
 
 {% block menu %}
 {% endblock %}
 
 {% block header %}
-    <h1>Income updating</h1>
+    <h1>Spending updating</h1>
 {% endblock %}
 
 {% block left_side %}
@@ -15,10 +15,9 @@
         {% csrf_token %}
         {{ form.as_p }}
         <p><button class='nav_btn' type='submit'>Update</button></p>
-
     </form>
 
-{% if message %}
+    {% if message %}
         <p>{{ message }}</p>
     {% endif %}
 {% endblock %}

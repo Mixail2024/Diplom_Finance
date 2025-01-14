@@ -1,20 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum
+from decimal import Decimal
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from .models import Wallet, Income, Income_type, Spending, Spending_type
 from .forms import (
-    Form_create_wlt, Form_delete_wlt,
+    Form_create_wlt,
     Form_add_income, Form_update_income,
     Form_add_income_type, Form_update_income_type,
-    Form_add_spending
+    Form_add_spending, Form_update_spending,
+    Form_add_spending_type, Form_update_spending_type
     )
-
-
-
-from decimal import Decimal
 from django.utils.timezone import datetime
 
+
+
+#=========================================================================================================_H O M E
 def home(request):
     wlts = Wallet.objects.order_by('w_name')
     return render(request, 'finance/home.html', {'wlts':wlts})
@@ -23,13 +24,16 @@ def home_wlt(request, w_pk):
     current_wlt = Wallet.objects.get(pk=w_pk)
     return render(request, 'finance/home_wlt.html', {'current_wlt':current_wlt})
 
-class Create_wlt(CreateView):
+
+#========================================================================================================W A L L E T
+class Create_wlt(CreateView):#____________________________________________Create_wlt
     model = Wallet
     form_class = Form_create_wlt
     template_name = 'finance/tmplt_create_wlt.html'
     success_url = reverse_lazy('home')
 
-class Update_wlt(UpdateView):
+
+class Update_wlt(UpdateView):#____________________________________________Update_wlt
     model = Wallet
     form_class = Form_create_wlt
     template_name = 'finance/tmplt_update_wlt.html'
@@ -37,7 +41,8 @@ class Update_wlt(UpdateView):
         w_pk = self.kwargs['pk']  # Получаем pk текущей записи из URL
         return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
 
-class Delete_wlt(DeleteView):
+
+class Delete_wlt(DeleteView):#_______________________________________________Delete_wlt
     model = Wallet
     template_name = 'finance/tmplt_delete_wlt.html'
     success_url = reverse_lazy('home')
@@ -55,7 +60,7 @@ class Delete_wlt(DeleteView):
         context['pk'] = self.kwargs.get('pk')
         return context
 
-
+#================================================================================================C A L E N D A R
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
     initial_balance = current_wlt.initial_balance
@@ -102,7 +107,9 @@ def calendar_view(request, pk):
     return render(request, 'finance/home_wlt.html', context)
 
 
-def add_income(request, w_pk):
+
+#=======================================================================================================I N C O M E
+def add_income(request, w_pk):#_______________________________________________add_income
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
     form_income = Form_add_income(request.POST or None, prefix="form_income")
@@ -114,7 +121,57 @@ def add_income(request, w_pk):
     return render(request, 'finance/tmplt_add_income.html', {'form_income': form_income, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
 
 
-class Update_income_type(UpdateView):
+class Update_income(UpdateView):#_____________________________________________Update_income
+    model = Income
+    form_class = Form_update_income
+    template_name = 'finance/tmplt_update_income.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Вы можете добавить дополнительные данные в контекст, если нужно
+        return context
+
+
+def add_income_type(request, w_pk):#_________________________________________add_income_type
+    current_wlt = get_object_or_404(Wallet, pk=w_pk)
+    message = None
+    form = Form_add_income_type(request.POST or None, prefix="form")
+    if form.is_valid():
+        if "delete" in request.POST:
+            selected_item = form.cleaned_data.get("choices")
+            if selected_item:
+                selected_item.delete()
+                message = f"'{selected_item}' deleted successfully"
+        elif "edit" in request.POST:
+            selected_item = form.cleaned_data.get("choices")
+            if selected_item:
+               return redirect('update_income_type', w_pk=w_pk, pk=selected_item.pk)
+        elif "add" in request.POST:
+            new_value = form.cleaned_data.get("new_value")
+            if new_value:
+                if not Income_type.objects.filter(name=new_value).exists():
+                    Income_type.objects.create(name=new_value)
+                    message = f"'{new_value}' added successfully"
+                    form = Form_add_income_type(prefix="form")  # Очищаем форму после добавления
+                else:
+                    message = f"'{new_value}' already exists"
+        elif "add_exit" in request.POST:
+            new_value = form.cleaned_data.get("new_value")
+            if new_value:
+                if not Income_type.objects.filter(name=new_value).exists():
+                    Income_type.objects.create(name=new_value)
+                    message = f"'{new_value}' added successfully"
+                else:
+                    message = f"'{new_value}' already exists"
+            return redirect('add_income', w_pk=w_pk)
+    # Возвращаем страницу с формой и возможным сообщением
+    return render(request, 'finance/tmplt_add_income_type.html', {
+        'form': form,
+        'w_pk': w_pk,
+        'current_wlt': current_wlt,
+        'message': message
+    })
+
+class Update_income_type(UpdateView):#_________________________________________Update_income_type
     model = Income_type
     form_class = Form_update_income_type
     template_name = 'finance/tmplt_update_income_type.html'
@@ -125,68 +182,77 @@ class Update_income_type(UpdateView):
 
 
 
-def add_income_type(request, w_pk):
+#====================================================================================================S P E N D I N G
+def add_spending(request, w_pk):#_______________________________________________add_spending
+    message = ''
+    current_wlt = Wallet.objects.get(pk=w_pk)
+    form_spending = Form_add_spending(request.POST or None, prefix="form_spending")
+    if form_spending.is_valid():
+        spending = form_spending.save(commit=False)
+        spending.wallet = current_wlt
+        spending.save()
+        return redirect('home_wlt', current_wlt.pk)
+    return render(request, 'finance/tmplt_add_spending.html', {'form_spending': form_spending, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
+
+
+class Update_spending(UpdateView):#_____________________________________________Update_spending
+    model = Spending
+    form_class = Form_update_spending
+    template_name = 'finance/tmplt_update_spending.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Вы можете добавить дополнительные данные в контекст, если нужно
+        return context
+
+
+def add_spending_type(request, w_pk):#_________________________________________add_spending_type
     current_wlt = get_object_or_404(Wallet, pk=w_pk)
     message = None
-    form = Form_add_income_type(request.POST or None, prefix="form")
-
+    form = Form_add_spending_type(request.POST or None, prefix="form")
     if form.is_valid():
         if "delete" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
                 selected_item.delete()
                 message = f"'{selected_item}' deleted successfully"
-
         elif "edit" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
-               return redirect('update_income_type', w_pk=w_pk, pk=selected_item.pk)
-
+               return redirect('update_spending_type', w_pk=w_pk, pk=selected_item.pk)
         elif "add" in request.POST:
             new_value = form.cleaned_data.get("new_value")
             if new_value:
-                if not Income_type.objects.filter(name=new_value).exists():
-                    Income_type.objects.create(name=new_value)
+                if not Spending_type.objects.filter(name=new_value).exists():
+                    Spending_type.objects.create(name=new_value)
                     message = f"'{new_value}' added successfully"
-                    form = Form_add_income_type(prefix="form")  # Очищаем форму после добавления
+                    form = Form_add_spending_type(prefix="form")  # Очищаем форму после добавления
                 else:
                     message = f"'{new_value}' already exists"
-
         elif "add_exit" in request.POST:
             new_value = form.cleaned_data.get("new_value")
             if new_value:
-                if not Income_type.objects.filter(name=new_value).exists():
-                    Income_type.objects.create(name=new_value)
+                if not Spending_type.objects.filter(name=new_value).exists():
+                    Spending_type.objects.create(name=new_value)
                     message = f"'{new_value}' added successfully"
                 else:
                     message = f"'{new_value}' already exists"
-            return redirect('add_income', w_pk=w_pk)
-
+            return redirect('add_spending', w_pk=w_pk)
     # Возвращаем страницу с формой и возможным сообщением
-    return render(request, 'finance/tmplt_add_income_type.html', {
+    return render(request, 'finance/tmplt_add_spending_type.html', {
         'form': form,
         'w_pk': w_pk,
         'current_wlt': current_wlt,
         'message': message
     })
 
-
-class Delete_income_type(FormView):
-    pass
-
-
-class Add_spending(CreateView):
-    pass
-
-class Update_income(UpdateView):
-    model = Income
-    form_class = Form_update_income
-    template_name = 'finance/tmplt_update_income.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Вы можете добавить дополнительные данные в контекст, если нужно
-        return context
+class Update_spending_type(UpdateView):#_________________________________________Update_spending_type
+    model = Spending_type
+    form_class = Form_update_spending_type
+    template_name = 'finance/tmplt_update_spending_type.html'
+    def get_success_url(self):
+        w_pk = self.kwargs['w_pk']
+        current_wlt = Wallet.objects.get(pk=w_pk)
+        return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
 
 
 

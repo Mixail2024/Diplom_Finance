@@ -1,0 +1,44 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} Spending type edit {% endblock %}
+
+{% block menu %}
+    <div class='nav'>
+        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
+        <button class="btn nav_btn" onclick="location.href='{% url 'home_wlt' w_pk%}'">back to {{current_wlt}}</button>
+    </div>
+{% endblock %}
+
+{% block header %}
+    <h1>Spending type edit</h1>
+{% endblock %}
+
+{% block left_side %}
+    <form method="POST">
+        {% csrf_token %}
+        <label for="{{ form.choices.id_for_label }}">{{ form.choices.label }}</label><br>
+        {{ form.choices }}
+        <button class="btn nav_btn btn_red" type="submit" name="delete">Delete</button>
+        <button class="btn nav_btn btn_red" type="submit" name="edit">Edit</button>
+        <br><br>
+        <label for="{{ form.new_value.id_for_label }}">{{ form.new_value.label }}</label><br>
+        {{ form.new_value }}<br><br>
+        <button class="btn nav_btn" type="submit" name="add">Add</button>
+        <button class="btn nav_btn" type="submit" name="add_exit">Add and exit</button>
+    </form>
+    {% if message %}
+        <p class="msg">ℹ️ {{ message }}</p>
+    {% endif %}
+
+    {% if form.choices.field.queryset.exists %}
+        <p class="msg">Existing types:</p>
+        {% for spending in form.choices.field.queryset %}
+            <li class="info_txt">{{ spending }}</li>
+        {% endfor %}
+
+    {% endif %}
+{% endblock %}
+
+{% block right_side %}
+{% endblock %}

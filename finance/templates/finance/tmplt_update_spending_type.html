@@ -1,0 +1,21 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block menu %}
+    <div class = 'nav'>
+        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
+    </div>
+{% endblock %}
+
+{% block title %} Spending type updating {% endblock %}
+
+{% block header %} <h1> Spending type updating </h1>{% endblock %}
+
+{% block left_side %}
+   <form method='POST'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type='submit' class="btn nav_btn">Update</button>
+    </form>
+{% endblock %}
+
