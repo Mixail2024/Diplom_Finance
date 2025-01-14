@@ -5,7 +5,7 @@ from .views import (
     calendar_view,
     add_income, update_income,
     add_income_type, Update_income_type,
-    add_spending, Update_spending,
+    add_spending, update_spending,
     add_spending_type, Update_spending_type
 )
 
@@ -26,7 +26,7 @@ urlpatterns = [
 #____________________________________________________________________________________________________SPENDING
 
     path('home_wlt/<int:w_pk>/add_spending/', add_spending, name = 'add_spending'),
-    path('home_wlt/<int:pk>/update_spending/', Update_spending.as_view(), name='update_spending'),
+    path('home_wlt/<int:w_pk>/update_spending/<int:spending_pk>/', update_spending, name='update_spending'),
 
     path('home_wlt/<int:w_pk>/add_spending_type/', add_spending_type, name='add_spending_type'),
     path('home_wlt/<int:w_pk>/update_spending_type/<int:pk>/', Update_spending_type.as_view(), name='update_spending_type'),

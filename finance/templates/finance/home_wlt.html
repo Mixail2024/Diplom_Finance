@@ -194,7 +194,7 @@
                 <tr class="table-container ct">
                     <td>{{ rec.date|date:"d.m.y" }}</td>
                     <td style="text-align: right; padding: 5px 20px 5px 10px; font-weight: bold;">
-                        <a href="{% url 'update_spending' rec.pk %}" >{{ rec.credit }}</a>
+                        <a href="{% url 'update_spending' w_pk=current_wlt.pk spending_pk=rec.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}">{{ rec.credit }}</a>
                     </td>
                     <td>{{ rec.destination }}</td>
                     <td>{{ rec.comment }}</td>

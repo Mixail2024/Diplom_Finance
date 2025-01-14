@@ -151,7 +151,6 @@ def add_income(request, w_pk):#_______________________________________________ad
 
 
 def update_income(request, w_pk, income_pk):#_____________________________________________Update_income
-    current_wlt = get_object_or_404(Wallet, pk=w_pk)
     record = get_object_or_404(Income, pk=income_pk)
 
     if request.method == 'POST':
@@ -237,14 +236,24 @@ def add_spending(request, w_pk):#_______________________________________________
     return render(request, 'finance/tmplt_add_spending.html', {'form_spending': form_spending, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
 
 
-class Update_spending(UpdateView):#_____________________________________________Update_spending
-    model = Spending
-    form_class = Form_update_spending
-    template_name = 'finance/tmplt_update_spending.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Вы можете добавить дополнительные данные в контекст, если нужно
-        return context
+def update_spending(request, w_pk, spending_pk):  # _____________________________________________Update_spending
+    record = get_object_or_404(Spending, pk=spending_pk)
+
+    if request.method == 'POST':
+        form = Form_update_spending(request.POST, instance=record)
+        if form.is_valid():
+            form.save()
+            # Получаем все параметры из request.GET и добавляем их к URL
+            get_params = request.GET.urlencode()
+            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+    else:
+        form = Form_update_spending(instance=record)
+
+    return render(request, 'finance/tmplt_update_spending.html', {
+        'form': form,
+        'w_pk': w_pk,
+        'record': record,
+    })
 
 
 def add_spending_type(request, w_pk):#_________________________________________add_spending_type
