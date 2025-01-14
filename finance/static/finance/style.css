@@ -228,6 +228,31 @@ table tr:hover th {
 }
 
 
+.collapsible {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    text-align: right;
+    outline: none;
+    width: 100%;
+}
+
+.table-container {
+    display: none;
+    overflow: hidden;
+}
+
+.always-visible {
+    display: table-row;
+}
+
+
+
+
+
+
+
+
 
 /* ------------------- other ------------------*/
 .msg {
@@ -238,7 +263,7 @@ table tr:hover th {
 .info_txt{
      margin: 15px;
      font-size: 12px;
-     line-height: 0.1
+     line-height: 0.5
 }
 
 .bal {
@@ -246,16 +271,16 @@ table tr:hover th {
     font-size: 12px;
 }
 
-.dt {
+.d {
     font-weight: bold;
     color: blue;
-    font-size: 11px;
+    font-size: 12px;
 }
 
-.ct {
+.c {
     font-weight: bold;
     color: red;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 
