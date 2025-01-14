@@ -150,14 +150,31 @@ def add_income(request, w_pk):#_______________________________________________ad
     return render(request, 'finance/tmplt_add_income.html', {'form_income': form_income, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
 
 
-class Update_income(UpdateView):#_____________________________________________Update_income
-    model = Income
-    form_class = Form_update_income
-    template_name = 'finance/tmplt_update_income.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Вы можете добавить дополнительные данные в контекст, если нужно
-        return context
+def update_income(request, w_pk, income_pk):#_____________________________________________Update_income
+    current_wlt = get_object_or_404(Wallet, pk=w_pk)
+    record = get_object_or_404(Income, pk=income_pk)
+
+    if request.method == 'POST':
+        form = Form_update_income(request.POST, instance=record)
+        if form.is_valid():
+            form.save()
+
+            # Получаем параметр 'next' из GET-запроса
+            next_url = request.GET.get('next', None)
+            if next_url:
+                print(next_url)
+                return redirect(next_url)  # Перенаправляем на предыдущую страницу
+            else:
+                return redirect('home_wlt', w_pk=current_wlt.pk)
+    else:
+        form = Form_update_income(instance=record)
+
+    return render(request, 'finance/tmplt_update_income.html', {
+        'form': form,
+        'w_pk': w_pk,
+        'record': record,
+    })
+
 
 
 def add_income_type(request, w_pk):#_________________________________________add_income_type

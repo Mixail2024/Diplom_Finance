@@ -3,7 +3,7 @@ from .views import (
     home, home_wlt,
     Create_wlt, Update_wlt,  Delete_wlt,
     calendar_view,
-    add_income, Update_income,
+    add_income, update_income,
     add_income_type, Update_income_type,
     add_spending, Update_spending,
     add_spending_type, Update_spending_type
@@ -17,7 +17,7 @@ urlpatterns = [
 #____________________________________________________________________________________________________INCOME
 
     path('home_wlt/<int:w_pk>/add_income/', add_income, name = 'add_income'),
-    path('home_wlt/<int:pk>/update_income/', Update_income.as_view(), name='update_income'),
+    path('home_wlt/<int:w_pk>/update_income/<int:income_pk>/', update_income, name='update_income'),
 
     path('home_wlt/<int:w_pk>/add_income_type/', add_income_type, name='add_income_type'),
     path('home_wlt/<int:w_pk>/update_income_type/<int:pk>/', Update_income_type.as_view(), name='update_income_type'),
