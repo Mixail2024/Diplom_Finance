@@ -5,7 +5,7 @@
 
 
 {% block header %}
-   <h1>Adding new income to: <span style="color:blue">{{current_wlt.f_name}}</span></h1>
+   <h1>Adding new income to: <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'home_wlt' current_wlt.pk %}'">{{current_wlt.f_name}}</button></h1>
 {% endblock %}
 
 {% block left_side %}
@@ -14,10 +14,10 @@
             {% csrf_token %}
 
             <div>
-                <label for="{{ form_income.date.id_for_label }}">{{ form_income.date.label }}</label>
-                <div>{{ form_income.date }}</div>
-                {% if form_income.date.errors %}
-                    <div style="color: red;">{{ form_income.date.errors }}</div>
+                <label >{{ form.date.label }}</label>
+                <div class="form_view">{{ form.date }}</div>
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.date.errors }}</div>
                 {% endif %}
             </div>
              <!-- Подключение Flatpickr -->
@@ -31,42 +31,42 @@
 
 
             <div>
-                <label for="{{ form_income.debit.id_for_label }}">{{ form_income.debit.label }}</label>
-                <div class="form_view">{{ form_income.debit }}</div>
-                {% if form_income.debit.errors %}
-                    <div style="color: red; font-size: 12px;">{{ form_income.debit.errors }}</div>
+                <label>{{ form.debit.label }}</label>
+                <div class="form_view">{{ form.debit }}</div>
+                {% if form.debit.errors %}
+                    <div style="color: red; font-size: 12px;">{{ form.debit.errors }}</div>
                 {% endif %}
             </div>
 
             <div>
-                <label for="{{ form_income.source.id_for_label }}">{{ form_income.source.label }}</label>
-                <div class="form_view">{{ form_income.source }}</div>
-                {% if form_income.source.errors %}
-                    <div style="color: red;">{{ form_income.source.errors }}</div>
+                <label>{{ form.source.label }}</label>
+                <div class="form_view">{{ form.source }}</div>
+                {% if form.source.errors %}
+                    <div style="color: red;">{{ form.source.errors }}</div>
                 {% endif %}
             </div>
 
             <div>
-                <label for="{{ form_income.comment.id_for_label }}">{{ form_income.comment.label }}</label>
-                <div class="form_comm">{{ form_income.comment }}</div>
-                {% if form_income.comment.errors %}
-                    <div style="color: red;">{{ form_income.comment.errors }}</div>
+                <label>{{ form.comment.label }}</label>
+                <div class="form_comm">{{ form.comment }}</div>
+                {% if form.comment.errors %}
+                    <div style="color: red;">{{ form.comment.errors }}</div>
                 {% endif %}
             </div>
 
             <div>
-                <label for="{{ form_income.income_type.id_for_label }}">{{ form_income.income_type.label }}</label>
+                <label>{{ form.income_type.label }}</label>
                 <div class="form_view">
-                    {{ form_income.income_type }}
+                    {{ form.income_type }}
                     <button class='btn nav_btn' onclick="location.href='{% url  'add_income_type' w_pk %}'">Edit</button>
                 </div>
-                {% if form_income.income_type.errors %}
-                    <div style="color: red;">{{ form_income.income_type.errors }}</div>
+                {% if form.income_type.errors %}
+                    <div style="color: red;">{{ form.income_type.errors }}</div>
                 {% endif %}
             </div>
 
 
-            <button class='btn nav_btn' type='submit' name="form_income">Save</button>
+            <button class='btn nav_btn' type='submit' name="form">Save</button>
 
         </form>
     </div>

@@ -141,13 +141,13 @@ def calendar_view(request, pk):
 def add_income(request, w_pk):#_______________________________________________add_income
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
-    form_income = Form_add_income(request.POST or None, prefix="form_income")
-    if form_income.is_valid():
-        income = form_income.save(commit=False)
+    form = Form_add_income(request.POST or None, prefix="form_income")
+    if form.is_valid():
+        income = form.save(commit=False)
         income.wallet = current_wlt
         income.save()
         return redirect('home_wlt', current_wlt.pk)
-    return render(request, 'finance/tmplt_add_income.html', {'form_income': form_income, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
+    return render(request, 'finance/tmplt_add_income.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
 
 
 def update_income(request, w_pk, income_pk):#_____________________________________________Update_income

@@ -5,7 +5,7 @@
 
 
 {% block header %}
-   <h1>Adding new spending to: <span style="color:blue">{{current_wlt.f_name}}</span></h1>
+   <h1>Adding new spending to: <button class="btn nav_btn btn_red" onclick="location.href='{% url 'home_wlt' current_wlt.pk %}'">{{current_wlt.f_name}}</button></h1>
 {% endblock %}
 
 {% block left_side %}
@@ -14,7 +14,7 @@
             {% csrf_token %}
 
             <div>
-                <label for="{{ form_spending.date.id_for_label }}">{{ form_spending.date.label }}</label>
+                <label>{{ form_spending.date.label }}</label>
                 <div class="form_view">{{ form_spending.date }}</div>
                 {% if form_spending.date.errors %}
                     <div style="color: red;">{{ form_spending.date.errors }}</div>
@@ -31,7 +31,7 @@
 
 
             <div>
-                <label for="{{ form_spending.credit.id_for_label }}">{{ form_spending.credit.label }}</label>
+                <label>{{ form_spending.credit.label }}</label>
                 <div class="form_view">{{ form_spending.credit }}</div>
                 {% if form_spending.credit.errors %}
                     <div style="color: red; font-size: 12px;">{{ form_spending.credit.errors }}</div>
@@ -39,7 +39,7 @@
             </div>
 
             <div>
-                <label for="{{ form_spending.destination.id_for_label }}">{{ form_spending.destination.label }}</label>
+                <label>{{ form_spending.destination.label }}</label>
                 <div class="form_view">{{ form_spending.destination }}</div>
                 {% if form_spending.destination.errors %}
                     <div style="color: red;">{{ form_spending.destination.errors }}</div>
@@ -47,7 +47,7 @@
             </div>
 
             <div>
-                <label for="{{ form_spending.comment.id_for_label }}">{{ form_spending.comment.label }}</label>
+                <label>{{ form_spending.comment.label }}</label>
                 <div class="form_comm">{{ form_spending.comment }}</div>
                 {% if form_spending.comment.errors %}
                     <div style="color: red;">{{ form_spending.comment.errors }}</div>
@@ -55,7 +55,7 @@
             </div>
 
             <div>
-                <label for="{{ form_spending.spending_type.id_for_label }}">{{ form_spending.spending_type.label }}</label>
+                <label>{{ form_spending.spending_type.label }}</label>
                 <div class="form_view">{{ form_spending.spending_type }}
                     <button class='btn nav_btn' onclick="location.href='{% url  'add_spending_type' w_pk %}'">Edit</button>
                 </div>
