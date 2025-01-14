@@ -258,7 +258,10 @@ table tr:hover th {
     display: table-row;
 }
 
-
+/* Убираем начальное скрытие таблиц */
+.dt.table-container, .ct.table-container {
+    display: table-row; /* Поставим их сразу в развернутый вид */
+}
 
 
 

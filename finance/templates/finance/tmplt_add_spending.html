@@ -5,7 +5,11 @@
 
 
 {% block header %}
-   <h1>Adding new spending to: <button class="btn nav_btn btn_red" onclick="location.href='{% url 'home_wlt' current_wlt.pk %}'">{{current_wlt.f_name}}</button></h1>
+    <h1>
+        <button class="btn nav_btn btn_red"
+                onclick="location.href='{% url 'home_wlt' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'"><</button>
+        Adding new spending to: {{current_wlt.f_name}}
+    </h1>
 {% endblock %}
 
 {% block left_side %}

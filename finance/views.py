@@ -146,18 +146,19 @@ def add_income(request, w_pk):#_______________________________________________ad
         income = form.save(commit=False)
         income.wallet = current_wlt
         income.save()
-        return redirect('home_wlt', current_wlt.pk)
+        # Получаем все параметры из request.GET и добавляем их к URL
+        get_params = request.GET.urlencode()
+        return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+
     return render(request, 'finance/tmplt_add_income.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
 
 
 def update_income(request, w_pk, income_pk):#_____________________________________________Update_income
     record = get_object_or_404(Income, pk=income_pk)
-
     if request.method == 'POST':
         form = Form_update_income(request.POST, instance=record)
         if form.is_valid():
             form.save()
-
             # Получаем все параметры из request.GET и добавляем их к URL
             get_params = request.GET.urlencode()
             return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
@@ -169,7 +170,6 @@ def update_income(request, w_pk, income_pk):#___________________________________
         'w_pk': w_pk,
         'record': record,
     })
-
 
 
 def add_income_type(request, w_pk):#_________________________________________add_income_type
@@ -232,7 +232,9 @@ def add_spending(request, w_pk):#_______________________________________________
         spending = form_spending.save(commit=False)
         spending.wallet = current_wlt
         spending.save()
-        return redirect('home_wlt', current_wlt.pk)
+        # Получаем все параметры из request.GET и добавляем их к URL
+        get_params = request.GET.urlencode()
+        return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
     return render(request, 'finance/tmplt_add_spending.html', {'form_spending': form_spending, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
 
 

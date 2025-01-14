@@ -6,8 +6,8 @@
 {% block header %}
     <div class='header'>
         <h1>{{current_wlt.f_name}}</h1>
-            <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'add_income' current_wlt.pk %}'">Add income</button>
-            <button class="btn nav_btn btn_red" onclick="location.href='{% url 'add_spending' current_wlt.pk %}'">Add spending</button>
+            <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'add_income' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">Add income</button>
+            <button class="btn nav_btn btn_red"  onclick="location.href='{% url 'add_spending' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">Add spending</button>
     </div>
 {% endblock %}
 
@@ -212,24 +212,45 @@
         </table>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                function toggleVisibility(buttonClass, rowClass) {
-                    var button = document.querySelector(buttonClass);
-                    var rows = document.querySelectorAll(rowClass);
+    document.addEventListener('DOMContentLoaded', function() {
+        function toggleVisibility(buttonClass, rowClass) {
+            var button = document.querySelector(buttonClass);
+            var rows = document.querySelectorAll(rowClass);
 
-                    button.addEventListener('click', function() {
-                        rows.forEach(function(row) {
-                            row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
-                        });
+            // Проверяем, развернута ли таблица
+            if(localStorage.getItem(buttonClass) === 'expanded') {
+                rows.forEach(function(row) {
+                    row.style.display = 'table-row'; // Разворачиваем таблицу
+                });
+            } else {
+                rows.forEach(function(row) {
+                    row.style.display = 'none'; // Сворачиваем таблицу
+                });
+            }
+
+            button.addEventListener('click', function() {
+                // Переключаем состояние
+                var isExpanded = rows[0].style.display === 'none';
+
+                if (isExpanded) {
+                    rows.forEach(function(row) {
+                        row.style.display = 'table-row'; // Разворачиваем таблицу
                     });
+                    localStorage.setItem(buttonClass, 'expanded'); // Сохраняем состояние
+                } else {
+                    rows.forEach(function(row) {
+                        row.style.display = 'none'; // Сворачиваем таблицу
+                    });
+                    localStorage.setItem(buttonClass, 'collapsed'); // Сохраняем состояние
                 }
-                // Toggle visibility for 'Incomes'
-                toggleVisibility('.collapsible.dt', '.dt.table-container');
-                // Toggle visibility for 'Spendings'
-                toggleVisibility('.collapsible.ct', '.ct.table-container');
             });
-        </script>
+        }
 
+        // Разворачиваем таблицы по умолчанию при загрузке страницы
+        toggleVisibility('.collapsible.dt', '.dt.table-container');
+        toggleVisibility('.collapsible.ct', '.ct.table-container');
+    });
+</script>
 
 
 
