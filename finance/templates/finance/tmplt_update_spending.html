@@ -11,19 +11,74 @@
 {% endblock %}
 
 {% block left_side %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <p><button class='btn nav_btn' type='submit'>Update</button></p>
-    </form>
+    <div class="container_dark">
+        <form method='POST' action="">
+            {% csrf_token %}
 
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
+            <div>
+                <label>{{ form.date.label }}</label>
+                <p class="form_view">{{ form.date }}</p>
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.date.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Подключение Flatpickr -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            <script>
+                flatpickr("#id_date", {  <!-- Используем ID автоматически сгенерированное Django -->
+                    dateFormat: "Y-m-d",
+                });
+            </script>
+
+            <div>
+                <label>{{ form.credit.label }}</label>
+                <div class="form_view">{{ form.credit }}</div>
+                {% if form.credit.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {{ form.credit.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label>{{ form.destination.label }}</label>
+                <div class="form_view">{{ form.destination }}</div>
+                {% if form.destination.errors %}
+                    <div style="color: red;">{{ form.destination.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label>{{ form.comment.label }}</label>
+                <div class="form_view">{{ form.comment }}</div>
+                {% if form.comment.errors %}
+                    <div style="color: red;">{{ form.comment.errors }}</div>
+                {% endif %}
+            </div>
+            <br><br>
+            <div>
+                <label>{{ form.spending_type.label }}</label>
+                <div class="form_view">{{ form.spending_type }}</div>
+                {% if form.spending_type.errors %}
+                    <div style="color: red;">{{ form.spending_type.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button class='btn nav_btn' type='submit' name="form_spending">Save</button>
+        </form>
+    </div>
 {% endblock %}
+
+
+
+
 
 {% block right_side %}
 {% endblock %}
+
+
 
 
 

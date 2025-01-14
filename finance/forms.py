@@ -87,6 +87,11 @@ class Form_update_spending(forms.ModelForm):#___________________________________
     class Meta:
         model = Spending
         fields = ['date', 'credit', 'destination', 'comment', 'spending_type']
+    def __init__(self, *args, **kwargs):
+        super(Form_update_spending, self).__init__(*args, **kwargs)
+        # Установка стиля для конкретного поля
+        self.fields['destination'].widget.attrs.update({'style': 'width: 150px;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height: 50px'})
 
 class Form_add_spending_type(forms.Form):#______________________________________________Form_add_spending_type
     choices = forms.ModelChoiceField(

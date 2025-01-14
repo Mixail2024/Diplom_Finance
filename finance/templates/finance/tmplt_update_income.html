@@ -13,62 +13,64 @@
 
 
 {% block left_side %}
-    <form method='POST' action="">
-        {% csrf_token %}
+    <div class="container_dark">
+        <form method='POST' action="">
+            {% csrf_token %}
 
-        <div>
-            <label for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
-            <p class="form_view">{{ form.date }}</p>
-            {% if form.date.errors %}
-                <div style="color: red;">{{ form.date.errors }}</div>
-            {% endif %}
-        </div>
+            <div>
+                <label>{{ form.date.label }}</label>
+                <p class="form_view">{{ form.date }}</p>
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.date.errors }}</div>
+                {% endif %}
+            </div>
 
-        <!-- Подключение Flatpickr -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script>
-            flatpickr("#id_date", {  <!-- Используем ID автоматически сгенерированное Django -->
-                dateFormat: "Y-m-d",
-            });
-        </script>
+            <!-- Подключение Flatpickr -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            <script>
+                flatpickr("#id_date", {  <!-- Используем ID автоматически сгенерированное Django -->
+                    dateFormat: "Y-m-d",
+                });
+            </script>
 
-        <div>
-            <label for="{{ form.debit.id_for_label }}">{{ form.debit.label }}</label>
-            <div class="form_view">{{ form.debit }}</div>
-            {% if form.debit.errors %}
-                <div style="color: red; font-size: 12px;">
-                    {{ form.debit.errors }}
-                </div>
-            {% endif %}
-        </div>
+            <div>
+                <label>{{ form.debit.label }}</label>
+                <div class="form_view">{{ form.debit }}</div>
+                {% if form.debit.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {{ form.debit.errors }}
+                    </div>
+                {% endif %}
+            </div>
 
-        <div>
-            <label for="{{ form.source.id_for_label }}">{{ form.source.label }}</label>
-            <div class="form_view">{{ form.source }}</div>
-            {% if form.source.errors %}
-                <div style="color: red;">{{ form.source.errors }}</div>
-            {% endif %}
-        </div>
+            <div>
+                <label>{{ form.source.label }}</label>
+                <div class="form_view">{{ form.source }}</div>
+                {% if form.source.errors %}
+                    <div style="color: red;">{{ form.source.errors }}</div>
+                {% endif %}
+            </div>
 
-        <div>
-            <label for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
-            <div class="form_view">{{ form.comment }}</div>
-            {% if form.comment.errors %}
-                <div style="color: red;">{{ form.comment.errors }}</div>
-            {% endif %}
-        </div>
+            <div>
+                <label>{{ form.comment.label }}</label>
+                <div class="form_view">{{ form.comment }}</div>
+                {% if form.comment.errors %}
+                    <div style="color: red;">{{ form.comment.errors }}</div>
+                {% endif %}
+            </div>
+            <br><br>
+            <div>
+                <label>{{ form.income_type.label }}</label>
+                <div class="form_view">{{ form.income_type }}</div>
+                {% if form.income_type.errors %}
+                    <div style="color: red;">{{ form.income_type.errors }}</div>
+                {% endif %}
+            </div>
 
-        <div>
-            <label for="{{ form.income_type.id_for_label }}">{{ form.income_type.label }}</label>
-            <div class="form_view">{{ form.income_type }}</div>
-            {% if form.income_type.errors %}
-                <div style="color: red;">{{ form.income_type.errors }}</div>
-            {% endif %}
-        </div>
-
-        <button class='btn nav_btn' type='submit' name="form_income">Save</button>
-    </form>
+            <button class='btn nav_btn' type='submit' name="form_income">Save</button>
+        </form>
+    </div>
 {% endblock %}
 
 
