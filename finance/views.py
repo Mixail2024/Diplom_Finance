@@ -159,13 +159,9 @@ def update_income(request, w_pk, income_pk):#___________________________________
         if form.is_valid():
             form.save()
 
-            # Получаем параметр 'next' из GET-запроса
-            next_url = request.GET.get('next', None)
-            if next_url:
-                print(next_url)
-                return redirect(next_url)  # Перенаправляем на предыдущую страницу
-            else:
-                return redirect('home_wlt', w_pk=current_wlt.pk)
+            # Получаем все параметры из request.GET и добавляем их к URL
+            get_params = request.GET.urlencode()
+            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
     else:
         form = Form_update_income(instance=record)
 
