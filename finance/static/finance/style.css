@@ -198,6 +198,7 @@ table th {
     padding: 10px;
     border-bottom: 2px solid black;
     font-size: 12px;
+    text-align: center;
 }
 table td {
     padding: 5px;
@@ -228,7 +229,7 @@ table tr:hover th {
 }
 
 
-.collapsible {
+.collapsible {/* for collapse */
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0);
     border: none;
@@ -263,7 +264,13 @@ table tr:hover th {
 .info_txt{
      margin: 15px;
      font-size: 12px;
-     line-height: 0.5
+     line-height: 0.6
+}
+
+.types_lst {
+     margin: 15px;
+     font-size: 12px;
+     line-height: 0.1
 }
 
 .bal {
@@ -275,11 +282,13 @@ table tr:hover th {
     font-weight: bold;
     color: blue;
     font-size: 12px;
+
 }
 
 .c {
     font-weight: bold;
-    color: red;
+    color: rgb(183, 0, 14);
+
     font-size: 12px;
 }
 

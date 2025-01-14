@@ -144,11 +144,11 @@
 
 
 {% block right_side %}
-    {% if filtered_dt_sum > 0 or filtered_ct_sum > 0 %}
+    {% if dtct_sum > 0 %}
 
         <div class="info_txt">
             <p>initial balance: <span class="bal">{{ initial_balance }}</span></p>
-            <p>turnover: <span class="d">{{ filtered_dt_sum }}</span>/<span class="c">{{ filtered_ct_sum }}</span> </p>
+            <p>turnover: <span class="d">{{ filtered_dt_sum }}</span>  /  <span class="c">{{ filtered_ct_sum }}</span> </p>
             <p>final balance: <span class="bal">{{ final_balance }}</span></p>
         </div>
 
@@ -157,7 +157,7 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Debit</th>
+                    <th class="d">Debit</th>
                     <th>Source</th>
                     <th>Comment</th>
                     <th>Income type</th>
@@ -167,7 +167,7 @@
                 {% for rec in filtered_dt %}
                 <tr class="table-container dt">
                     <td>{{ rec.date|date:"d.m.y" }}</td>
-                    <td style="text-align: right; padding: 5px 20px 5px 20px; font-weight: bold;">
+                    <td style="text-align: right; padding: 5px 20px 5px 10px; font-weight: bold;">
                         <a href="{% url 'update_income' rec.pk %}" >{{ rec.debit }}</a>
                     </td>
                     <td>{{ rec.source }}</td>
@@ -190,7 +190,7 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Credit</th>
+                    <th class="c">Credit</th>
                     <th>Destination</th>
                     <th>Comment</th>
                     <th>Spending type</th>
@@ -200,7 +200,7 @@
                 {% for rec in filtered_ct %}
                 <tr class="table-container ct">
                     <td>{{ rec.date|date:"d.m.y" }}</td>
-                    <td style="text-align: right; padding: 5px 20px 5px 20px; font-weight: bold;">
+                    <td style="text-align: right; padding: 5px 20px 5px 10px; font-weight: bold;">
                         <a href="{% url 'update_spending' rec.pk %}" >{{ rec.credit }}</a>
                     </td>
                     <td>{{ rec.destination }}</td>

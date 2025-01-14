@@ -34,7 +34,7 @@
     {% if form.choices.field.queryset.exists %}
         <p class="msg">Existing types:</p>
         {% for spending in form.choices.field.queryset %}
-            <li class="info_txt">{{ spending }}</li>
+            <li class="types_lst">{{ spending }}</li>
         {% endfor %}
 
     {% endif %}

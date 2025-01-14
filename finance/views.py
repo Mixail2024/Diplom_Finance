@@ -122,12 +122,14 @@ def calendar_view(request, pk):
     context['initial_balance'] = initial_balance
 
     context['filtered_dt'] = filtered_dt
-    context['filtered_dt_sum'] = filtered_dt_sum
+    context['filtered_dt_sum'] = "{:.2f}".format(filtered_dt_sum)
 
     context['filtered_ct'] = filtered_ct
     context['filtered_ct_sum'] = "{:.2f}".format(filtered_ct_sum)
 
-    context['final_balance'] = initial_balance + Decimal(filtered_dt_sum) - Decimal(filtered_ct_sum)
+    context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
+
+    context['final_balance'] = initial_balance + filtered_dt_sum - filtered_ct_sum
 
     # print('request', request.GET)
     # print('context', context)
