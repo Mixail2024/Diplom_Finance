@@ -162,6 +162,16 @@ select:focus {
     border-color: black;
 }
 
+.form_view {
+    margin: 0px 0px 0px 0px;
+    height: 30px;
+}
+
+.form_comm {
+    margin: 0px 0px 0px 0px;
+    height: 60px;
+}
+
 /*------------------------------- C O N T A I N E R S ---------------------*/
 .flex-container {
     display: flex;
@@ -181,6 +191,7 @@ select:focus {
 
 .container_dark{
     margin: 10px;
+    padding:5px;
     background-color: rgba(0, 139, 139, 0.1);
     border-radius: 10px;
 }
@@ -288,8 +299,9 @@ table tr:hover th {
 .c {
     font-weight: bold;
     color: rgb(183, 0, 14);
-
     font-size: 12px;
 }
+
+
 
 

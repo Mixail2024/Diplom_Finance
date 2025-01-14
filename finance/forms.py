@@ -33,7 +33,7 @@ class Form_add_income(forms.ModelForm):#________________________________________
         super(Form_add_income, self).__init__(*args, **kwargs)
         self.fields['debit'].widget.attrs.update({'style': 'width: 150px;'})
         self.fields['source'].widget.attrs.update({'style': 'width: 200px;'})
-        self.fields['comment'].widget.attrs.update({'style': 'width: 200px;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height:50px; padding:5px'})
         self.fields['income_type'].widget.attrs.update({'style': 'width: 150;'})
 
 
@@ -41,6 +41,12 @@ class Form_update_income(forms.ModelForm):#_____________________________________
     class Meta:
         model = Income
         fields = ['date', 'debit', 'source', 'comment', 'income_type']
+    def __init__(self, *args, **kwargs):
+        super(Form_update_income, self).__init__(*args, **kwargs)
+        # Установка стиля для конкретного поля
+        self.fields['source'].widget.attrs.update({'style': 'width: 150px;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height: 50px'})
+
 
 
 class Form_add_income_type(forms.Form):#______________________________________________Form_add_income_type
@@ -73,7 +79,7 @@ class Form_add_spending(forms.ModelForm):  # ___________________________________
         super(Form_add_spending, self).__init__(*args, **kwargs)
         self.fields['credit'].widget.attrs.update({'style': 'width: 150px;'})
         self.fields['destination'].widget.attrs.update({'style': 'width: 200px;'})
-        self.fields['comment'].widget.attrs.update({'style': 'width: 200px;'})
+        self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height:50px; padding:5px'})
         self.fields['spending_type'].widget.attrs.update({'style': 'width: 150;'})
 
 

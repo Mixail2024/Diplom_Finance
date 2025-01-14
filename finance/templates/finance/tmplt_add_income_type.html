@@ -15,29 +15,39 @@
 {% endblock %}
 
 {% block left_side %}
-    <form method="POST">
-        {% csrf_token %}
-        <label for="{{ form.choices.id_for_label }}">{{ form.choices.label }}</label><br>
-        {{ form.choices }}
-        <button class="btn nav_btn btn_red" type="submit" name="delete">Delete</button>
-        <button class="btn nav_btn btn_red" type="submit" name="edit">Edit</button>
-        <br><br>
-        <label for="{{ form.new_value.id_for_label }}">{{ form.new_value.label }}</label><br>
-        {{ form.new_value }}<br><br>
-        <button class="btn nav_btn" type="submit" name="add">Add</button>
-        <button class="btn nav_btn" type="submit" name="add_exit">Add and exit</button>
-    </form>
-    {% if message %}
-        <p class="msg">ℹ️ {{ message }}</p>
-    {% endif %}
+    <div class="container_dark">
+        <form method="POST">
+            {% csrf_token %}
+            <label  for="{{ form.choices.id_for_label }}">{{ form.choices.label }}</label><br>
+            <div style="margin:5px 10px 10px 0px;">
+                {{ form.choices }}
+            </div>
+             <div>
+                <button class="btn nav_btn btn_red" type="submit" name="delete">Delete</button>
+                <button class="btn nav_btn " type="submit" name="edit">Edit</button>
+            </div>
+            <p></p>
+            <label for="{{ form.new_value.id_for_label }}">{{ form.new_value.label }}</label><br>
+             <div style="margin:5px 10px 10px 0px;">
+                {{ form.new_value }}
+             </div>
+            <div>
+                <button class="btn nav_btn" type="submit" name="add">Add</button>
+                <button class="btn nav_btn" type="submit" name="add_exit">Add and exit</button>
+            </div>
+        </form>
+        {% if message %}
+            <p class="msg">ℹ️ {{ message }}</p>
+        {% endif %}
 
-    {% if form.choices.field.queryset.exists %}
-        <p class="msg">Existing types:</p>
-        {% for income in form.choices.field.queryset %}
-            <li class="types_lst">{{ income }}</li>
-        {% endfor %}
-
-    {% endif %}
+        {% if form.choices.field.queryset.exists %}
+            <p class="msg">Existing types:</p>
+            {% for income in form.choices.field.queryset %}
+                <li class="types_lst">{{ income }}</li>
+            {% endfor %}
+        {% endif %}
+        <p></p>
+    </div>
 {% endblock %}
 
 {% block right_side %}
