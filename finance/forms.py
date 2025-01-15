@@ -24,7 +24,7 @@ class Form_delete_wlt(forms.ModelForm):#________________________________________
 
 #=====================================================================================================I N C O M E
 class Form_add_income(forms.ModelForm):#___________________________________________Form_add_income
-    date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%d-%m-%Y'])
+    date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%Y-%m-%d'])
     debit = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
     class Meta:
         model = Income
@@ -70,7 +70,7 @@ class Form_update_income_type(forms.ModelForm):#________________________________
 #======================================================================================================S P E N D I N G
 class Form_add_spending(forms.ModelForm):  # __________________________________________________Form_add_spending
     date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
-                           input_formats=['%d-%m-%Y'])
+                           input_formats=['%Y-%m-%d'])
     credit = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
     class Meta:
         model = Spending

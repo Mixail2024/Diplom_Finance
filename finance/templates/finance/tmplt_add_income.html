@@ -7,7 +7,7 @@
 {% block header %}
     <h1>
         <button class="btn nav_btn btn_blue"
-                onclick="location.href='{% url 'home_wlt' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'"><</button>
+                onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'"><</button>
         Adding new income to: {{current_wlt.f_name}}
     </h1>
 {% endblock %}
@@ -16,20 +16,24 @@
     <div class="container_dark">
         <form method='POST' action="">
             {% csrf_token %}
-
             <div>
-                <label >{{ form.date.label }}</label>
-                <div class="form_view">{{ form.date }}</div>
+                <label>{{ form.date.label }}</label>
+                <div class="form_view">
+                    {{ form.date }}
+                </div>
                 {% if form.date.errors %}
                     <div style="color: red;">{{ form.date.errors }}</div>
                 {% endif %}
-            </div>
+                </div>
+
              <!-- Подключение Flatpickr -->
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
             <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
             <script>
-                flatpickr("#datepicker", {
-                    dateFormat: "d-m-Y",
+                document.addEventListener('DOMContentLoaded', function() {
+                    flatpickr("#datepicker", {
+                        dateFormat: "Y-m-d",
+                    });
                 });
             </script>
 

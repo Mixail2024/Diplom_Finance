@@ -7,7 +7,7 @@
 {% block header %}
     <h1>
         <button class="btn nav_btn btn_red"
-                onclick="location.href='{% url 'home_wlt' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'"><</button>
+                onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'"><</button>
         Adding new spending to: {{current_wlt.f_name}}
     </h1>
 {% endblock %}
@@ -16,60 +16,64 @@
     <div class="container_dark">
         <form method='POST' action="">
             {% csrf_token %}
-
             <div>
-                <label>{{ form_spending.date.label }}</label>
-                <div class="form_view">{{ form_spending.date }}</div>
-                {% if form_spending.date.errors %}
-                    <div style="color: red;">{{ form_spending.date.errors }}</div>
+                <label>{{ form.date.label }}</label>
+                <div class="form_view">
+                    {{ form.date }}
+                </div>
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.date.errors }}</div>
                 {% endif %}
-            </div>
+                </div>
+
              <!-- Подключение Flatpickr -->
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
             <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
             <script>
-                flatpickr("#datepicker", {
-                    dateFormat: "d-m-Y",
+                document.addEventListener('DOMContentLoaded', function() {
+                    flatpickr("#datepicker", {
+                        dateFormat: "Y-m-d",
+                    });
                 });
             </script>
 
 
             <div>
-                <label>{{ form_spending.credit.label }}</label>
-                <div class="form_view">{{ form_spending.credit }}</div>
-                {% if form_spending.credit.errors %}
-                    <div style="color: red; font-size: 12px;">{{ form_spending.credit.errors }}</div>
+                <label>{{ form.credit.label }}</label>
+                <div class="form_view">{{ form.credit }}</div>
+                {% if form.credit.errors %}
+                    <div style="color: red; font-size: 12px;">{{ form.credit.errors }}</div>
                 {% endif %}
             </div>
 
             <div>
-                <label>{{ form_spending.destination.label }}</label>
-                <div class="form_view">{{ form_spending.destination }}</div>
-                {% if form_spending.destination.errors %}
-                    <div style="color: red;">{{ form_spending.destination.errors }}</div>
+                <label>{{ form.destination.label }}</label>
+                <div class="form_view">{{ form.destination }}</div>
+                {% if form.destination.errors %}
+                    <div style="color: red;">{{ form.destination.errors }}</div>
                 {% endif %}
             </div>
 
             <div>
-                <label>{{ form_spending.comment.label }}</label>
-                <div class="form_comm">{{ form_spending.comment }}</div>
-                {% if form_spending.comment.errors %}
-                    <div style="color: red;">{{ form_spending.comment.errors }}</div>
+                <label>{{ form.comment.label }}</label>
+                <div class="form_comm">{{ form.comment }}</div>
+                {% if form.comment.errors %}
+                    <div style="color: red;">{{ form.comment.errors }}</div>
                 {% endif %}
             </div>
 
             <div>
-                <label>{{ form_spending.spending_type.label }}</label>
-                <div class="form_view">{{ form_spending.spending_type }}
+                <label>{{ form.spending_type.label }}</label>
+                <div class="form_view">{{ form.spending_type }}
                     <button class='btn nav_btn' onclick="location.href='{% url  'add_spending_type' w_pk %}'">Edit</button>
                 </div>
-                {% if form_spending.spending_type.errors %}
-                    <div style="color: red;">{{ form_spending.spending_type.errors }}</div>
+                {% if form.spending_type.errors %}
+                    <div style="color: red;">{{ form.spending_type.errors }}</div>
                 {% endif %}
             </div>
 
 
-            <button class='btn nav_btn' type='submit' name="form_spending">Save</button>
+            <button class='btn nav_btn' type='submit' name="form">Save</button>
 
         </form>
     </div>

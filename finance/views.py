@@ -11,7 +11,7 @@ from .forms import (
     Form_add_spending, Form_update_spending,
     Form_add_spending_type, Form_update_spending_type
     )
-from django.utils.timezone import datetime
+from django.utils.timezone import datetime, now
 
 
 
@@ -141,16 +141,16 @@ def calendar_view(request, pk):
 def add_income(request, w_pk):#_______________________________________________add_income
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
-    form = Form_add_income(request.POST or None, prefix="form_income")
-    if form.is_valid():
+    single_date = request.GET.get('single_date', now().strftime('%Y-%m-%d'))
+    form = Form_add_income(request.POST or None, prefix="form", initial={'date': single_date})
+    if request.method == 'POST' and form.is_valid():
         income = form.save(commit=False)
         income.wallet = current_wlt
         income.save()
         # Получаем все параметры из request.GET и добавляем их к URL
         get_params = request.GET.urlencode()
         return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
-
-    return render(request, 'finance/tmplt_add_income.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
+    return render(request, 'finance/tmplt_add_income.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message, 'single_date':single_date})
 
 
 def update_income(request, w_pk, income_pk):#_____________________________________________Update_income
@@ -234,15 +234,16 @@ class Update_income_type(UpdateView):#_________________________________________U
 def add_spending(request, w_pk):#_______________________________________________add_spending
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
-    form_spending = Form_add_spending(request.POST or None, prefix="form_spending")
-    if form_spending.is_valid():
-        spending = form_spending.save(commit=False)
+    single_date = request.GET.get('single_date', now().strftime('%Y-%m-%d'))
+    form = Form_add_spending(request.POST or None, prefix="form", initial={'date': single_date})
+    if request.method == 'POST' and form.is_valid():
+        spending = form.save(commit=False)
         spending.wallet = current_wlt
         spending.save()
         # Получаем все параметры из request.GET и добавляем их к URL
         get_params = request.GET.urlencode()
         return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
-    return render(request, 'finance/tmplt_add_spending.html', {'form_spending': form_spending, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message})
+    return render(request, 'finance/tmplt_add_spending.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message, 'single_date':single_date})
 
 
 def update_spending(request, w_pk, spending_pk):  # _____________________________________________Update_spending
