@@ -121,17 +121,17 @@ def calendar_view(request, pk):
     lst = [pk, current_wlt, initial_balance, filtered_dt, filtered_ct]
     for i in lst:
         if not i:
-            i = 0
+            i = []
 
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
     context['initial_balance'] = initial_balance
 
     context['filtered_dt'] = filtered_dt
-    context['filtered_dt_sum'] = "{:.2f}".format(filtered_dt_sum)
+    context['filtered_dt_sum'] = filtered_dt_sum
 
     context['filtered_ct'] = filtered_ct
-    context['filtered_ct_sum'] = "{:.2f}".format(filtered_ct_sum)
+    context['filtered_ct_sum'] = filtered_ct_sum
 
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
@@ -141,6 +141,16 @@ def calendar_view(request, pk):
     # print('context', context)
     return render(request, 'finance/home_wlt.html', context)
 
+
+def delete_filtered_dt(request, w_pk):#_________________________________________delete_filtered_dt
+    lst = request.GET.get('ids')
+    lst = lst.split('/')
+    lst = [i for i in lst if i.isdigit() and int(i) > 0]
+    Income.objects.filter(pk__in=lst).delete()
+    # for i in lst:
+    #     obj = Income.objects.get(id=i)
+    #     print(obj.date, '-', obj.debit)
+    return redirect('home_wlt', w_pk=w_pk)
 
 
 #=======================================================================================================I N C O M E
@@ -343,10 +353,6 @@ class Update_spending_type(UpdateView):#________________________________________
         else:
             new_url = base_url
         return new_url
-
-
-
-
 
 
 

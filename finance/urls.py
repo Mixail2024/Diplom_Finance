@@ -6,7 +6,8 @@ from .views import (
     add_income, update_income,
     add_income_type, Update_income_type,
     add_spending, update_spending,
-    add_spending_type, Update_spending_type
+    add_spending_type, Update_spending_type,
+    delete_filtered_dt
 )
 
 urlpatterns = [
@@ -36,7 +37,7 @@ urlpatterns = [
 
 #______________________________________________________________________________________________
 
-
+    path('home_wlt/<int:w_pk>/delete filtered dt/', delete_filtered_dt, name = 'delete_filtered_dt'),
     path('home_wlt/<int:pk>/calendar/', calendar_view, name='calendar'),
     path('home_wlt/<int:w_pk>/', home_wlt, name = 'home_wlt'),
 

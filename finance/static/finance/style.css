@@ -239,11 +239,11 @@ table tr:nth-child(even) {/* Чередование цвета строк */
     background-color: rgba(0, 0, 0, 0.1);
 }
 table tr:hover {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
+    background-color: rgba(0, 139, 139, 0.3);
+
 }
 table tr:hover th {
-    color: white;
+
 }
 
 
@@ -302,14 +302,14 @@ table tr:hover th {
 .d {
     font-weight: bold;
     color: blue;
-    font-size: 12px;
+    font-size: 13px;
 
 }
 
 .c {
     font-weight: bold;
     color: rgb(183, 0, 14);
-    font-size: 12px;
+    font-size: 13px;
 }
 
 

@@ -10,7 +10,7 @@ class Wallet(models.Model):
     w_ticker = models.CharField(max_length=3, verbose_name = 'Currency ticker')
     w_type = models.CharField(max_length=1, choices=W_TYPES, verbose_name = 'Type')
     w_bank = models.CharField(max_length=25, verbose_name = 'Bank name', blank=True)
-    initial_balance = models.DecimalField(max_digits=9, decimal_places=2, verbose_name = 'Initial balance', default=0.00)
+    initial_balance = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Initial balance', default=0.00)
     f_name = models.CharField(max_length=24, blank=True, verbose_name='Full wallet name')
     def save(self, *args, **kwargs):
         self.f_name = f"{self.w_name} {self.w_ticker}"
@@ -26,7 +26,7 @@ class Wallet(models.Model):
 
 class Income(models.Model):
     date = models.DateField(db_index=True, verbose_name = 'Date')
-    debit = models.DecimalField(max_digits=9, decimal_places=2, verbose_name = 'Debit')
+    debit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Debit')
     source = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'From')
     comment = models.TextField(max_length=60, null=True, blank=True, verbose_name = 'Comment')
     income_type = models.ForeignKey('Income_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Income Type')
@@ -38,7 +38,7 @@ class Income(models.Model):
 
 class Spending(models.Model):
     date = models.DateField(db_index=True, verbose_name = 'Date')
-    credit = models.DecimalField(max_digits=9, decimal_places=2, verbose_name = 'Credit')
+    credit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Credit')
     destination = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'To')
     comment = models.TextField(max_length=60, null=True, blank=True, verbose_name = 'Comment')
     spending_type = models.ForeignKey('Spending_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Spending Type')
