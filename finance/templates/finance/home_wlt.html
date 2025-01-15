@@ -138,6 +138,7 @@
 
 {% block right_side %}
     {% if dtct_sum > 0 %}
+        <!-- Ваши элементы информации и таблицы -->
 
         <div class="info_txt">
             <p>initial balance: <span class="bal">{{ initial_balance }}</span></p>
@@ -172,21 +173,16 @@
                 {% endfor %}
                 <tr class="always-visible">
                     <td></td>
-                     <td></td>
+                    <td></td>
                     <td style="text-align: right; padding: 5px 20px 5px 20px;" class="d">{{ filtered_dt_sum }}</td>
                     <td></td>
                     <td></td>
-                    <td><a href="{% url 'delete_filtered_dt' w_pk=current_wlt.pk %}?ids={% for item in filtered_dt %}{{ item.pk }}/{% endfor %}">❌Delete all</a></td>
+                    <td><a href="#" class="delete_dt_link" data_url_dt="{% url 'delete_filtered_dt' w_pk=current_wlt.pk %}?ids={% for item in filtered_dt %}{{ item.pk }}/{% endfor %}">❌Delete all</a></td>
                 </tr>
             </tbody>
         </table>
-        <br>
 
-
-
-
-
-<button class="collapsible ct c">Spendings</button>
+        <button class="collapsible ct c">Spendings</button>
         <table>
             <thead>
                 <tr>
@@ -212,59 +208,74 @@
                 </tr>
                 {% endfor %}
                 <tr class="always-visible">
-                    <td ></td>
-                    <td ></td>
+                    <td></td>
+                    <td></td>
                     <td style="text-align: right; padding: 5px 20px 5px 20px;" class="c">{{ filtered_ct_sum }}</td>
                     <td></td>
                     <td></td>
-                    <td></td>
-
+                    <td><a href="#" class="delete_ct_link" data_url_ct="{% url 'delete_filtered_ct' w_pk=current_wlt.pk %}?ids={% for item in filtered_ct %}{{ item.pk }}/{% endfor %}">❌Delete all</a></td>
                 </tr>
             </tbody>
         </table>
 
+        <!-- Модальное окно -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <h2>Are you sure you want to delete <span id="recordCount"></span> records?</h2>
+                <button id="yesBtn" class="btn btn_mod btn_red">Yes</button>
+                <button id="noBtn" class="btn btn_mod btn_green">No</button>
+            </div>
+        </div>
+
+        <!-- JavaScript для модального окна -->
         <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function toggleVisibility(buttonClass, rowClass) {
-            var button = document.querySelector(buttonClass);
-            var rows = document.querySelectorAll(rowClass);
+            document.addEventListener("DOMContentLoaded", function() {
+                const deleteDtLinks = document.querySelectorAll(".delete_dt_link");
+                const deleteCtLinks = document.querySelectorAll(".delete_ct_link");
+                const modal = document.getElementById("confirmationModal");
+                const yesButton = document.getElementById("yesBtn");
+                const noButton = document.getElementById("noBtn");
+                const recordCountSpan = document.getElementById("recordCount");
+                let deleteUrl = "";
 
-            // Проверяем, развернута ли таблица
-            if(localStorage.getItem(buttonClass) === 'expanded') {
-                rows.forEach(function(row) {
-                    row.style.display = 'table-row'; // Разворачиваем таблицу
-                });
-            } else {
-                rows.forEach(function(row) {
-                    row.style.display = 'none'; // Сворачиваем таблицу
-                });
-            }
-
-            button.addEventListener('click', function() {
-                // Переключаем состояние
-                var isExpanded = rows[0].style.display === 'none';
-
-                if (isExpanded) {
-                    rows.forEach(function(row) {
-                        row.style.display = 'table-row'; // Разворачиваем таблицу
+                // Открытие модального окна для dt
+                deleteDtLinks.forEach(function(link) {
+                    link.addEventListener("click", function(event) {
+                        event.preventDefault();
+                        deleteUrl = link.getAttribute("data_url_dt");
+                        recordCountSpan.textContent = "{{ filtered_dt_count }}"; // Количество записей для dt
+                        modal.style.display = "block";
                     });
-                    localStorage.setItem(buttonClass, 'expanded'); // Сохраняем состояние
-                } else {
-                    rows.forEach(function(row) {
-                        row.style.display = 'none'; // Сворачиваем таблицу
+                });
+
+                // Открытие модального окна для ct
+                deleteCtLinks.forEach(function(link) {
+                    link.addEventListener("click", function(event) {
+                        event.preventDefault();
+                        deleteUrl = link.getAttribute("data_url_ct");
+                        recordCountSpan.textContent = "{{ filtered_ct_count }}"; // Количество записей для ct
+                        modal.style.display = "block";
                     });
-                    localStorage.setItem(buttonClass, 'collapsed'); // Сохраняем состояние
-                }
+                });
+
+                // Кнопка "Yes" — выполняет переход на URL удаления
+                yesButton.addEventListener("click", function() {
+                    window.location.href = deleteUrl; // Переход на URL для удаления
+                });
+
+                // Кнопка "No" — закрывает модальное окно
+                noButton.addEventListener("click", function() {
+                    modal.style.display = "none"; // Скрываем модальное окно
+                });
+
+                // Закрытие модального окна при клике вне его
+                window.addEventListener("click", function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                });
             });
-        }
-
-        // Разворачиваем таблицы по умолчанию при загрузке страницы
-        toggleVisibility('.collapsible.dt', '.dt.table-container');
-        toggleVisibility('.collapsible.ct', '.ct.table-container');
-    });
-</script>
-
-
+        </script>
     {% else %}
         <p>no turnover for this period</p>
     {% endif %}

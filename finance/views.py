@@ -128,9 +128,11 @@ def calendar_view(request, pk):
     context['initial_balance'] = initial_balance
 
     context['filtered_dt'] = filtered_dt
+    context['filtered_dt_count']= filtered_dt.count()
     context['filtered_dt_sum'] = filtered_dt_sum
 
     context['filtered_ct'] = filtered_ct
+    context['filtered_ct_count'] = filtered_ct.count()
     context['filtered_ct_sum'] = filtered_ct_sum
 
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
@@ -147,11 +149,14 @@ def delete_filtered_dt(request, w_pk):#_________________________________________
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]
     Income.objects.filter(pk__in=lst).delete()
-    # for i in lst:
-    #     obj = Income.objects.get(id=i)
-    #     print(obj.date, '-', obj.debit)
     return redirect('home_wlt', w_pk=w_pk)
 
+def delete_filtered_ct(request, w_pk):#_________________________________________delete_filtered_ct
+    lst = request.GET.get('ids')
+    lst = lst.split('/')
+    lst = [i for i in lst if i.isdigit() and int(i) > 0]
+    Spending.objects.filter(pk__in=lst).delete()
+    return redirect('home_wlt', w_pk=w_pk)
 
 #=======================================================================================================I N C O M E
 def add_income(request, w_pk):#_______________________________________________add_income
