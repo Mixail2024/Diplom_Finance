@@ -18,7 +18,7 @@
     <div class="container_dark">
         <form method="POST">
             {% csrf_token %}
-            <label  for="{{ form.choices.id_for_label }}">{{ form.choices.label }}</label><br>
+            <label>{{ form.choices.label }}</label><br>
             <div style="margin:5px 10px 10px 0px;">
                 {{ form.choices }}
             </div>
@@ -27,7 +27,7 @@
                 <button class="btn nav_btn " type="submit" name="edit">Edit</button>
             </div>
             <p></p>
-            <label for="{{ form.new_value.id_for_label }}">{{ form.new_value.label }}</label><br>
+            <label>{{ form.new_value.label }}</label><br>
              <div style="margin:5px 10px 10px 0px;">
                 {{ form.new_value }}
              </div>

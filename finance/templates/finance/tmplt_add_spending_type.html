@@ -17,12 +17,12 @@
 {% block left_side %}
     <form method="POST">
         {% csrf_token %}
-        <label for="{{ form.choices.id_for_label }}">{{ form.choices.label }}</label><br>
+        <label>{{ form.choices.label }}</label><br>
         {{ form.choices }}
         <button class="btn nav_btn btn_red" type="submit" name="delete">Delete</button>
         <button class="btn nav_btn btn_red" type="submit" name="edit">Edit</button>
         <br><br>
-        <label for="{{ form.new_value.id_for_label }}">{{ form.new_value.label }}</label><br>
+        <label>{{ form.new_value.label }}</label><br>
         {{ form.new_value }}<br><br>
         <button class="btn nav_btn" type="submit" name="add">Add</button>
         <button class="btn nav_btn" type="submit" name="add_exit">Add and exit</button>

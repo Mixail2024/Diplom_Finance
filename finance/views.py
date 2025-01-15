@@ -158,10 +158,17 @@ def update_income(request, w_pk, income_pk):#___________________________________
     if request.method == 'POST':
         form = Form_update_income(request.POST, instance=record)
         if form.is_valid():
-            form.save()
-            # Получаем все параметры из request.GET и добавляем их к URL
-            get_params = request.GET.urlencode()
-            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+            if "delete" in request.POST:
+               if record:
+                   record.delete()
+                   message = f"the record deleted successfully"
+                   get_params = request.GET.urlencode()
+                   return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+            if "save" in request.POST:
+                form.save()
+                # Получаем все параметры из request.GET и добавляем их к URL
+                get_params = request.GET.urlencode()
+                return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
     else:
         form = Form_update_income(instance=record)
 
