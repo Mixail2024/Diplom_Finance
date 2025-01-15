@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum
@@ -241,6 +242,7 @@ def add_income_type(request, w_pk):#_________________________________________add
                     message = f"'{new_value}' already exists"
             return redirect('add_income', w_pk=w_pk)
     # Возвращаем страницу с формой и возможным сообщением
+    print('send',w_pk)
     return render(request, 'finance/tmplt_add_income_type.html', {
         'form': form,
         'w_pk': w_pk,
@@ -248,19 +250,30 @@ def add_income_type(request, w_pk):#_________________________________________add
         'message': message
     })
 
-class Update_income_type(UpdateView):#_________________________________________Update_income_type
-    model = Income_type
-    form_class = Form_update_income_type
-    template_name = 'finance/tmplt_update_income_type.html'
-    def get_success_url(self):
-        w_pk = self.kwargs['w_pk']
-        get_params = self.request.GET.urlencode()
-        base_url = reverse('add_income_type', kwargs={'w_pk': w_pk})
-        if get_params:
-            new_url = f"{base_url}?{get_params}"
-        else:
-            new_url = base_url
-        return new_url
+
+def update_income_type(request, w_pk, pk):#___________________________________________update_income_type
+    try:
+        income_type = Income_type.objects.get(pk=pk)
+    except Income_type.DoesNotExist:
+        raise Http404("Income type not found")
+
+    form = Form_update_income_type(request.POST or None, instance=income_type)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            get_params = request.GET.urlencode()
+            if get_params:
+                return redirect(f'/finance/home_wlt/{w_pk}/add_income_type/?{get_params}')
+            else:
+               return redirect(f'/finance/home_wlt/{w_pk}/add_income_type/')
+        return redirect(f'/finance/home_wlt/{w_pk}')
+
+    # Отображаем форму
+    return render(request, 'finance/tmplt_update_income_type.html', {
+        'form': form,
+        'w_pk': w_pk,
+        'income_type': income_type,
+    })
 
 
 #====================================================================================================S P E N D I N G
@@ -349,22 +362,27 @@ def add_spending_type(request, w_pk):#_________________________________________a
         'message': message
     })
 
-class Update_spending_type(UpdateView):#_________________________________________Update_spending_type
-    model = Spending_type
-    form_class = Form_update_spending_type
-    template_name = 'finance/tmplt_update_spending_type.html'
-    def get_success_url(self):
-        w_pk = self.kwargs['w_pk']
-        get_params = self.request.GET.urlencode()
-        base_url = reverse('add_spending_type', kwargs={'w_pk': w_pk})
-        if get_params:
-            new_url = f"{base_url}?{get_params}"
-        else:
-            new_url = base_url
-        return new_url
+def update_spending_type(request, w_pk, pk):#___________________________________________update_spending_type
+    try:
+        spending_type = Spending_type.objects.get(pk=pk)
+    except Income_type.DoesNotExist:
+        raise Http404("Income type not found")
 
+    form = Form_update_spending_type(request.POST or None, instance=spending_type)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            get_params = request.GET.urlencode()
+            if get_params:
+                return redirect(f'/finance/home_wlt/{w_pk}/add_spending_type/?{get_params}')
+            else:
+               return redirect(f'/finance/home_wlt/{w_pk}/add_spending_type/')
+        return redirect(f'/finance/home_wlt/{w_pk}')
 
-
-
-
+    # Отображаем форму
+    return render(request, 'finance/tmplt_update_spending_type.html', {
+        'form': form,
+        'w_pk': w_pk,
+        'spending_type': spending_type,
+    })
 

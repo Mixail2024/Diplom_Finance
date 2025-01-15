@@ -10,7 +10,7 @@
     <h1>
         {% if request.GET.choice %}
             <button class="btn nav_btn btn_green"
-                    onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">
+                    onclick="location.href='{% url 'home_wlt' w_pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">
                 < </button>
         {% else %}
             <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home_wlt' w_pk %}'"> < </button>

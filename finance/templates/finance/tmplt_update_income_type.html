@@ -2,14 +2,23 @@
 {% load static %}
 
 {% block menu %}
-    <div class = 'nav'>
-        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
-    </div>
 {% endblock %}
 
 {% block title %} Income type updating {% endblock %}
 
-{% block header %} <h1> Income type updating </h1>{% endblock %}
+{% block header %}
+    <h1>
+        {% if request.GET.choice %}
+            <button class="btn nav_btn btn_green"
+                    onclick="location.href='{% url 'home_wlt' w_pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">
+                < </button>
+        {% else %}
+            <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home_wlt' w_pk %}'"> < </button>
+        {% endif %}
+        Income type updating
+    </h1>
+{% endblock %}
+
 
 {% block left_side %}
    <form method='POST'>
