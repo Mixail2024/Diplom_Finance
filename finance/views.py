@@ -155,7 +155,6 @@ def add_income(request, w_pk):#_______________________________________________ad
         income.save()
         get_params = request.GET.urlencode()
         if get_params:
-
             return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
         else:
             return redirect(f'/finance/home_wlt/{w_pk}')
@@ -180,7 +179,6 @@ def update_income(request, w_pk, income_pk):#___________________________________
                 return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
     else:
         form = Form_update_income(instance=record)
-
     return render(request, 'finance/tmplt_update_income.html', {
         'form': form,
         'w_pk': w_pk,
@@ -199,10 +197,12 @@ def add_income_type(request, w_pk):#_________________________________________add
                 selected_item.delete()
                 message = f"'{selected_item}' deleted successfully"
         elif "edit" in request.POST:
-
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
-               return redirect('update_income_type', w_pk=w_pk, pk=selected_item.pk)
+               get_params = request.GET.urlencode()
+               base_url = reverse('update_income_type', kwargs={'w_pk': w_pk, 'pk': selected_item.pk})
+               new_url = f"{base_url}?{get_params}"
+               return redirect(new_url)
         elif "add" in request.POST:
             new_value = form.cleaned_data.get("new_value")
             if new_value:
@@ -235,9 +235,13 @@ class Update_income_type(UpdateView):#_________________________________________U
     template_name = 'finance/tmplt_update_income_type.html'
     def get_success_url(self):
         w_pk = self.kwargs['w_pk']
-        current_wlt = Wallet.objects.get(pk=w_pk)
-        return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
-
+        get_params = self.request.GET.urlencode()
+        base_url = reverse('add_income_type', kwargs={'w_pk': w_pk})
+        if get_params:
+            new_url = f"{base_url}?{get_params}"
+        else:
+            new_url = base_url
+        return new_url
 
 
 #====================================================================================================S P E N D I N G
@@ -271,7 +275,6 @@ def update_spending(request, w_pk, spending_pk):  # ____________________________
             return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
     else:
         form = Form_update_spending(instance=record)
-
     return render(request, 'finance/tmplt_update_spending.html', {
         'form': form,
         'w_pk': w_pk,
