@@ -285,7 +285,7 @@ def update_spending(request, w_pk, spending_pk):  # ____________________________
 def add_spending_type(request, w_pk):#_________________________________________add_spending_type
     current_wlt = get_object_or_404(Wallet, pk=w_pk)
     message = None
-    form = Form_add_spending_type(request.POST or None, prefix="form")
+    form = Form_add_income_type(request.POST or None, prefix="form")
     if form.is_valid():
         if "delete" in request.POST:
             selected_item = form.cleaned_data.get("choices")
@@ -295,7 +295,10 @@ def add_spending_type(request, w_pk):#_________________________________________a
         elif "edit" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
-               return redirect('update_spending_type', w_pk=w_pk, pk=selected_item.pk)
+               get_params = request.GET.urlencode()
+               base_url = reverse('update_spending_type', kwargs={'w_pk': w_pk, 'pk': selected_item.pk})
+               new_url = f"{base_url}?{get_params}"
+               return redirect(new_url)
         elif "add" in request.POST:
             new_value = form.cleaned_data.get("new_value")
             if new_value:
@@ -314,7 +317,6 @@ def add_spending_type(request, w_pk):#_________________________________________a
                 else:
                     message = f"'{new_value}' already exists"
             return redirect('add_spending', w_pk=w_pk)
-    # Возвращаем страницу с формой и возможным сообщением
     return render(request, 'finance/tmplt_add_spending_type.html', {
         'form': form,
         'w_pk': w_pk,
@@ -328,8 +330,13 @@ class Update_spending_type(UpdateView):#________________________________________
     template_name = 'finance/tmplt_update_spending_type.html'
     def get_success_url(self):
         w_pk = self.kwargs['w_pk']
-        current_wlt = Wallet.objects.get(pk=w_pk)
-        return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
+        get_params = self.request.GET.urlencode()
+        base_url = reverse('add_spending_type', kwargs={'w_pk': w_pk})
+        if get_params:
+            new_url = f"{base_url}?{get_params}"
+        else:
+            new_url = base_url
+        return new_url
 
 
 
