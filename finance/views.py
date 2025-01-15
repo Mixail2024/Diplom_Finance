@@ -159,6 +159,7 @@ def delete_filtered_ct(request, w_pk):#_________________________________________
     return redirect('home_wlt', w_pk=w_pk)
 
 #=======================================================================================================I N C O M E
+
 def add_income(request, w_pk):#_______________________________________________add_income
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
@@ -170,10 +171,13 @@ def add_income(request, w_pk):#_______________________________________________ad
         income.save()
         get_params = request.GET.urlencode()
         if get_params:
-            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+           return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
         else:
             return redirect(f'/finance/home_wlt/{w_pk}')
+
     return render(request, 'finance/tmplt_add_income.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message, 'single_date':single_date})
+
+
 
 
 def update_income(request, w_pk, income_pk):#_____________________________________________Update_income
@@ -306,7 +310,7 @@ def update_spending(request, w_pk, spending_pk):#_______________________________
 def add_spending_type(request, w_pk):#_________________________________________add_spending_type
     current_wlt = get_object_or_404(Wallet, pk=w_pk)
     message = None
-    form = Form_add_income_type(request.POST or None, prefix="form")
+    form = Form_add_spending_type(request.POST or None, prefix="form")
     if form.is_valid():
         if "delete" in request.POST:
             selected_item = form.cleaned_data.get("choices")
