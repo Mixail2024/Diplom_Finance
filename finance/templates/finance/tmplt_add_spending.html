@@ -7,11 +7,11 @@
 {% block header %}
     <h1>
         {% if request.GET.choice %}
-            <button class="btn nav_btn btn_blue"
+            <button class="btn nav_btn btn_green"
                     onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">
                 < </button>
         {% else %}
-            <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'home_wlt' current_wlt.pk %}'"> < </button>
+            <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home_wlt' current_wlt.pk %}'"> < </button>
         {% endif %}
         Adding new income to: {{ current_wlt.f_name }}
     </h1>

@@ -4,14 +4,19 @@
 {% block title %} Income type edit {% endblock %}
 
 {% block menu %}
-    <div class='nav'>
-        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
-        <button class="btn nav_btn" onclick="location.href='{% url 'home_wlt' w_pk%}'">back to {{current_wlt}}</button>
-    </div>
 {% endblock %}
 
 {% block header %}
-    <h1>Income type edit</h1>
+    <h1>
+        {% if request.GET.choice %}
+            <button class="btn nav_btn btn_green"
+                    onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">
+                < </button>
+        {% else %}
+            <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home_wlt' w_pk %}'"> < </button>
+        {% endif %}
+        Income type edit
+    </h1>
 {% endblock %}
 
 {% block left_side %}
@@ -33,7 +38,7 @@
              </div>
             <div>
                 <button class="btn nav_btn" type="submit" name="add">Add</button>
-                <button class="btn nav_btn" type="submit" name="add_exit">Add and exit</button>
+
             </div>
         </form>
         {% if message %}

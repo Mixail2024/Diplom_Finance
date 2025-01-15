@@ -53,12 +53,12 @@ class Form_add_income_type(forms.Form):#________________________________________
     choices = forms.ModelChoiceField(
         queryset=Income_type.objects.all(),
         required=False,
-        label="Choose income type",
+        label="Choose to edit or to delete",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
     new_value = forms.CharField(
         max_length=255,
         required=False,
-        label="Add new income type",
+        label="Add new",
         widget=forms.TextInput(attrs={'style': 'width: 150px;'}))
 
 class Form_update_income_type(forms.ModelForm):#_______________________________________Form_update_income_type

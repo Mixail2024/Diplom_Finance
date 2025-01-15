@@ -125,6 +125,13 @@ h1 {
     color: #ffe4e1;
 }
 
+.btn_green{
+    background-color: rgb(98, 171, 143); /*green*/
+}
+.btn_green:hover {
+    background-color: rgb(88, 132, 90); /*green*/
+    color: #ffe4e1;
+}
 
 /* -------------------------------F O R M S ---------------------- */
 form {

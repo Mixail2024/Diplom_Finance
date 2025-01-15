@@ -155,7 +155,7 @@ def add_income(request, w_pk):#_______________________________________________ad
         income.save()
         get_params = request.GET.urlencode()
         if get_params:
-            
+
             return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
         else:
             return redirect(f'/finance/home_wlt/{w_pk}')
@@ -199,6 +199,7 @@ def add_income_type(request, w_pk):#_________________________________________add
                 selected_item.delete()
                 message = f"'{selected_item}' deleted successfully"
         elif "edit" in request.POST:
+
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
                return redirect('update_income_type', w_pk=w_pk, pk=selected_item.pk)
