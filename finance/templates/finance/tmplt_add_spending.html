@@ -6,9 +6,14 @@
 
 {% block header %}
     <h1>
-        <button class="btn nav_btn btn_red"
-                onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'"><</button>
-        Adding new spending to: {{current_wlt.f_name}}
+        {% if request.GET.choice %}
+            <button class="btn nav_btn btn_blue"
+                    onclick="location.href='{% url 'home_wlt' current_wlt.pk %}calendar/?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">
+                < </button>
+        {% else %}
+            <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'home_wlt' current_wlt.pk %}'"> < </button>
+        {% endif %}
+        Adding new income to: {{ current_wlt.f_name }}
     </h1>
 {% endblock %}
 
