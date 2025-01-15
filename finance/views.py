@@ -117,6 +117,12 @@ def calendar_view(request, pk):
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
 
     # ___________________________________________________________________________________________________ContexT
+
+    lst = [pk, current_wlt, initial_balance, filtered_dt, filtered_ct]
+    for i in lst:
+        if not i:
+            i = 0
+
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
     context['initial_balance'] = initial_balance
@@ -147,9 +153,12 @@ def add_income(request, w_pk):#_______________________________________________ad
         income = form.save(commit=False)
         income.wallet = current_wlt
         income.save()
-        # Получаем все параметры из request.GET и добавляем их к URL
         get_params = request.GET.urlencode()
-        return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+        if get_params:
+            
+            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+        else:
+            return redirect(f'/finance/home_wlt/{w_pk}')
     return render(request, 'finance/tmplt_add_income.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message, 'single_date':single_date})
 
 
@@ -240,9 +249,12 @@ def add_spending(request, w_pk):#_______________________________________________
         spending = form.save(commit=False)
         spending.wallet = current_wlt
         spending.save()
-        # Получаем все параметры из request.GET и добавляем их к URL
         get_params = request.GET.urlencode()
-        return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+        if get_params:
+           return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
+        else:
+            return redirect(f'/finance/home_wlt/{w_pk}')
+
     return render(request, 'finance/tmplt_add_spending.html', {'form': form, 'w_pk': w_pk, 'current_wlt':current_wlt, 'message':message, 'single_date':single_date})
 
 
