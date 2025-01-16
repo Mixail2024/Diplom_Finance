@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from .views import (
     home, home_wlt,
-    Create_wlt, Update_wlt,  Delete_wlt,
+    Create_wlt, Update_wlt,  delete_wlt,
     calendar_view,
     add_income, update_income,
     add_income_type, update_income_type,
@@ -13,7 +13,7 @@ from .views import (
 urlpatterns = [
     path('create_wlt/', Create_wlt.as_view(), name = 'create_wlt'),
     path('home_wlt/<int:pk>/update_wlt/', Update_wlt.as_view(), name = 'update_wlt'),
-    path('home_wlt/<int:pk>/delete_wlt/', Delete_wlt.as_view(), name = 'delete_wlt'),
+    path('home_wlt/<int:pk>/delete_wlt/', delete_wlt, name = 'delete_wlt'),
 
 #____________________________________________________________________________________________________INCOME
 

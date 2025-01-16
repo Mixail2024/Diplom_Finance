@@ -29,8 +29,9 @@ class Income(models.Model):
     debit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Debit')
     source = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'From')
     comment = models.TextField(max_length=60, null=True, blank=True, verbose_name = 'Comment')
+
     income_type = models.ForeignKey('Income_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Income Type')
-    wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Wallet')
+    wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.CASCADE, verbose_name = 'Wallet')
     class Meta:
         verbose_name = 'income'
         verbose_name_plural = 'incomes'
@@ -41,8 +42,9 @@ class Spending(models.Model):
     credit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Credit')
     destination = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'To')
     comment = models.TextField(max_length=60, null=True, blank=True, verbose_name = 'Comment')
+
     spending_type = models.ForeignKey('Spending_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Spending Type')
-    wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.PROTECT, verbose_name='Wallet')
+    wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Wallet')
     class Meta:
         verbose_name = 'spending'
         verbose_name_plural = 'spendings'

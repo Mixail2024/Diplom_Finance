@@ -4,31 +4,42 @@
 {% block title %}Wallet deleting{% endblock %}
 
 {% block menu %}
-    <div class = 'nav'>
-        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
-    </div>
 {% endblock %}
 
-
 {% block header %}
-    <h1>Deleting wallet: <i>"{{ object.w_name }}"?</i></h1>
+ <h1>Delete wallet?</h1>
 {% endblock %}
 
 {% block left_side %}
-    {% if not deleted %}
-        <form method="post">
-            {% csrf_token %}
-            <button class='btn nav_btn' type="submit">Confirm deleting</button>
-            <button class='btn nav_btn' type='button' onclick="location.href='{% url 'home_wlt' pk %}'">Cancel</button>
-        </form>
-    {% else %}
-        <p class="msg" >ℹ️ Wallet was successfully deleted</p>
-        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Exit</button>
-    {% endif %}
+    <div class="container_dark">
+        {% if message %}
+            <div>
+                <p class="msg">ℹ️ {{ message }}</p>
+                <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home' %}'"> Exit </button>
+            </div>
+
+        {% else %}
+            {% if total_qty != 0 %}
+                <div style="margin:5px 5px 10px 0px; font-weight:bold; font-size:14">⚠️Wallet '{{ current_wlt }}' has:</div>
+                    {% if recs_income_qty != 0 %}
+                        <li style="font-size:14px">{{ recs_income_qty }} income records</li>
+                    {% endif %}
+                    {% if recs_spending_qty != 0 %}
+                        <li style="font-size:14px">{{ recs_spending_qty }} spending records</li>
+                    {% endif %}
+
+            {% else %}
+                <p>No records associated with this wallet.</p>
+            {% endif %}
+
+
+
+            <form method="post">
+                {% csrf_token %}
+                <button  name="confirm" type="submit" class='btn nav_btn btn_red' >Confirm</button>
+                <button name="cancel" type="submit" class="btn nav_btn">Cancel</button><br>
+            </form>
+
+        {% endif %}
+    </div>
 {% endblock %}
-
-
-
-
-
-

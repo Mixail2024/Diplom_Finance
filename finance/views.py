@@ -3,10 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum
 from decimal import Decimal
+from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from .models import Wallet, Income, Income_type, Spending, Spending_type
 from .forms import (
-    Form_create_wlt,
+    Form_create_wlt, Form_delete_wlt,
     Form_add_income, Form_update_income,
     Form_add_income_type, Form_update_income_type,
     Form_add_spending, Form_update_spending,
@@ -43,23 +44,38 @@ class Update_wlt(UpdateView):#____________________________________________Update
         return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
 
 
-class Delete_wlt(DeleteView):#_______________________________________________Delete_wlt
-    model = Wallet
-    template_name = 'finance/tmplt_delete_wlt.html'
-    success_url = reverse_lazy('home')
-    # Переопределим метод GET для отображения подтверждения на той же странице
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return self.render_to_response(self.get_context_data(object=self.object))
-    # Переопределим метод POST для удаления
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return self.render_to_response(self.get_context_data(deleted=True))
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['pk'] = self.kwargs.get('pk')
-        return context
+
+
+def delete_wlt(request, pk):  # ____________________________________________________________Delete_wlt
+    current_wlt = get_object_or_404(Wallet, pk=pk)
+    form = Form_delete_wlt(request.POST or None, instance=current_wlt)
+    recs_income_qty = Income.objects.filter(wallet=current_wlt).count()
+    recs_spending_qty = Spending.objects.filter(wallet=current_wlt).count()
+    total_qty = recs_income_qty + recs_spending_qty
+    message = None
+    if request.method == 'POST':
+        if 'confirm' in request.POST:
+            current_wlt.delete()
+            message = f"Wallet '{current_wlt}' deleted successfully"
+        if 'cancel' in request.POST:
+            get_params = request.GET.urlencode()
+            url = reverse_lazy('calendar', kwargs={'pk': pk})
+            if get_params:
+                url = f"{url}?{get_params}"
+                return redirect(url)
+            else:
+                return redirect(reverse_lazy('home_wlt', kwargs={'w_pk': pk}))
+    return render(request, 'finance/tmplt_delete_wlt.html', {
+        'form': form,
+        'pk': pk,
+        'message': message,
+        'current_wlt': current_wlt,
+        'recs_income_qty': recs_income_qty,
+        'recs_spending_qty': recs_spending_qty,
+        'total_qty': total_qty
+    })
+
+
 
 #================================================================================================C A L E N D A R
 def calendar_view(request, pk):
@@ -146,18 +162,26 @@ def calendar_view(request, pk):
 
 
 def delete_filtered_dt(request, w_pk):#_________________________________________delete_filtered_dt
+    params = request.GET.get('params')
+    params = params.replace("*", "&")
+    print('params DDt', params)
     lst = request.GET.get('ids')
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]
     Income.objects.filter(pk__in=lst).delete()
-    return redirect('home_wlt', w_pk=w_pk)
+    return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{params}')
 
 def delete_filtered_ct(request, w_pk):#_________________________________________delete_filtered_ct
+    params = request.GET.get('params')
+    params= params.replace("*", "&")
+    print('params kt', params)
     lst = request.GET.get('ids')
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]
     Spending.objects.filter(pk__in=lst).delete()
-    return redirect('home_wlt', w_pk=w_pk)
+    return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{params}')
+
+
 
 #=======================================================================================================I N C O M E
 
@@ -242,7 +266,7 @@ def add_income_type(request, w_pk):#_________________________________________add
                     message = f"'{new_value}' already exists"
             return redirect('add_income', w_pk=w_pk)
     # Возвращаем страницу с формой и возможным сообщением
-    print('send',w_pk)
+
     return render(request, 'finance/tmplt_add_income_type.html', {
         'form': form,
         'w_pk': w_pk,

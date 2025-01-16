@@ -130,17 +130,12 @@
             document.addEventListener("DOMContentLoaded", toggleFields);
         </script>
     </div>
-
-
-
 {% endblock %}
 
 
 {% block right_side %}
     {% if dtct_sum > 0 %}
-        <!-- Ваши элементы информации и таблицы -->
-
-        <div class="info_txt">
+            <div class="info_txt">
             <p>initial balance: <span class="bal">{{ initial_balance }}</span></p>
             <p>turnover: <span class="d">{{ filtered_dt_sum }}</span>  /  <span class="c">{{ filtered_ct_sum }}</span> </p>
             <p>final balance: <span class="bal">{{ final_balance }}</span></p>
@@ -177,7 +172,8 @@
                     <td style="text-align: right; padding: 5px 20px 5px 20px;" class="d">{{ filtered_dt_sum }}</td>
                     <td></td>
                     <td></td>
-                    <td><a href="#" class="delete_dt_link" data_url_dt="{% url 'delete_filtered_dt' w_pk=current_wlt.pk %}?ids={% for item in filtered_dt %}{{ item.pk }}/{% endfor %}">❌Delete all</a></td>
+                    <td><a href="#" class="delete_dt_link" data_url_dt="{% url 'delete_filtered_dt' w_pk=current_wlt.pk %}
+?params={% for key, value in request.GET.items %}{{ key }}={{ value }}*{% endfor %}&ids={% for item in filtered_dt %}{{ item.pk }}/{% endfor %}">❌Delete all</a>
                 </tr>
             </tbody>
         </table>
@@ -215,7 +211,9 @@
                     <td style="text-align: right; padding: 5px 20px 5px 20px;" class="c">{{ filtered_ct_sum }}</td>
                     <td></td>
                     <td></td>
-                    <td><a href="#" class="delete_ct_link" data_url_ct="{% url 'delete_filtered_ct' w_pk=current_wlt.pk %}?ids={% for item in filtered_ct %}{{ item.pk }}/{% endfor %}">❌Delete all</a></td>
+                    <td><a href="#" class="delete_ct_link" data_url_ct="{% url 'delete_filtered_ct' w_pk=current_wlt.pk %}
+?params={% for key, value in request.GET.items %}{{ key }}={{ value }}*{% endfor %}&ids={% for item in filtered_ct %}{{ item.pk }}/{% endfor %}">❌Delete all</a>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -238,7 +236,7 @@
                 const yesButton = document.getElementById("yesBtn");
                 const noButton = document.getElementById("noBtn");
                 const recordCountSpan = document.getElementById("recordCount");
-                let deleteUrl = "";
+                let deleteUrl = ""
 
                 // Открытие модального окна для dt
                 deleteDtLinks.forEach(function(link) {
