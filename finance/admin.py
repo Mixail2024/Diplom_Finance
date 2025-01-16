@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Wallet, Income, Spending, Income_type, Spending_type
 
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ('f_name', 'w_ticker', 'w_type', 'w_bank', 'initial_balance')
+    list_display = ('f_name', 'w_ticker', 'w_type', 'w_bank', 'init_date', 'init_balance')
     list_display_links = ('f_name', 'w_ticker')
     search_fields = ('f_name', 'w_ticker')
 

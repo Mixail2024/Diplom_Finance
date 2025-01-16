@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.db.models import Sum
+from django.db.models import Sum, ProtectedError
 from decimal import Decimal
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
@@ -80,7 +80,7 @@ def delete_wlt(request, pk):  # ________________________________________________
 #================================================================================================C A L E N D A R
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
-    initial_balance = current_wlt.initial_balance
+    init_balance = current_wlt.init_balance
     context = {}
     if request.method == 'GET':
         choice = request.GET.get("choice")
@@ -135,14 +135,14 @@ def calendar_view(request, pk):
 
     # ___________________________________________________________________________________________________ContexT
 
-    lst = [pk, current_wlt, initial_balance, filtered_dt, filtered_ct]
+    lst = [pk, current_wlt, init_balance, filtered_dt, filtered_ct]
     for i in lst:
         if not i:
             i = []
 
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
-    context['initial_balance'] = initial_balance
+    context['init_balance'] = init_balance
 
     context['filtered_dt'] = filtered_dt
     context['filtered_dt_count']= filtered_dt.count()
@@ -154,7 +154,7 @@ def calendar_view(request, pk):
 
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
-    context['final_balance'] = initial_balance + filtered_dt_sum - filtered_ct_sum
+    context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
 
     # print('request', request.GET)
     # print('context', context)
@@ -238,8 +238,13 @@ def add_income_type(request, w_pk):#_________________________________________add
         if "delete" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
-                selected_item.delete()
-                message = f"'{selected_item}' deleted successfully"
+                try:
+                    selected_item.delete()
+                    message = f"'{selected_item}' deleted successfully"
+                except ProtectedError:
+                    message = f"Cannot delete '{selected_item}' because it is referenced by other records!"
+
+
         elif "edit" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
@@ -256,16 +261,7 @@ def add_income_type(request, w_pk):#_________________________________________add
                     form = Form_add_income_type(prefix="form")  # Очищаем форму после добавления
                 else:
                     message = f"'{new_value}' already exists"
-        elif "add_exit" in request.POST:
-            new_value = form.cleaned_data.get("new_value")
-            if new_value:
-                if not Income_type.objects.filter(name=new_value).exists():
-                    Income_type.objects.create(name=new_value)
-                    message = f"'{new_value}' added successfully"
-                else:
-                    message = f"'{new_value}' already exists"
-            return redirect('add_income', w_pk=w_pk)
-    # Возвращаем страницу с формой и возможным сообщением
+
 
     return render(request, 'finance/tmplt_add_income_type.html', {
         'form': form,

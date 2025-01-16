@@ -6,7 +6,7 @@ from django import forms
 class Form_create_wlt(forms.ModelForm):#__________________________________________Form_create_wlt
     class Meta:
         model = Wallet
-        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'initial_balance']
+        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'init_date', 'init_balance']
     def __init__(self, *args, **kwargs):
         super(Form_create_wlt, self).__init__(*args, **kwargs)
         # Установка стиля для конкретного поля
@@ -18,14 +18,14 @@ class Form_create_wlt(forms.ModelForm):#________________________________________
 class Form_delete_wlt(forms.ModelForm):#__________________________________________Form_delete_wlt
     class Meta:
         model = Wallet
-        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'initial_balance']
+        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'init_date', 'init_balance']
 
 
 
 #=====================================================================================================I N C O M E
 class Form_add_income(forms.ModelForm):#___________________________________________Form_add_income
     date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%Y-%m-%d'])
-    debit = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
+    debit = forms.DecimalField(label='Sum', widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
     class Meta:
         model = Income
         fields = ['date', 'debit', 'source', 'comment', 'income_type']
@@ -71,7 +71,7 @@ class Form_update_income_type(forms.ModelForm):#________________________________
 class Form_add_spending(forms.ModelForm):  # __________________________________________________Form_add_spending
     date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
                            input_formats=['%Y-%m-%d'])
-    credit = forms.DecimalField(widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
+    credit = forms.DecimalField(label='Sum', widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
     class Meta:
         model = Spending
         fields = ['date', 'credit', 'destination', 'comment', 'spending_type']
