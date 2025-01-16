@@ -317,6 +317,7 @@ def add_spending(request, w_pk):#_______________________________________________
 
 def update_spending(request, w_pk, spending_pk):#_____________________________________________Update_spending
     record = get_object_or_404(Spending, pk=spending_pk)
+    get_params = request.GET.urlencode()
     if request.method == 'POST':
         form = Form_update_spending(request.POST, instance=record)
         if form.is_valid():
@@ -324,12 +325,12 @@ def update_spending(request, w_pk, spending_pk):#_______________________________
                if record:
                    record.delete()
                    message = f"the record deleted successfully"
-                   get_params = request.GET.urlencode()
+
                    return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
             if "save" in request.POST:
                 form.save()
                 # Получаем все параметры из request.GET и добавляем их к URL
-                get_params = request.GET.urlencode()
+
                 return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
     else:
         form = Form_update_spending(instance=record)
@@ -338,6 +339,7 @@ def update_spending(request, w_pk, spending_pk):#_______________________________
         'w_pk': w_pk,
         'record': record,
     })
+
 
 
 def add_spending_type(request, w_pk):#_________________________________________add_spending_type
