@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum, ProtectedError
 from decimal import Decimal
+from django.utils.text import slugify
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from .models import Wallet, Income, Income_type, Spending, Spending_type
@@ -20,7 +21,13 @@ from django.utils.timezone import datetime, now
 #=========================================================================================================_H O M E
 def home(request):
     wlts = Wallet.objects.order_by('w_name')
-    return render(request, 'finance/home.html', {'wlts':wlts})
+
+
+    context={}
+
+    context['wlts'] = wlts
+    print(context)
+    return render(request, 'finance/home.html', context)
 
 def home_wlt(request, w_pk):
     current_wlt = Wallet.objects.get(pk=w_pk)
@@ -42,9 +49,6 @@ class Update_wlt(UpdateView):#____________________________________________Update
     def get_success_url(self):
         w_pk = self.kwargs['pk']  # Получаем pk текущей записи из URL
         return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
-
-
-
 
 def delete_wlt(request, pk):  # ____________________________________________________________Delete_wlt
     current_wlt = get_object_or_404(Wallet, pk=pk)
@@ -74,7 +78,6 @@ def delete_wlt(request, pk):  # ________________________________________________
         'recs_spending_qty': recs_spending_qty,
         'total_qty': total_qty
     })
-
 
 
 #================================================================================================C A L E N D A R

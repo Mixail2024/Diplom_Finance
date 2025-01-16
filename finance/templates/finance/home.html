@@ -14,7 +14,14 @@
                 <button class="btn btn_add_wlt" onclick="location.href='{% url 'create_wlt' %}'">Add new</button>
             </div>
             {% for wlt in wlts %}
-                <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">{{wlt.f_name}}<br>balance - </button></p>
+                <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">
+                    <span style="font-weight: bold">{{wlt.f_name}}</span>
+                    <br><span>init bal {{wlt.init_balance}}</span>
+
+
+
+                </button></p>
+
             {% endfor %}
         </div>
     </body>

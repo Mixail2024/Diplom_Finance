@@ -218,7 +218,41 @@
             </tbody>
         </table>
 
-        <!-- Модальное окно -->
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                function toggleVisibility(buttonClass, rowClass) {
+                    var button = document.querySelector(buttonClass);
+                    var rows = document.querySelectorAll(rowClass);
+
+                    button.addEventListener('click', function() {
+                        rows.forEach(function(row) {
+                            row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
+                        });
+                    });
+                }
+                // Toggle visibility for 'Incomes'
+                toggleVisibility('.collapsible.dt', '.dt.table-container');
+                // Toggle visibility for 'Spendings'
+                toggleVisibility('.collapsible.ct', '.ct.table-container');
+            });
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Модальное окно -->
         <div id="confirmationModal" class="modal">
             <div class="modal-content">
                 <h2>Are you sure you want to delete <span id="recordCount"></span> records?</h2>
