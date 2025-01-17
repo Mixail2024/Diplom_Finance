@@ -58,6 +58,10 @@ def home(request):
         after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
         after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
         if choosen_date_obj.init_date < wlt.w_date:
+            after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, current_date])
+            after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+            after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, current_date])
+            after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
         else:
             final_bal = bal_on_date + after_dt_sum - after_ct_sum  # _____________________get final balance
