@@ -39,14 +39,19 @@
 
 
             {% for wlt in wlts %}
-                <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">
-                    <span style="font-weight: bold">{{wlt.f_name}}</span>
-                    <br><span>init bal {{wlt.w_balance}}</span>
-
-
-
-                </button></p>
-
+                {% for i in data %}
+                    {% if wlt.pk == i.wlt_pk %}
+                        <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">
+                        <div style="font-weight: bold; margin: 0px 5px 5px 5px">{{wlt.f_name}}</div>
+                        <span>init bal {{i.bal_on_date}}</span>
+                        <br><span>turnover {{i.after_dt_sum}} / {{i.after_ct_sum}}</span>
+                        <br><span>final bal {{i.final_bal}}</span>
+                            {% if wlt.w_limit > 0 %}
+                                <br><span>limit {{wlt.w_limit}}</span>
+                            {% endif %}
+                        </button></p>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         </div>
     </body>

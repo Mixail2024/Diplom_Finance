@@ -17,12 +17,12 @@ from .forms import (
     )
 from django.utils.timezone import datetime, now
 from datetime import timedelta, datetime
-
+from decimal import Decimal
 
 
 #=========================================================================================================_H O M E
 def home(request):
-    context={}
+
     current_datetime = datetime.now()
     current_date = current_datetime.date()
 
@@ -41,7 +41,9 @@ def home(request):
 
 
     wlts = Wallet.objects.order_by('w_name')
+    data = []
     for wlt in wlts:
+        # wallet_data=[]
         if choosen_date_obj.init_date < wlt.w_date:
             bal_on_date = 0
         else:
@@ -62,19 +64,22 @@ def home(request):
             final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
         else:
             final_bal = bal_on_date + after_dt_sum - after_ct_sum  # _____________________get final balance
-
-    print('on date', bal_on_date)
-    print('final', final_bal)
-
-
-    # print('init', init_date_obj.init_date, 'previous', prev_date)
-
+        data.append({'wlt_pk': wlt.pk,
+                     'bal_on_date': bal_on_date,
+                     'after_dt_sum': after_dt_sum,
+                     'after_ct_sum': after_ct_sum,
+                     'final_bal': final_bal})
 
 
 
-    context['form']= form
-    context['wlts'] = wlts
-    # print(context)
+
+
+
+    context = {
+        'form':form,
+        'wlts':wlts,
+        'data':data
+        }
     return render(request, 'finance/home.html', context)
 
 
