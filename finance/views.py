@@ -16,33 +16,64 @@ from .forms import (
     Form_set_date_init_bal,
     )
 from django.utils.timezone import datetime, now
+from datetime import timedelta, datetime
 
 
 
 #=========================================================================================================_H O M E
 def home(request):
     context={}
-    wlts = Wallet.objects.order_by('w_name')
+    current_datetime = datetime.now()
+    current_date = current_datetime.date()
 
 
-
-
-
-    try:#__________________________________________________SET INITE DATE
-        init_date = Info.objects.get()
+    try:#__________________________________________________set init date
+        choosen_date_obj = Info.objects.get()
     except Info.DoesNotExist:
-        init_date = None
+        choosen_date_obj = None
     if request.method == 'POST':
-        form = Form_set_date_init_bal(request.POST, instance=init_date)
+        form = Form_set_date_init_bal(request.POST, instance=choosen_date_obj)
         if form.is_valid():
             form.save()
     else:
-        form = Form_set_date_init_bal(instance=init_date)
+        form = Form_set_date_init_bal(instance=choosen_date_obj)#_____end
+    prev_date = choosen_date_obj.init_date - timedelta(days=1)
+
+
+    wlts = Wallet.objects.order_by('w_name')
+    for wlt in wlts:
+
+        if choosen_date_obj.init_date < wlt.w_date:
+            bal_on_date = 0
+
+        else:
+            before_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
+            before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+            before_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
+            before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+            bal_on_date = wlt.w_balance + before_dt_sum - before_ct_sum#_____________get bal on date (calculated from wlt open date)
+
+        after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
+        after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+        after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
+        after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+        if choosen_date_obj.init_date < wlt.w_date:
+            final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
+        else:
+            final_bal = bal_on_date + after_dt_sum - after_ct_sum  # _____________________get final balance
+
+        print('on date', bal_on_date)
+        print('final', final_bal)
+
+
+    # print('init', init_date_obj.init_date, 'previous', prev_date)
+
+
 
 
     context['form']= form
     context['wlts'] = wlts
-    print(context)
+    # print(context)
     return render(request, 'finance/home.html', context)
 
 
@@ -164,10 +195,7 @@ def calendar_view(request, pk):
 
     # ___________________________________________________________________________________________________ContexT
 
-    lst = [pk, current_wlt, init_balance, filtered_dt, filtered_ct]
-    for i in lst:
-        if not i:
-            i = []
+
 
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
@@ -185,8 +213,7 @@ def calendar_view(request, pk):
 
     context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
 
-    # print('request', request.GET)
-    # print('context', context)
+
     return render(request, 'finance/home_wlt.html', context)
 
 

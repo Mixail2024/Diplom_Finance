@@ -17,14 +17,10 @@
 
             <form method='POST'>
             {% csrf_token %}
-
                 <label>Initial balance on </label> {{ form.init_date }}
-
                 {% if form.date.errors %}
                     <div style="color: red;">{{ form.init_date.errors }}</div>
                 {% endif %}
-
-
                  <!-- Подключение Flatpickr -->
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
                 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -36,16 +32,7 @@
                     });
                 </script>
                 <button class='btn nav_btn' type='submit' >Set</button>
-
             </form>
-
-
-
-
-
-
-
-
 
 
 
