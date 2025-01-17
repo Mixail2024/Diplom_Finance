@@ -42,17 +42,14 @@ def home(request):
 
     wlts = Wallet.objects.order_by('w_name')
     for wlt in wlts:
-
         if choosen_date_obj.init_date < wlt.w_date:
             bal_on_date = 0
-
         else:
             before_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
             before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
             before_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
             before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             bal_on_date = wlt.w_balance + before_dt_sum - before_ct_sum#_____________get bal on date (calculated from wlt open date)
-
         after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
         after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
         after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
@@ -66,8 +63,8 @@ def home(request):
         else:
             final_bal = bal_on_date + after_dt_sum - after_ct_sum  # _____________________get final balance
 
-        print('on date', bal_on_date)
-        print('final', final_bal)
+    print('on date', bal_on_date)
+    print('final', final_bal)
 
 
     # print('init', init_date_obj.init_date, 'previous', prev_date)
