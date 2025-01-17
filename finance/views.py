@@ -22,10 +22,8 @@ from decimal import Decimal
 
 #=========================================================================================================_H O M E
 def home(request):
-
     current_datetime = datetime.now()
     current_date = current_datetime.date()
-
 
     try:#__________________________________________________set init date
         choosen_date_obj = Info.objects.get()
@@ -63,17 +61,12 @@ def home(request):
             after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
         else:
-            final_bal = bal_on_date + after_dt_sum - after_ct_sum  # _____________________get final balance
+            final_bal = bal_on_date + after_dt_sum - after_ct_sum
         data.append({'wlt_pk': wlt.pk,
                      'bal_on_date': bal_on_date,
-                     'after_dt_sum': after_dt_sum,
-                     'after_ct_sum': after_ct_sum,
+                     'after_dt_sum':after_dt_sum,
+                     'after_ct_sum':after_ct_sum,
                      'final_bal': final_bal})
-
-
-
-
-
 
     context = {
         'form':form,
@@ -83,17 +76,9 @@ def home(request):
     return render(request, 'finance/home.html', context)
 
 
-
-
-
 def home_wlt(request, w_pk):
     current_wlt = Wallet.objects.get(pk=w_pk)
     return render(request, 'finance/home_wlt.html', {'current_wlt':current_wlt})
-
-
-def set_date_init_bal(request):
-    pass
-
 
 
 #========================================================================================================W A L L E T

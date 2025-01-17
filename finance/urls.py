@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from .views import (
-    home, home_wlt, set_date_init_bal,
+    home, home_wlt,
     Create_wlt, Update_wlt,  delete_wlt,
     calendar_view,
     add_income, update_income,
@@ -32,15 +32,11 @@ urlpatterns = [
     path('home_wlt/<int:w_pk>/add_spending_type/', add_spending_type, name='add_spending_type'),
     path('home_wlt/<int:w_pk>/update_spending_type/<int:pk>/', update_spending_type, name='update_spending_type'),
 
-
-
-
 #______________________________________________________________________________________________
 
     path('home_wlt/<int:w_pk>/delete filtered dt/', delete_filtered_dt, name = 'delete_filtered_dt'),
     path('home_wlt/<int:w_pk>/delete filtered ct/', delete_filtered_ct, name = 'delete_filtered_ct'),
     path('home_wlt/<int:pk>/calendar/', calendar_view, name='calendar'),
     path('home_wlt/<int:w_pk>/', home_wlt, name = 'home_wlt'),
-    path('set_date/', set_date_init_bal, name = 'set_date_init_bal'),
     path('', home, name = 'home'),
     ]

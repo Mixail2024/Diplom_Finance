@@ -14,7 +14,6 @@
                 <button class="btn btn_add_wlt" onclick="location.href='{% url 'create_wlt' %}'">Add</button>
             </div>
 
-
             <form method='POST'>
             {% csrf_token %}
                 <label>Initial balance on </label> {{ form.init_date }}
@@ -34,10 +33,6 @@
                 <button class='btn nav_btn' type='submit' >Set</button>
             </form>
 
-
-
-
-
             {% for wlt in wlts %}
                 {% for i in data %}
                     {% if wlt.pk == i.wlt_pk %}
@@ -45,7 +40,7 @@
                         <div style="font-weight: bold; margin: 0px 5px 5px 5px">{{wlt.f_name}}</div>
                         <span>init bal {{i.bal_on_date}}</span>
                         <br><span>turnover {{i.after_dt_sum}} / {{i.after_ct_sum}}</span>
-                        <br><span>final bal {{i.final_bal}}</span>
+                        <br><span>current bal {{i.final_bal}}</span>
                             {% if wlt.w_limit > 0 %}
                                 <br><span>limit {{wlt.w_limit}}</span>
                             {% endif %}
