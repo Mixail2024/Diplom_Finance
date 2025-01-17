@@ -6,13 +6,14 @@ from decimal import Decimal
 from django.utils.text import slugify
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
-from .models import Wallet, Income, Income_type, Spending, Spending_type
+from .models import Wallet, Income, Income_type, Spending, Spending_type, Info
 from .forms import (
     Form_create_wlt, Form_delete_wlt,
     Form_add_income, Form_update_income,
     Form_add_income_type, Form_update_income_type,
     Form_add_spending, Form_update_spending,
-    Form_add_spending_type, Form_update_spending_type
+    Form_add_spending_type, Form_update_spending_type,
+    Form_set_date_init_bal,
     )
 from django.utils.timezone import datetime, now
 
@@ -20,18 +21,42 @@ from django.utils.timezone import datetime, now
 
 #=========================================================================================================_H O M E
 def home(request):
+    context={}
     wlts = Wallet.objects.order_by('w_name')
 
 
-    context={}
 
+
+
+    try:#__________________________________________________SET INITE DATE
+        init_date = Info.objects.get()
+    except Info.DoesNotExist:
+        init_date = None
+    if request.method == 'POST':
+        form = Form_set_date_init_bal(request.POST, instance=init_date)
+        if form.is_valid():
+            form.save()
+    else:
+        form = Form_set_date_init_bal(instance=init_date)
+
+
+    context['form']= form
     context['wlts'] = wlts
     print(context)
     return render(request, 'finance/home.html', context)
 
+
+
+
+
 def home_wlt(request, w_pk):
     current_wlt = Wallet.objects.get(pk=w_pk)
     return render(request, 'finance/home_wlt.html', {'current_wlt':current_wlt})
+
+
+def set_date_init_bal(request):
+    pass
+
 
 
 #========================================================================================================W A L L E T
@@ -83,9 +108,10 @@ def delete_wlt(request, pk):  # ________________________________________________
 #================================================================================================C A L E N D A R
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
-    init_balance = current_wlt.init_balance
+    init_balance = current_wlt.w_balance
     context = {}
     if request.method == 'GET':
+
         choice = request.GET.get("choice")
 
         if choice == "date":#_____________________________________________________________________date

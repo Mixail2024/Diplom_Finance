@@ -11,12 +11,50 @@
         <div>
             <div class='nav_H'>
                 <div class="wallet">Wallets</div>
-                <button class="btn btn_add_wlt" onclick="location.href='{% url 'create_wlt' %}'">Add new</button>
+                <button class="btn btn_add_wlt" onclick="location.href='{% url 'create_wlt' %}'">Add</button>
             </div>
+
+
+            <form method='POST'>
+            {% csrf_token %}
+
+                <label>Initial balance on </label> {{ form.init_date }}
+
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.init_date.errors }}</div>
+                {% endif %}
+
+
+                 <!-- Подключение Flatpickr -->
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        flatpickr("#datepicker", {
+                            dateFormat: "Y-m-d",
+                        });
+                    });
+                </script>
+                <button class='btn nav_btn' type='submit' >Set</button>
+
+            </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
             {% for wlt in wlts %}
                 <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">
                     <span style="font-weight: bold">{{wlt.f_name}}</span>
-                    <br><span>init bal {{wlt.init_balance}}</span>
+                    <br><span>init bal {{wlt.w_balance}}</span>
 
 
 

@@ -1,4 +1,4 @@
-from .models import Wallet, Income, Income_type, Spending, Spending_type
+from .models import Wallet, Income, Income_type, Spending, Spending_type, Info
 from django import forms
 
 
@@ -6,7 +6,7 @@ from django import forms
 class Form_create_wlt(forms.ModelForm):#__________________________________________Form_create_wlt
     class Meta:
         model = Wallet
-        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'init_date', 'init_balance']
+        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'w_date', 'w_balance', 'w_limit']
     def __init__(self, *args, **kwargs):
         super(Form_create_wlt, self).__init__(*args, **kwargs)
         # Установка стиля для конкретного поля
@@ -18,9 +18,15 @@ class Form_create_wlt(forms.ModelForm):#________________________________________
 class Form_delete_wlt(forms.ModelForm):#__________________________________________Form_delete_wlt
     class Meta:
         model = Wallet
-        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'init_date', 'init_balance']
+        fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'w_date', 'w_balance', 'w_limit']
 
 
+class Form_set_date_init_bal(forms.ModelForm):#__________________________________________Set_date_init_bal
+    init_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
+                           input_formats=['%Y-%m-%d'])
+    class Meta:
+        model = Info
+        fields = ['init_date']
 
 #=====================================================================================================I N C O M E
 class Form_add_income(forms.ModelForm):#___________________________________________Form_add_income

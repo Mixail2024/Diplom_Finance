@@ -10,9 +10,10 @@ class Wallet(models.Model):
     w_ticker = models.CharField(max_length=3, verbose_name = 'Currency ticker')
     w_type = models.CharField(max_length=1, choices=W_TYPES, verbose_name = 'Type')
     w_bank = models.CharField(max_length=25, verbose_name = 'Bank name', blank=True)
-    init_date = models.DateField(db_index=True, verbose_name = 'Initial date')
-    init_balance = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Initial balance', default=0.00)
+    w_date = models.DateField(db_index=True, verbose_name = 'Open date')
+    w_balance = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Open balance', default=0.00)
     f_name = models.CharField(max_length=24, blank=True, verbose_name='Full wallet name')
+    w_limit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Limit', default=0.00)
     def save(self, *args, **kwargs):
         self.f_name = f"{self.w_name} {self.w_ticker}"
         super().save(*args, **kwargs)
@@ -71,3 +72,12 @@ class Spending_type(models.Model):
         verbose_name = 'spending type'
         verbose_name_plural = 'spending types'
         ordering = ['name']
+
+
+class Info(models.Model):
+    init_date = models.DateField(verbose_name='Init Date')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Если запись новая (нет pk)
+            Info.objects.all().delete()  # Удаляем все существующие записи
+        super().save(*args, **kwargs)  # Сохраняем текущую запись
