@@ -3,6 +3,43 @@
 
 {% block title %} {{current_wlt.w_name}} {% endblock %}
 
+{% block extra_head %}
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Category', 'Salary', 'Investments', 'Dividends', 'Food', 'Fuel', 'Rent'],
+        ['Incomes', 10, 50, 60, 0, 0, 0],
+        ['Spendings', 0, 0, 0, 550, 478, 156]
+
+            ]);
+
+            var options = {
+                title: 'Company Performance',
+                backgroundColor: { fill: 'transparent' },
+                hAxis: {title: 'Year'},
+                vAxis: {title: 'Sales'},
+                isStacked: true,
+
+                chartArea: {
+                        left: 100,
+                        top: 20,
+                        width: '50%',
+                        height: '80%'
+                    },
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+{% endblock %}
+
+
+
+
 {% block header %}
     <div class='header'>
         <h1>{{current_wlt.f_name}}</h1>
@@ -219,7 +256,6 @@
         </table>
 
 
-
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 function toggleVisibility(buttonClass, rowClass) {
@@ -238,18 +274,6 @@
                 toggleVisibility('.collapsible.ct', '.ct.table-container');
             });
         </script>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- Модальное окно -->
@@ -314,3 +338,7 @@
         <p>no turnover for this period</p>
     {% endif %}
 {% endblock %}
+
+{% block diagram %}
+    <div id="chart_div" style="width: 500px; height: 500px;"></div>
+{% endblock%}

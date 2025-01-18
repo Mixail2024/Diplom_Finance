@@ -19,7 +19,7 @@ class SpendingAdmin(admin.ModelAdmin):
 
 
 class InfoAdmin(admin.ModelAdmin):
-    list_display = ('init_date',)
+    list_display = ('init_date', 'final_date')
 
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(Income, IncomeAdmin)

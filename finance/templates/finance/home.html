@@ -9,11 +9,11 @@
 
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript">
+
             google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart);
 
             function drawChart() {
-
 
                 var data1 = google.visualization.arrayToDataTable({{ data1|safe }});
                 var options = {
@@ -47,10 +47,16 @@
 
             <form method='POST'>
             {% csrf_token %}
-                <label>Initial balance on </label> {{ form.init_date }}
+                <label>Period from</label> {{ form.init_date }}
                 {% if form.date.errors %}
                     <div style="color: red;">{{ form.init_date.errors }}</div>
                 {% endif %}
+                <label>to</label> {{ form.final_date }}
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.final_date.errors }}</div>
+                {% endif %}
+
+
                  <!-- Подключение Flatpickr -->
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
                 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

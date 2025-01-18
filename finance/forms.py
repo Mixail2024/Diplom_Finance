@@ -24,9 +24,11 @@ class Form_delete_wlt(forms.ModelForm):#________________________________________
 class Form_set_date_init_bal(forms.ModelForm):#__________________________________________Set_date_init_bal
     init_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
                            input_formats=['%Y-%m-%d'])
+    final_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
+                                input_formats=['%Y-%m-%d'])
     class Meta:
         model = Info
-        fields = ['init_date']
+        fields = ['init_date', 'final_date']
 
 #=====================================================================================================I N C O M E
 class Form_add_income(forms.ModelForm):#___________________________________________Form_add_income

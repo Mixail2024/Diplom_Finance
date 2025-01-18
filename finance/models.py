@@ -75,7 +75,9 @@ class Spending_type(models.Model):
 
 
 class Info(models.Model):
-    init_date = models.DateField(verbose_name='Init Date')
+    init_date = models.DateField(verbose_name='Init date')
+    final_date = models.DateField(verbose_name='Final date', default='2025-01-01')
+
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Если запись новая (нет pk)

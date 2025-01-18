@@ -36,6 +36,8 @@ def home(request):
     else:
         form = Form_set_date_init_bal(instance=choosen_date_obj)#_____end
     prev_date = choosen_date_obj.init_date - timedelta(days=1)
+    choosen_init = choosen_date_obj.init_date
+    choosen_final = choosen_date_obj.final_date
 
 
     wlts = Wallet.objects.order_by('w_name')
@@ -50,14 +52,14 @@ def home(request):
             before_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
             before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             bal_on_date = wlt.w_balance + before_dt_sum - before_ct_sum#_____________get bal on date (calculated from wlt open date)
-        after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
+        after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[choosen_init, choosen_final])
         after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-        after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_date_obj.init_date, current_date])
+        after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_init, choosen_final])
         after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
         if choosen_date_obj.init_date < wlt.w_date:
-            after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, current_date])
+            after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, choosen_final])
             after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, current_date])
+            after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, choosen_final])
             after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
         else:
