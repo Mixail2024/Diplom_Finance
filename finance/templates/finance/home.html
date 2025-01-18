@@ -6,6 +6,37 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel='stylesheet' type='text/css' href="{% static 'finance/style.css' %}">
         <title>Wallets</title>
+
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+
+
+                var data1 = google.visualization.arrayToDataTable({{ data1|safe }});
+                var options = {
+                    title: 'My 3D Pie Chart',
+                    is3D: true,
+                    backgroundColor: { fill: 'transparent' },
+                    slices: {
+                        0: {offset: 0.1},         // Сдвиг первого сегмента
+                        1: {offset: 0.1},         // Сдвиг второго сегмента
+                    },
+                    chartArea: {
+                        left: 20,
+                        top: 20,
+                        width: '90%',
+                        height: '80%'
+                    },
+                    pieSliceText: 'value',        // Отображение значений на диаграмме
+                };
+
+                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                chart.draw(data1, options);
+            }
+        </script>
     </head>
     <body>
         <div>
@@ -49,5 +80,10 @@
                 {% endfor %}
             {% endfor %}
         </div>
+
+
+
+
+        <div id="piechart" style="width: 450px; height: 250px; position: absolute; top: 80px; left: 200px; z-index: 1;"></div>
     </body>
 </html>

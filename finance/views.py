@@ -64,14 +64,21 @@ def home(request):
             final_bal = bal_on_date + after_dt_sum - after_ct_sum
         data.append({'wlt_pk': wlt.pk,
                      'bal_on_date': bal_on_date,
-                     'after_dt_sum':after_dt_sum,
-                     'after_ct_sum':after_ct_sum,
+                     'after_dt_sum': after_dt_sum,
+                     'after_ct_sum': after_ct_sum,
                      'final_bal': final_bal})
 
+    data1 = [
+        ['Category', 'Percentage'],
+        ['Category A', 30],
+        ['Category B', 45],
+        ['Category C', 25]
+    ]
     context = {
-        'form':form,
-        'wlts':wlts,
-        'data':data
+        'form': form,
+        'wlts': wlts,
+        'data': data,
+        'data1': data1,
         }
     return render(request, 'finance/home.html', context)
 
