@@ -5,7 +5,7 @@ from django.db.models import Sum, ProtectedError
 from decimal import Decimal
 from django.utils.text import slugify
 from django.contrib import messages
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, UpdateView
 from .models import Wallet, Income, Income_type, Spending, Spending_type, Info
 from .forms import (
     Form_create_wlt, Form_delete_wlt,
@@ -18,6 +18,7 @@ from .forms import (
 from django.utils.timezone import datetime, now
 from datetime import timedelta, datetime
 from decimal import Decimal
+import json
 
 
 #=========================================================================================================_H O M E
@@ -141,6 +142,27 @@ def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
     init_balance = current_wlt.w_balance
     context = {}
+
+    income_types_all_obj = Income_type.objects.all()
+    income_types_qty = len(income_types_all_obj)
+    income_types_lst = []
+    for i in income_types_all_obj:
+        income_types_lst.append(i.name)
+        income_types_lst.append({"role": "annotation"})
+
+    spending_types_all_obj= Spending_type.objects.all()
+    spending_types_qty = len(spending_types_all_obj)
+    spending_types_lst = []
+    for i in spending_types_all_obj:
+        spending_types_lst.append(i.name)
+        spending_types_lst.append({"role": "annotation"})
+
+    data_types = ['Category'] + income_types_lst + spending_types_lst
+
+
+
+
+
     if request.method == 'GET':
 
         choice = request.GET.get("choice")
@@ -189,14 +211,15 @@ def calendar_view(request, pk):
 
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+            data_dt = make_data_for_grafik('dt', filtered_dt,  income_types_all_obj, spending_types_qty) #в income передаю spending_types_qty чтобы добавить нyли в конец
 
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+            data_ct = make_data_for_grafik('ct', filtered_ct, spending_types_all_obj, income_types_qty)#в spending передаю income_types_qty чтобы добавить нyли в начало
 
     # ___________________________________________________________________________________________________ContexT
 
-
-
+    print([data_types, data_dt, data_ct])
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
     context['init_balance'] = init_balance
@@ -212,15 +235,47 @@ def calendar_view(request, pk):
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
     context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
+    context['data'] = ([data_types, data_dt, data_ct])
 
 
     return render(request, 'finance/home_wlt.html', context)
+
+def make_data_for_grafik(variant, objs, types_objs, qty):
+    result = []
+    if variant == 'dt':
+        # result.append('Income')
+        for type in types_objs:
+            try:
+                group = objs.filter(income_type=type)
+                group_sum = group.aggregate(Sum('debit'))['debit__sum'] or 0.0
+            except:
+                group_sum = 0
+
+            result.append('Income')
+            result.append(float(group_sum))
+        result = result + ['Income', 0]*qty
+    else:
+        # result.append('Spending')
+        result = result + ['Spending', 0] * qty
+        for type in types_objs:
+            try:
+                group = objs.filter(spending_type=type)
+                group_sum = group.aggregate(Sum('credit'))['credit__sum'] or 0.0
+            except:
+                group_sum = 0
+            result.append('Spending')
+            result.append(float(group_sum))
+
+
+    # print(result)
+    return result
+
+
 
 
 def delete_filtered_dt(request, w_pk):#_________________________________________delete_filtered_dt
     params = request.GET.get('params')
     params = params.replace("*", "&")
-    print('params DDt', params)
     lst = request.GET.get('ids')
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]
@@ -230,7 +285,6 @@ def delete_filtered_dt(request, w_pk):#_________________________________________
 def delete_filtered_ct(request, w_pk):#_________________________________________delete_filtered_ct
     params = request.GET.get('params')
     params= params.replace("*", "&")
-    print('params kt', params)
     lst = request.GET.get('ids')
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]

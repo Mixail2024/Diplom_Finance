@@ -9,18 +9,13 @@
         google.charts.setOnLoadCallback(drawChart);
 
         function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Category', 'Salary', 'Investments', 'Dividends', 'Food', 'Fuel', 'Rent'],
-        ['Incomes', 10, 50, 60, 0, 0, 0],
-        ['Spendings', 0, 0, 0, 550, 478, 156]
-
-            ]);
+            var data = google.visualization.arrayToDataTable({{ data|safe }});
 
             var options = {
-                title: 'Company Performance',
+                title: '',
                 backgroundColor: { fill: 'transparent' },
-                hAxis: {title: 'Year'},
-                vAxis: {title: 'Sales'},
+                hAxis: {title: ''},
+                vAxis: {title: 'Default Title' },
                 isStacked: true,
 
                 chartArea: {
@@ -29,6 +24,14 @@
                         width: '50%',
                         height: '80%'
                     },
+                annotations: {
+                    alwaysOutside: true, // Показывать аннотации снаружи столбиков
+                    textStyle: {
+                        fontSize: 12,
+                        bold: true,
+                        color: '#000'
+                    }
+                }
             };
 
             var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
