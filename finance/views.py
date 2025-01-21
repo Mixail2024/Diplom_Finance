@@ -221,81 +221,60 @@ def calendar_view(request, pk):
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
     context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
-    # context['data_chart'] = data_chart
+    context['data_chart'] = data_chart
 
 
     return render(request, 'finance/home_wlt.html', context)
 
 
-
-# income_types_all_obj = Income_type.objects.all()
-# income_types_qty = len(income_types_all_obj)
-# income_types_lst = []
-# for i in income_types_all_obj:
-#     income_types_lst.append(i.name)
-#     income_types_lst.append({"role": "annotation"})
-#
-# spending_types_all_obj= Spending_type.objects.all()
-# spending_types_qty = len(spending_types_all_obj)
-# spending_types_lst = []
-# for i in spending_types_all_obj:
-#     spending_types_lst.append(i.name)
-#     spending_types_lst.append({"role": "annotation"})
-#
-#     data_types = ['Category'] + income_types_lst + spending_types_lst
-
-
-def get_data_chart(dt , ct):
-
+def get_data_chart(dt , ct):#______________________________________get_data_chart
     dt_types = []
     for i in dt:
-
-
-
         if not i.income_type in dt_types:
             dt_types.append(i.income_type)
-    print(dt_types)
+    dt_types_qty = len(dt_types)
+    dt_type_names = []
+    for j in dt_types:
+        dt_type_names.append(j.name)
+        dt_type_names.append({"role": "annotation"})
 
+    ct_types = []
+    for i in ct:
+        if not i.spending_type in ct_types:
+            ct_types.append(i.spending_type)
+    ct_types_qty = len(ct_types)
+    ct_type_names = []
+    for j in ct_types:
+        ct_type_names.append(j.name)
+        ct_type_names.append({"role": "annotation"})
 
+    types_row = ['Category'] + dt_type_names + ct_type_names
 
+    dt_row = ['Income']
+    for typ in dt_types:
+        try:
+            group = dt.filter(income_type=typ)
+            group_sum = group.aggregate(Sum('debit'))['debit__sum'] or 0
+        except:
+            group_sum = 0
+        dt_row.append(float(group_sum))
+        dt_row.append(str(typ) + ' ' + str(group_sum))
+    dt_row = dt_row + [0, '']*ct_types_qty
 
+    ct_row = ['Spending']
+    ct_row = ct_row + [0, '']*dt_types_qty
+    for typ in ct_types:
+        try:
+            group = ct.filter(spending_type=typ)
+            group_sum = group.aggregate(Sum('credit'))['credit__sum'] or 0
+        except:
+            group_sum = 0
+        ct_row.append(float(group_sum))
+        ct_row.append(str(typ) + ' ' + str(group_sum))
 
-
-
-
-
-
-
-    # result = []
-    # if variant == 'dt':
-    #     # result.append('Income')
-    #     for type in types_objs:
-    #         try:
-    #             group = objs.filter(income_type=type)
-    #             group_sum = group.aggregate(Sum('debit'))['debit__sum'] or 0.0
-    #         except:
-    #             group_sum = 0
-    #
-    #         result.append('Income')
-    #         result.append(float(group_sum))
-    #     result = result + ['Income', 0]*qty
-    # else:
-    #     # result.append('Spending')
-    #     result = result + ['Spending', 0] * qty
-    #     for type in types_objs:
-    #         try:
-    #             group = objs.filter(spending_type=type)
-    #             group_sum = group.aggregate(Sum('credit'))['credit__sum'] or 0.0
-    #         except:
-    #             group_sum = 0
-    #         result.append('Spending')
-    #         result.append(float(group_sum))
-    #
-    #
-    # # print(result)
-    # return result
-
-
+    data_chart = [types_row, dt_row, ct_row]
+    data_chart = json.dumps(data_chart)
+    return data_chart
 
 
 def delete_filtered_dt(request, w_pk):#_________________________________________delete_filtered_dt
