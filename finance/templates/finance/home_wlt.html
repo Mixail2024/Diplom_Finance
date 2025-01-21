@@ -4,42 +4,42 @@
 {% block title %} {{current_wlt.w_name}} {% endblock %}
 
 {% block extra_head %}
-    <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
+   <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart', 'bar']});
+    google.charts.setOnLoadCallback(drawStacked);
 
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable({{ data|safe }});
+    function drawStacked() {
+        var data = google.visualization.arrayToDataTable([
+            ['Category', 'Series 1', { role: 'annotation' }, 'Series 2', { role: 'annotation' }],
+            ['Category 1', 5, '5', 2, '2'],
+            ['Category 2', 3, '3', 4, '4'],
+            ['Category 3', 4, '4', 1, '1']
+        ]);
 
-            var options = {
-                title: '',
-                backgroundColor: { fill: 'transparent' },
-                hAxis: {title: ''},
-                vAxis: {title: 'Default Title' },
-                isStacked: true,
+        var options = {
+            title: 'Stacked Column Chart with Annotations',
+            backgroundColor: { fill: 'transparent' },
+            chartArea: {width: '50%'},
+            isStacked: true,
+            hAxis: {
+                title: 'Categories'
+            },
+            vAxis: {
+                minValue: 0,
+                title: 'Values'
+            },
+            annotations: {
+                alwaysOutside: false
+            }
+        };
 
-                chartArea: {
-                        left: 100,
-                        top: 20,
-                        width: '50%',
-                        height: '80%'
-                    },
-                annotations: {
-                    alwaysOutside: true, // Показывать аннотации снаружи столбиков
-                    textStyle: {
-                        fontSize: 12,
-                        bold: true,
-                        color: '#000'
-                    }
-                }
-            };
+        // Изменение типа диаграммы на ColumnChart
+        var chart = new google.visualization.ColumnChart(document.getElementById('stacked_chart'));
+        chart.draw(data, options);
+    }
+</script>
 
-            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-            chart.draw(data, options);
-        }
-    </script>
 {% endblock %}
-
 
 
 
@@ -340,8 +340,10 @@
     {% else %}
         <p>no turnover for this period</p>
     {% endif %}
+
+
 {% endblock %}
 
 {% block diagram %}
-    <div id="chart_div" style="width: 500px; height: 500px;"></div>
+    <div id="stacked_chart" style="width: 900px; height: 500px;"></div>
 {% endblock%}

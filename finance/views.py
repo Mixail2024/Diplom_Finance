@@ -211,15 +211,15 @@ def calendar_view(request, pk):
 
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            data_dt = make_data_for_grafik('dt', filtered_dt,  income_types_all_obj, spending_types_qty) #в income передаю spending_types_qty чтобы добавить нyли в конец
+            # data_dt = make_data_for_grafik('dt', filtered_dt,  income_types_all_obj, spending_types_qty) #в income передаю spending_types_qty чтобы добавить нyли в конец
 
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-            data_ct = make_data_for_grafik('ct', filtered_ct, spending_types_all_obj, income_types_qty)#в spending передаю income_types_qty чтобы добавить нyли в начало
+            # data_ct = make_data_for_grafik('ct', filtered_ct, spending_types_all_obj, income_types_qty)#в spending передаю income_types_qty чтобы добавить нyли в начало
 
     # ___________________________________________________________________________________________________ContexT
 
-    print([data_types, data_dt, data_ct])
+    # print([data_types, data_dt, data_ct])
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
     context['init_balance'] = init_balance
@@ -235,8 +235,15 @@ def calendar_view(request, pk):
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
     context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
-    context['data'] = ([data_types, data_dt, data_ct])
+    # context['data'] = ([data_types, data_dt, data_ct])
 
+    data1 = [
+        ['Category', 'Percentage'],
+        ['Category A', 30],
+        ['Category B', 45],
+        ['Category C', 25]
+    ]
+    context['data1'] = data1
 
     return render(request, 'finance/home_wlt.html', context)
 
