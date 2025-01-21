@@ -342,5 +342,7 @@
 {% endblock %}
 
 {% block diagram %}
-    <div id="stacked_chart" style="width: 500px; height: 500px;"></div>
+    {% if dtct_sum > 0 %}
+        <div id="stacked_chart" style="width: 500px; height: 500px;"></div>
+    {% endif %}
 {% endblock%}
