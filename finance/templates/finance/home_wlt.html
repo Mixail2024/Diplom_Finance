@@ -10,19 +10,19 @@
 
     function drawStacked() {
         var data = google.visualization.arrayToDataTable([
-            ['Category', 'Series 1', { role: 'annotation' }, 'Series 2', { role: 'annotation' }],
-            ['Category 1', 5, '5', 2, '2'],
-            ['Category 2', 3, '3', 4, '4'],
-            ['Category 3', 4, '4', 1, '1']
+            ['Category', 'Amazon', { role: 'annotation' }, 'Velux', { role: 'annotation' }, 'Rent', { role: 'annotation' }],
+            ['Incomes', 5, 'amazon 5', 2, 'Velux 2', 0, ''],
+            ['Spendings', 0, '', 0, '', 10, 'Rent'],
+
         ]);
 
         var options = {
-            title: 'Stacked Column Chart with Annotations',
+            title: '',
             backgroundColor: { fill: 'transparent' },
-            chartArea: {width: '50%'},
+            chartArea: {left: 50, top: 20, width: '50%', height: '80%'},
             isStacked: true,
             hAxis: {
-                title: 'Categories'
+                title: ''
             },
             vAxis: {
                 minValue: 0,
@@ -345,5 +345,5 @@
 {% endblock %}
 
 {% block diagram %}
-    <div id="stacked_chart" style="width: 900px; height: 500px;"></div>
+    <div id="stacked_chart" style="width: 500px; height: 500px;"></div>
 {% endblock%}

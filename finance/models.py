@@ -31,26 +31,34 @@ class Income(models.Model):
     debit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Sum dt')
     source = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'From')
     comment = models.TextField(max_length=60, null=True, blank=True, verbose_name = 'Comment')
-
     income_type = models.ForeignKey('Income_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Income Type')
     wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.CASCADE, verbose_name = 'Wallet')
     class Meta:
         verbose_name = 'income'
         verbose_name_plural = 'incomes'
         ordering = ['date']
+    def save(self, *args, **kwargs):
+        if not self.income_type:
+            # Устанавливаем значение по умолчанию, если оно не задано
+            self.income_type, created = Income_type.objects.get_or_create(name='no type')
+        super().save(*args, **kwargs)
 
 class Spending(models.Model):
     date = models.DateField(db_index=True, verbose_name = 'Date')
     credit = models.DecimalField(max_digits=12, decimal_places=2, verbose_name = 'Sum ct')
     destination = models.CharField(max_length=20, null=True, blank=True, verbose_name = 'To')
     comment = models.TextField(max_length=60, null=True, blank=True, verbose_name = 'Comment')
-
     spending_type = models.ForeignKey('Spending_type', null=True, blank=True, on_delete=models.PROTECT, verbose_name = 'Spending Type')
     wallet = models.ForeignKey(Wallet, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Wallet')
     class Meta:
         verbose_name = 'spending'
         verbose_name_plural = 'spendings'
         ordering = ['date']
+    def save(self, *args, **kwargs):
+        if not self.spending_type:
+            # Устанавливаем значение по умолчанию, если оно не задано
+            self.spending_type, created = Spending_type.objects.get_or_create(name='no type')
+        super().save(*args, **kwargs)
 
 
 

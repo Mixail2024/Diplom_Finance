@@ -143,21 +143,7 @@ def calendar_view(request, pk):
     init_balance = current_wlt.w_balance
     context = {}
 
-    income_types_all_obj = Income_type.objects.all()
-    income_types_qty = len(income_types_all_obj)
-    income_types_lst = []
-    for i in income_types_all_obj:
-        income_types_lst.append(i.name)
-        income_types_lst.append({"role": "annotation"})
 
-    spending_types_all_obj= Spending_type.objects.all()
-    spending_types_qty = len(spending_types_all_obj)
-    spending_types_lst = []
-    for i in spending_types_all_obj:
-        spending_types_lst.append(i.name)
-        spending_types_lst.append({"role": "annotation"})
-
-    data_types = ['Category'] + income_types_lst + spending_types_lst
 
 
 
@@ -211,15 +197,15 @@ def calendar_view(request, pk):
 
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            # data_dt = make_data_for_grafik('dt', filtered_dt,  income_types_all_obj, spending_types_qty) #в income передаю spending_types_qty чтобы добавить нyли в конец
 
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-            # data_ct = make_data_for_grafik('ct', filtered_ct, spending_types_all_obj, income_types_qty)#в spending передаю income_types_qty чтобы добавить нyли в начало
+
+            data_chart = get_data_chart(filtered_dt, filtered_ct)
 
     # ___________________________________________________________________________________________________ContexT
 
-    # print([data_types, data_dt, data_ct])
+
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
     context['init_balance'] = init_balance
@@ -235,47 +221,79 @@ def calendar_view(request, pk):
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
     context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
-    # context['data'] = ([data_types, data_dt, data_ct])
+    # context['data_chart'] = data_chart
 
-    data1 = [
-        ['Category', 'Percentage'],
-        ['Category A', 30],
-        ['Category B', 45],
-        ['Category C', 25]
-    ]
-    context['data1'] = data1
 
     return render(request, 'finance/home_wlt.html', context)
 
-def make_data_for_grafik(variant, objs, types_objs, qty):
-    result = []
-    if variant == 'dt':
-        # result.append('Income')
-        for type in types_objs:
-            try:
-                group = objs.filter(income_type=type)
-                group_sum = group.aggregate(Sum('debit'))['debit__sum'] or 0.0
-            except:
-                group_sum = 0
-
-            result.append('Income')
-            result.append(float(group_sum))
-        result = result + ['Income', 0]*qty
-    else:
-        # result.append('Spending')
-        result = result + ['Spending', 0] * qty
-        for type in types_objs:
-            try:
-                group = objs.filter(spending_type=type)
-                group_sum = group.aggregate(Sum('credit'))['credit__sum'] or 0.0
-            except:
-                group_sum = 0
-            result.append('Spending')
-            result.append(float(group_sum))
 
 
-    # print(result)
-    return result
+# income_types_all_obj = Income_type.objects.all()
+# income_types_qty = len(income_types_all_obj)
+# income_types_lst = []
+# for i in income_types_all_obj:
+#     income_types_lst.append(i.name)
+#     income_types_lst.append({"role": "annotation"})
+#
+# spending_types_all_obj= Spending_type.objects.all()
+# spending_types_qty = len(spending_types_all_obj)
+# spending_types_lst = []
+# for i in spending_types_all_obj:
+#     spending_types_lst.append(i.name)
+#     spending_types_lst.append({"role": "annotation"})
+#
+#     data_types = ['Category'] + income_types_lst + spending_types_lst
+
+
+def get_data_chart(dt , ct):
+
+    dt_types = []
+    for i in dt:
+
+
+
+        if not i.income_type in dt_types:
+            dt_types.append(i.income_type)
+    print(dt_types)
+
+
+
+
+
+
+
+
+
+
+
+    # result = []
+    # if variant == 'dt':
+    #     # result.append('Income')
+    #     for type in types_objs:
+    #         try:
+    #             group = objs.filter(income_type=type)
+    #             group_sum = group.aggregate(Sum('debit'))['debit__sum'] or 0.0
+    #         except:
+    #             group_sum = 0
+    #
+    #         result.append('Income')
+    #         result.append(float(group_sum))
+    #     result = result + ['Income', 0]*qty
+    # else:
+    #     # result.append('Spending')
+    #     result = result + ['Spending', 0] * qty
+    #     for type in types_objs:
+    #         try:
+    #             group = objs.filter(spending_type=type)
+    #             group_sum = group.aggregate(Sum('credit'))['credit__sum'] or 0.0
+    #         except:
+    #             group_sum = 0
+    #         result.append('Spending')
+    #         result.append(float(group_sum))
+    #
+    #
+    # # print(result)
+    # return result
 
 
 
