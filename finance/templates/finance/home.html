@@ -74,12 +74,12 @@
                 {% for i in data %}
                     {% if wlt.pk == i.wlt_pk %}
                         <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">
-                        <div style="font-weight: bold; margin: 0px 5px 5px 5px">{{wlt.f_name}}</div>
-                        <span>init bal {{i.bal_on_date}}</span>
-                        <br><span>turnover {{i.after_dt_sum}} / {{i.after_ct_sum}}</span>
-                        <br><span>current bal {{i.final_bal}}</span>
+                        <div style="font-weight: bold; margin: 0px 5px 5px 5px">{{wlt.f_name }}</div>
+                        <span>init bal {{ i.bal_on_date|floatformat:2 }}</span>
+                        <br><span>turnover {{ i.after_dt_sum|floatformat:2 }} / {{ i.after_ct_sum|floatformat:2 }}</span>
+                        <br><span>current bal {{ i.final_bal|floatformat:2 }}</span>
                             {% if wlt.w_limit > 0 %}
-                                <br><span>limit {{wlt.w_limit}}</span>
+                                <br><span>limit {{ wlt.w_limit|floatformat:2 }}</span>
                             {% endif %}
                         </button></p>
                     {% endif %}

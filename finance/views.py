@@ -143,12 +143,6 @@ def calendar_view(request, pk):
     init_balance = current_wlt.w_balance
     context = {}
 
-
-
-
-
-
-
     if request.method == 'GET':
 
         choice = request.GET.get("choice")
@@ -163,6 +157,7 @@ def calendar_view(request, pk):
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date=single_date)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
 
+            data_chart = get_data_chart(filtered_dt, filtered_ct)
 
         elif choice == "period":#_____________________________________________________________________period
             start_date = request.GET.get("start_date")
@@ -176,6 +171,7 @@ def calendar_view(request, pk):
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
 
+            data_chart = get_data_chart(filtered_dt, filtered_ct)
 
         elif choice == "month_year":#_____________________________________________________________________month_year
             month = request.GET.get("month")
@@ -190,6 +186,7 @@ def calendar_view(request, pk):
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
 
+            data_chart = get_data_chart(filtered_dt, filtered_ct)
 
         elif choice == "year_only":#_____________________________________________________________________year_only
             year_only = request.GET.get("year_only")
@@ -225,61 +222,6 @@ def calendar_view(request, pk):
 
 
     return render(request, 'finance/home_wlt.html', context)
-
-
-# def get_data_chart(dt , ct):#______________________________________get_data_chart
-#     dt_types = []
-#     for i in dt:
-#         if not i.income_type in dt_types:
-#             dt_types.append(i.income_type)
-#     dt_types_qty = len(dt_types)
-#     dt_type_names = []
-#     for j in dt_types:
-#         dt_type_names.append(j.name)
-#         dt_type_names.append({"role": "annotation"})
-#
-#     ct_types = []
-#     for i in ct:
-#         if not i.spending_type in ct_types:
-#             ct_types.append(i.spending_type)
-#     ct_types_qty = len(ct_types)
-#     ct_type_names = []
-#     for j in ct_types:
-#         ct_type_names.append(j.name)
-#         ct_type_names.append({"role": "annotation"})
-#
-#     types_row = ['Category'] + dt_type_names + ct_type_names
-#
-#     dt_row = ['Income']
-#     for typ in dt_types:
-#         try:
-#             group = dt.filter(income_type=typ)
-#             group_sum = group.aggregate(Sum('debit'))['debit__sum'] or 0.00
-#         except:
-#             group_sum = 0.00
-#         group_sum = f"{float(group_sum):.2f}"
-#         dt_row.append(group_sum)
-#         dt_row.append(str(typ) + ' ' + str(group_sum))
-#     dt_row = dt_row + [0.00, '']*ct_types_qty
-#
-#     ct_row = ['Spending']
-#     ct_row = ct_row + [0.00, '']*dt_types_qty
-#     for typ in ct_types:
-#         try:
-#             group = ct.filter(spending_type=typ)
-#             group_sum = group.aggregate(Sum('credit'))['credit__sum'] or 0.00
-#         except:
-#             group_sum = 0.00
-#         group_sum = f"{float(group_sum):.2f}"
-#         print(group_sum)
-#         ct_row.append(group_sum)
-#         ct_row.append(str(typ) + ' ' + str(group_sum))
-#
-#     data_chart = [types_row, dt_row, ct_row]
-#     data_chart = json.dumps(data_chart)
-#
-#     return data_chart
-
 
 
 def get_data_chart(dt , ct):#______________________________________get_data_chart
@@ -326,7 +268,6 @@ def get_data_chart(dt , ct):#______________________________________get_data_char
         except:
             group_sum = 0.00
 
-        print(group_sum)
         ct_row.append(float(group_sum))
         ct_row.append(str(typ) + ' ' + str(float(group_sum)))
 

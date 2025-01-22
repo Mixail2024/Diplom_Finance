@@ -21,7 +21,7 @@
             },
             vAxis: {
                 minValue: 0,
-                title: 'Values'
+                title: ''
             },
             annotations: {
                 alwaysOutside: false,
@@ -173,9 +173,9 @@
 {% block right_side %}
     {% if dtct_sum > 0 %}
             <div class="info_txt">
-            <p>initial balance: <span class="bal">{{ init_balance }}</span></p>
-            <p>turnover: <span class="d">{{ filtered_dt_sum }}</span>  /  <span class="c">{{ filtered_ct_sum }}</span> </p>
-            <p>final balance: <span class="bal">{{ final_balance }}</span></p>
+            <p>initial balance: <span class="bal">{{ init_balance|floatformat:2 }}</span></p>
+            <p>turnover: <span class="d">{{ filtered_dt_sum|floatformat:2 }}</span>  /  <span class="c">{{ filtered_ct_sum|floatformat:2 }}</span> </p>
+            <p>final balance: <span class="bal">{{ final_balance|floatformat:2 }}</span></p>
         </div>
 
         <button class="collapsible dt d">Incomes</button>
@@ -206,7 +206,7 @@
                 <tr class="always-visible">
                     <td></td>
                     <td></td>
-                    <td style="text-align: right; padding: 5px 20px 5px 20px;" class="d">{{ filtered_dt_sum }}</td>
+                    <td style="text-align: right; padding: 5px 20px 5px 20px;" class="d">{{ filtered_dt_sum|floatformat:2 }}</td>
                     <td></td>
                     <td></td>
                     <td><a href="#" class="delete_dt_link" data_url_dt="{% url 'delete_filtered_dt' w_pk=current_wlt.pk %}
@@ -245,7 +245,7 @@
                 <tr class="always-visible">
                     <td></td>
                     <td></td>
-                    <td style="text-align: right; padding: 5px 20px 5px 20px;" class="c">{{ filtered_ct_sum }}</td>
+                    <td style="text-align: right; padding: 5px 20px 5px 20px;" class="c">{{ filtered_ct_sum|floatformat:2 }}</td>
                     <td></td>
                     <td></td>
                     <td><a href="#" class="delete_ct_link" data_url_ct="{% url 'delete_filtered_ct' w_pk=current_wlt.pk %}

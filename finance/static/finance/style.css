@@ -76,8 +76,8 @@ h2 {
     border-radius: 8px;
     white-space: normal;  /* Разрешает перенос текста внутри кнопки */
     word-wrap: break-word;  /* Переносит слово, если оно слишком длинное */
-    width: auto;  /* Автоматическая ширина кнопки */
-    max-width: 100%;
+    /*width: auto;  /* Автоматическая ширина кнопки */
+    /*max-width: 100%;*/
 }
 .btn:hover {
     transform: scale(1.1);
@@ -88,14 +88,14 @@ h2 {
     margin: 0px 0px 0px 10px;
     padding: 10px;
     background-color: rgba(0, 139, 139, 0.2);
-    width: 150px;
+    width: 200px;
     font-size: 12px;
     text-align: left;
     border-radius: 15px;
 }
 .btn_wlts:hover {
-    background-color: #a52a2a; /*red*/
-    color:#ffe4e1; /* mintrose*/
+    background-color:  rgba(245, 68, 71, 0.3); /*red*/
+    /*color:#ffe4e1; /* mintrose*/
     border-radius: 25px;
 }
 
