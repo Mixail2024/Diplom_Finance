@@ -140,7 +140,7 @@ def delete_wlt(request, pk):  # ________________________________________________
 #================================================================================================C A L E N D A R
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
-    init_balance = current_wlt.w_balance
+    # init_balance = current_wlt.w_balance
     context = {}
 
     if request.method == 'GET':
@@ -148,64 +148,100 @@ def calendar_view(request, pk):
         choice = request.GET.get("choice")
 
         if choice == "date":#_____________________________________________________________________date
+
             single_date = request.GET.get("single_date")
             context['single_date'] = single_date
-
             filtered_dt = Income.objects.filter(wallet=current_wlt, date=single_date)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date=single_date)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-
             data_chart = get_data_chart(filtered_dt, filtered_ct)
+
+            init_date = datetime.strptime(single_date, "%Y-%m-%d").date()
+            prev_date = init_date - timedelta(days=1)
+            if init_date < current_wlt.w_date:
+                init_bal = 0
+            else:
+                before_obj_dt = Income.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                before_obj_ct = Spending.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+                init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
+
 
         elif choice == "period":#_____________________________________________________________________period
             start_date = request.GET.get("start_date")
             end_date = request.GET.get("end_date")
             context['start_date'] = start_date
             context['end_date'] = end_date
-
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-
             data_chart = get_data_chart(filtered_dt, filtered_ct)
+
+            init_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            prev_date = init_date - timedelta(days=1)
+            if init_date < current_wlt.w_date:
+                init_bal = 0
+            else:
+                before_obj_dt = Income.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                before_obj_ct = Spending.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+                init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
+
 
         elif choice == "month_year":#_____________________________________________________________________month_year
             month = request.GET.get("month")
             year = request.GET.get("year")
             context['month'] = month
             context['year'] = year
-
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-
-
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__year=year, date__month=month)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-
             data_chart = get_data_chart(filtered_dt, filtered_ct)
+
+            init_date = datetime.strptime(f'{year}-{month}-01', "%Y-%m-%d").date()
+            prev_date = init_date - timedelta(days=1)
+            if init_date < current_wlt.w_date:
+                init_bal = 0
+            else:
+                before_obj_dt = Income.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                before_obj_ct = Spending.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+                init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
+
 
         elif choice == "year_only":#_____________________________________________________________________year_only
             year_only = request.GET.get("year_only")
             context['year_only'] = year_only
-
             filtered_dt = Income.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-
             filtered_ct = Spending.objects.filter(wallet=current_wlt, date__year=year_only)
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-
             data_chart = get_data_chart(filtered_dt, filtered_ct)
+
+            init_date = datetime.strptime(f'{year_only}-01-01', "%Y-%m-%d").date()
+            prev_date = init_date - timedelta(days=1)
+            if init_date < current_wlt.w_date:
+                init_bal = 0
+            else:
+                before_obj_dt = Income.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                before_obj_ct = Spending.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+                init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
 
     # ___________________________________________________________________________________________________ContexT
 
 
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
-    context['init_balance'] = init_balance
+
+    context['init_bal'] = init_bal
 
     context['filtered_dt'] = filtered_dt
     context['filtered_dt_count']= filtered_dt.count()
@@ -217,7 +253,7 @@ def calendar_view(request, pk):
 
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
 
-    context['final_balance'] = init_balance + filtered_dt_sum - filtered_ct_sum
+    context['final_balance'] = init_bal + filtered_dt_sum - filtered_ct_sum
     context['data_chart'] = data_chart
 
 
