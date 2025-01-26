@@ -16,13 +16,10 @@ from django.utils.timezone import datetime, now
 from datetime import timedelta, datetime
 from decimal import Decimal
 import json
-from collections import defaultdict
+from forex_python.converter import CurrencyRates
 
 #=========================================================================================================_H O M E
 def home(request):
-    # current_datetime = datetime.now()
-    # current_date = current_datetime.date()
-
     try:#__________________________________________________set init date
         choosen_date_obj = Info.objects.get()
     except Info.DoesNotExist:
@@ -37,15 +34,11 @@ def home(request):
     choosen_init = choosen_date_obj.init_date
     choosen_final = choosen_date_obj.final_date
 
-
-
     wlts = Wallet.objects.all()
     tickers = set()
     for wlt in wlts:
         tickers.add(wlt.w_ticker)
     tickers = sorted(tickers)
-    print(tickers)
-
 
     n = 0
     data = {}
@@ -101,8 +94,6 @@ def home(request):
     info_final = info_date_obj.final_date
 
 
-
-
     data_chart1 = [
         ['Category', 'Percentage'],
         ['Category A', 30],
@@ -117,18 +108,23 @@ def home(request):
         'totals': totals,
         'info_init': info_init,
         'info_final': info_final,
-
-        'data_chart1': data_chart1,
+        'data_chart1': data_chart1
         }
     return render(request, 'finance/home.html', context)
 
 
-def home_wlt(request, w_pk):
+def get_rates():
+    c = CurrencyRates()
+    rate = c.get_rate('EUR', 'CZK')
+    print(f"1 EUR = {rate} CZK")
+
+def home_wlt(request, w_pk):#____________________________________________HOME WLT
     current_wlt = Wallet.objects.get(pk=w_pk)
 
     info_date_obj = Info.objects.get()
     info_init = info_date_obj.init_date
     info_final = info_date_obj.final_date
+
     context = {
         'info_init': info_init,
         'info_final': info_final,

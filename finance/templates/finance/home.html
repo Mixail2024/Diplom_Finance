@@ -12,7 +12,7 @@
 
         function drawChart() {
 
-            var data1 = google.visualization.arrayToDataTable({{ data1|safe }});
+            var data1 = google.visualization.arrayToDataTable({{ data_chart1|safe }});
             var options = {
                 title: 'My 3D Pie Chart',
                 is3D: true,
@@ -121,8 +121,7 @@
 
 {% block diagram %}
 
-
-        <div id="piechart" style="width: 300px; height: 300px;"></div>
+    <div id="piechart" style="width: 500px; height: 500px;"></div>
 
 {% endblock%}
 
