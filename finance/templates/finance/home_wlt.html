@@ -57,7 +57,7 @@
             <!-- PERIOD -->
             <p><input type="radio" name="choice" value="period" id="choose-period" onclick="toggleFields()" {% if start_date or end_date %}checked{% endif %}>
             <label>From:</label>
-            <input type="text" name="start_date" id="start_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ start_date }}" {% if not start_date %}disabled{% endif %}></p>
+            <input type="text" name="start_date" id="start_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ info_init|date:'Y-m-d' }}" {% if not start_date %}disabled{% endif %}></p>
             <p><label style="margin-left: 25px;">to:</label>
             <input type="text" name="end_date" id="end_date" class="flatpickr" data-enable-time="false" data-date-format="Y-m-d" value="{{ end_date }}" {% if not start_date %}disabled{% endif %}></p>
 
@@ -141,8 +141,8 @@
 
                 // If "Period" is selected, display selected period or current date
                 if (isPeriod) {
-                    startDate.value = "{{ start_date }}" ? "{{ start_date }}" : formattedDate; // Show selected start date or current date
-                    endDate.value = "{{ end_date }}" ? "{{ end_date }}" : formattedDate; // Show selected end date or current date
+                startDate.value = "{{ start_date }}" ? "{{ start_date }}" : "{{ info_init|date:'Y-m-d' }}";
+                endDate.value = "{{ end_date }}" ? "{{ end_date }}" : "{{ info_final|date:'Y-m-d' }}";
                 }
 
                 // If "Month and Year" is selected, show current month and year
@@ -163,6 +163,8 @@
             });
 
             document.addEventListener("DOMContentLoaded", toggleFields);
+
+
         </script>
     </div>
 {% endblock %}

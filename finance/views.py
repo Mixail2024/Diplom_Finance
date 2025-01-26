@@ -123,8 +123,18 @@ def home(request):
 
 def home_wlt(request, w_pk):
     current_wlt = Wallet.objects.get(pk=w_pk)
-    return render(request, 'finance/home_wlt.html', {'current_wlt':current_wlt})
+    info_date_obj = Info.objects.get()
+    info_init = info_date_obj.init_date
+    info_final = info_date_obj.final_date
+    context = {
+        'info_init': info_init,
+        'info_final': info_final,
+        'current_wlt': current_wlt
+        }
 
+
+    print(context)
+    return render(request, 'finance/home_wlt.html', context)
 
 #========================================================================================================W A L L E T
 class Create_wlt(CreateView):#____________________________________________Create_wlt
