@@ -253,6 +253,7 @@ select:focus {
 
 /* ---------------- T A B L E S ------------------*/
 table {
+    min-width: 450px;
     width: fit;
     border-collapse: collapse;
     font-size: 11px;
@@ -260,7 +261,7 @@ table {
 }
 table th {
     background-color: rgba(0, 0, 0, 0.2);
-    padding: 10px;
+    padding: 5px;
     border-bottom: 2px solid black;
     font-size: 12px;
     text-align: center;
@@ -268,7 +269,7 @@ table th {
 table td {
     padding: 5px;
     border-bottom: 1px solid black;
-    text-align: right;
+
 }
 table td a {
     text-decoration: none;
@@ -278,7 +279,7 @@ table td a:visited {
     color: inherit;
 }
 table td a:hover {
-    color: white;
+     color:black;
 }
 table td a:active {
     color: inherit;

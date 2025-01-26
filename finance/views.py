@@ -87,12 +87,17 @@ def home(request):
                     'final_bal': final_bal,
                 }
 
-    #     t_dic[ticker].append(w)
-    # data.append(t_dic)
-    print(data)
+    # print(data)
 
-
-
+    totals = {}
+    for ticker, wallets in data.items():
+        totals[ticker] = {
+            'total_initial': sum(wallet_data['bal_on_date'] for wallet_data in wallets.values()),
+            'total_income': sum(wallet_data['after_dt_sum'] for wallet_data in wallets.values()),
+            'total_spending': sum(wallet_data['after_ct_sum'] for wallet_data in wallets.values()),
+            'total_final': sum(wallet_data['final_bal'] for wallet_data in wallets.values()),
+        }
+    # print(totals)
 
 
 
@@ -109,7 +114,7 @@ def home(request):
         'form': form,
         'wlts': wlts,
         'data': data,
-
+        'totals': totals,
 
         'data1': data1,
         }
@@ -170,11 +175,10 @@ def delete_wlt(request, pk):  # ________________________________________________
 #================================================================================================C A L E N D A R
 def calendar_view(request, pk):
     current_wlt = Wallet.objects.get(pk=pk)
-    # init_balance = current_wlt.w_balance
+
     context = {}
 
     if request.method == 'GET':
-
         choice = request.GET.get("choice")
 
         if choice == "date":#_____________________________________________________________________date
@@ -266,7 +270,7 @@ def calendar_view(request, pk):
                 init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
 
     # ___________________________________________________________________________________________________ContexT
-
+    final_balance = init_bal + filtered_dt_sum - filtered_ct_sum
 
     context['wlt_pk'] = pk
     context['current_wlt'] = current_wlt
@@ -282,8 +286,9 @@ def calendar_view(request, pk):
     context['filtered_ct_sum'] = filtered_ct_sum
 
     context['dtct_sum'] = filtered_dt_sum + filtered_ct_sum
+    context['left'] = current_wlt.w_limit + final_balance
 
-    context['final_balance'] = init_bal + filtered_dt_sum - filtered_ct_sum
+    context['final_balance'] = final_balance
     context['data_chart'] = data_chart
 
 

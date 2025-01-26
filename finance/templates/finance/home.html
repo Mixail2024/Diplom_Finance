@@ -1,44 +1,43 @@
+{% extends 'layout/basic.html' %}
 {% load static %}
 
-<html>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel='stylesheet' type='text/css' href="{% static 'finance/style.css' %}">
-        <title>Wallets</title>
+{% block title %} Wallets {% endblock %}
 
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript">
+{% block menu %}{% endblock %}
 
-            google.charts.load('current', {'packages':['corechart']});
-            google.charts.setOnLoadCallback(drawChart);
+{% block extra_head %}
+     <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
 
-            function drawChart() {
+        function drawChart() {
 
-                var data1 = google.visualization.arrayToDataTable({{ data1|safe }});
-                var options = {
-                    title: 'My 3D Pie Chart',
-                    is3D: true,
-                    backgroundColor: { fill: 'transparent' },
-                    slices: {
-                        0: {offset: 0.1},         // Сдвиг первого сегмента
-                        1: {offset: 0.1},         // Сдвиг второго сегмента
-                    },
-                    chartArea: {
-                        left: 20,
-                        top: 20,
-                        width: '90%',
-                        height: '80%'
-                    },
-                    pieSliceText: 'value',        // Отображение значений на диаграмме
-                };
+            var data1 = google.visualization.arrayToDataTable({{ data1|safe }});
+            var options = {
+                title: 'My 3D Pie Chart',
+                is3D: true,
+                backgroundColor: { fill: 'transparent' },
+                slices: {
+                    0: {offset: 0.1},         // Сдвиг первого сегмента
+                    1: {offset: 0.1},         // Сдвиг второго сегмента
+                },
+                chartArea: {
+                    left: 20,
+                    top: 20,
+                    width: '90%',
+                    height: '80%'
+                },
+                pieSliceText: 'value',        // Отображение значений на диаграмме
+            };
 
-                var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-                chart.draw(data1, options);
-            }
-        </script>
-    </head>
-    <body>
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data1, options);
+        }
+     </script>
+{% endblock %}
+
+{% block header %}
+
         <div>
             <div class='nav_H'>
                 <div class="wallet">Wallets</div>
@@ -71,39 +70,52 @@
             </form>
         </div>
 
+{% endblock %}
 
-
-    <div style="width:500px">
+{% block left_side %}
     {% for ticker, wallets in data.items %}
         <p>{{ ticker }}</p>
         <table>
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Название кошелька</th>
-                    <th>Начальный баланс</th>
-                    <th>Доход</th>
-                    <th>Расход</th>
-                    <th>Итоговый баланс</th>
+                    <th>Wallet</th>
+                    <th>Initial <br> balance</th>
+                    <th>Income</th>
+                    <th>Spending</th>
+                    <th>Final <br> balance</th>
                 </tr>
             </thead>
             <tbody>
                 {% for wallet, wallet_data in wallets.items %}
                     <tr>
                         <td>{{ wallet_data.n }}</td> <!-- Порядковый номер -->
-                        <td style="text-align: center; padding: 5px 20px 5px 10px; font-weight: bold;">
-                            <a href="{% url 'home_wlt' wallet_data.wlt_pk %}">{{ wallet.w_name }}</a>
+                        <td style="font-weight: bold;">
+                            <a href="{% url 'home_wlt' wallet_data.wlt_pk %}">{{ wallet.f_name }}</a>
                         </td>
                         <td style="text-align: right;">{{ wallet_data.bal_on_date|floatformat:2 }}</td>
                         <td style="text-align: right;">{{ wallet_data.after_dt_sum|floatformat:2 }}</td>
                         <td style="text-align: right;">{{ wallet_data.after_ct_sum|floatformat:2 }}</td>
                         <td style="text-align: right;">{{ wallet_data.final_bal|floatformat:2 }}</td>
-                    </tr>
+
+                {% endfor %}
+                {% for total_ticker, total_data in totals.items %}
+                    {% if total_ticker == ticker %}
+                        <tr>
+                            <td></td>
+                            <td style="text-align: right; font-weight: bold;">TOTAL</td>
+                            <td style="text-align: right; font-weight: bold;">{{ total_data.total_initial|floatformat:2 }}</td>
+                            <td style="text-align: right; font-weight: bold;">{{ total_data.total_income|floatformat:2 }}</td>
+                            <td style="text-align: right; font-weight: bold;">{{ total_data.total_spending|floatformat:2 }}</td>
+                            <td style="text-align: right; font-weight: bold;">{{ total_data.total_final|floatformat:2 }}</td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>
     {% endfor %}
-    </div>
+
+{% endblock %}
 
 
 
@@ -112,6 +124,3 @@
 
 
 
-
-    </body>
-</html>

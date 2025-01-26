@@ -35,9 +35,7 @@
         chart.draw(data, options);
     }
 </script>
-
 {% endblock %}
-
 
 
 {% block header %}
@@ -172,10 +170,15 @@
 
 {% block right_side %}
     {% if dtct_sum > 0 %}
-            <div class="info_txt">
+        <div class="info_txt">
             <p>Init balance:  <span class="bal">{{ init_bal|floatformat:2 }}</span></p>
             <p>Turnover: <span class="d">{{ filtered_dt_sum|floatformat:2 }}</span>  /  <span class="c">{{ filtered_ct_sum|floatformat:2 }}</span> </p>
             <p>Final balance: <span class="bal">{{ final_balance|floatformat:2 }}</span></p>
+            {% if current_wlt.w_limit > 0 and final_balance < 0 %}
+                <p>Limit / Left: <span class="bal">{{ current_wlt.w_limit|floatformat:2 }} / {{ left|floatformat:2 }} </span></p>
+            {% endif %}
+
+
         </div>
 
         <button class="collapsible dt d">Incomes</button>
