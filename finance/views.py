@@ -20,8 +20,8 @@ from collections import defaultdict
 
 #=========================================================================================================_H O M E
 def home(request):
-    current_datetime = datetime.now()
-    current_date = current_datetime.date()
+    # current_datetime = datetime.now()
+    # current_date = current_datetime.date()
 
     try:#__________________________________________________set init date
         choosen_date_obj = Info.objects.get()
@@ -87,8 +87,6 @@ def home(request):
                     'final_bal': final_bal,
                 }
 
-    # print(data)
-
     totals = {}
     for ticker, wallets in data.items():
         totals[ticker] = {
@@ -97,32 +95,37 @@ def home(request):
             'total_spending': sum(wallet_data['after_ct_sum'] for wallet_data in wallets.values()),
             'total_final': sum(wallet_data['final_bal'] for wallet_data in wallets.values()),
         }
-    # print(totals)
+
+    info_date_obj = Info.objects.get()
+    info_init = info_date_obj.init_date
+    info_final = info_date_obj.final_date
 
 
 
-    data1 = [
+
+    data_chart1 = [
         ['Category', 'Percentage'],
         ['Category A', 30],
         ['Category B', 45],
         ['Category C', 25]
     ]
 
-
-
     context = {
         'form': form,
         'wlts': wlts,
         'data': data,
         'totals': totals,
+        'info_init': info_init,
+        'info_final': info_final,
 
-        'data1': data1,
+        'data_chart1': data_chart1,
         }
     return render(request, 'finance/home.html', context)
 
 
 def home_wlt(request, w_pk):
     current_wlt = Wallet.objects.get(pk=w_pk)
+
     info_date_obj = Info.objects.get()
     info_init = info_date_obj.init_date
     info_final = info_date_obj.final_date
@@ -132,8 +135,6 @@ def home_wlt(request, w_pk):
         'current_wlt': current_wlt
         }
 
-
-    print(context)
     return render(request, 'finance/home_wlt.html', context)
 
 #========================================================================================================W A L L E T

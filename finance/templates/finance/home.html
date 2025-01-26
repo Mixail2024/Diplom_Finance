@@ -91,7 +91,7 @@
                     <tr>
                         <td>{{ wallet_data.n }}</td> <!-- Порядковый номер -->
                         <td style="font-weight: bold;">
-                            <a href="{% url 'home_wlt' wallet_data.wlt_pk %}">{{ wallet.f_name }}</a>
+                            <a href="{% url 'home_wlt' wallet_data.wlt_pk %}calendar/?choice=period&start_date={{info_init|date:'Y-m-d'}}&end_date={{info_final|date:'Y-m-d'}}">{{ wallet.f_name }}</a>
                         </td>
                         <td style="text-align: right;">{{ wallet_data.bal_on_date|floatformat:2 }}</td>
                         <td style="text-align: right;">{{ wallet_data.after_dt_sum|floatformat:2 }}</td>
@@ -114,10 +114,17 @@
             </tbody>
         </table>
     {% endfor %}
-
 {% endblock %}
 
+{% block right_side %}
+{% endblock %}
 
+{% block diagram %}
+
+
+        <div id="piechart" style="width: 300px; height: 300px;"></div>
+
+{% endblock%}
 
 
 
