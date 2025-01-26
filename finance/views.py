@@ -2,9 +2,6 @@ from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum, ProtectedError
-from decimal import Decimal
-from django.utils.text import slugify
-from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from .models import Wallet, Income, Income_type, Spending, Spending_type, Info
 from .forms import (
@@ -19,7 +16,7 @@ from django.utils.timezone import datetime, now
 from datetime import timedelta, datetime
 from decimal import Decimal
 import json
-
+from collections import defaultdict
 
 #=========================================================================================================_H O M E
 def home(request):
@@ -41,35 +38,63 @@ def home(request):
     choosen_final = choosen_date_obj.final_date
 
 
-    wlts = Wallet.objects.order_by('w_name')
-    data = []
+
+    wlts = Wallet.objects.all()
+    tickers = set()
     for wlt in wlts:
-        # wallet_data=[]
-        if choosen_date_obj.init_date < wlt.w_date:
-            bal_on_date = 0
-        else:
-            before_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
-            before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            before_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
-            before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-            bal_on_date = wlt.w_balance + before_dt_sum - before_ct_sum#_____________get bal on date (calculated from wlt open date)
-        after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[choosen_init, choosen_final])
-        after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-        after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_init, choosen_final])
-        after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-        if choosen_date_obj.init_date < wlt.w_date:
-            after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, choosen_final])
-            after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, choosen_final])
-            after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
-            final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
-        else:
-            final_bal = bal_on_date + after_dt_sum - after_ct_sum
-        data.append({'wlt_pk': wlt.pk,
-                     'bal_on_date': bal_on_date,
-                     'after_dt_sum': after_dt_sum,
-                     'after_ct_sum': after_ct_sum,
-                     'final_bal': final_bal})
+        tickers.add(wlt.w_ticker)
+    tickers = sorted(tickers)
+    print(tickers)
+
+
+    n = 0
+    data = {}
+    for ticker in tickers:
+        data[ticker] = {}
+        for wlt in wlts:
+            if ticker == wlt.w_ticker:
+                n += 1
+
+                if choosen_date_obj.init_date < wlt.w_date:
+                    bal_on_date = 0
+                else:
+                    before_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
+                    before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                    before_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, prev_date])
+                    before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+                    bal_on_date = wlt.w_balance + before_dt_sum - before_ct_sum
+
+                after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[choosen_init, choosen_final])
+                after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[choosen_init, choosen_final])
+                after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+
+                if choosen_date_obj.init_date < wlt.w_date:
+                    after_obj_dt = Income.objects.filter(wallet=wlt, date__range=[wlt.w_date, choosen_final])
+                    after_dt_sum = after_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
+                    after_obj_ct = Spending.objects.filter(wallet=wlt, date__range=[wlt.w_date, choosen_final])
+                    after_ct_sum = after_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
+                    final_bal = wlt.w_balance + after_dt_sum - after_ct_sum
+                else:
+                    final_bal = bal_on_date + after_dt_sum - after_ct_sum
+
+                data[ticker][wlt] = {
+                    'n': n,
+                    'wlt_pk': wlt.pk,
+                    'bal_on_date': bal_on_date,
+                    'after_dt_sum': after_dt_sum,
+                    'after_ct_sum': after_ct_sum,
+                    'final_bal': final_bal,
+                }
+
+    #     t_dic[ticker].append(w)
+    # data.append(t_dic)
+    print(data)
+
+
+
+
+
 
     data1 = [
         ['Category', 'Percentage'],
@@ -77,10 +102,15 @@ def home(request):
         ['Category B', 45],
         ['Category C', 25]
     ]
+
+
+
     context = {
         'form': form,
         'wlts': wlts,
         'data': data,
+
+
         'data1': data1,
         }
     return render(request, 'finance/home.html', context)
@@ -283,7 +313,7 @@ def get_data_chart(dt , ct):#______________________________________get_data_char
 
     types_row = ['Category'] + dt_type_names + ct_type_names
 
-    dt_row = ['Income']
+    dt_row = ['Incomes']
     for typ in dt_types:
         try:
             group = dt.filter(income_type=typ)
@@ -295,7 +325,7 @@ def get_data_chart(dt , ct):#______________________________________get_data_char
         dt_row.append(str(typ) + ' ' + str(float(group_sum)))
     dt_row = dt_row + [0.00, '']*ct_types_qty
 
-    ct_row = ['Spending']
+    ct_row = ['Spendings']
     ct_row = ct_row + [0.00, '']*dt_types_qty
     for typ in ct_types:
         try:

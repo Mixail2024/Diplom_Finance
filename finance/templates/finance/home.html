@@ -69,27 +69,49 @@
                 </script>
                 <button class='btn nav_btn' type='submit' >Set</button>
             </form>
-
-            {% for wlt in wlts %}
-                {% for i in data %}
-                    {% if wlt.pk == i.wlt_pk %}
-                        <p><button class="btn btn_wlts" onclick="location.href='{% url 'home_wlt' wlt.pk %}'">
-                        <div style="font-weight: bold; margin: 0px 5px 5px 5px">{{wlt.f_name }}</div>
-                        <span>init bal {{ i.bal_on_date|floatformat:2 }}</span>
-                        <br><span>turnover {{ i.after_dt_sum|floatformat:2 }} / {{ i.after_ct_sum|floatformat:2 }}</span>
-                        <br><span>current bal {{ i.final_bal|floatformat:2 }}</span>
-                            {% if wlt.w_limit > 0 %}
-                                <br><span>limit {{ wlt.w_limit|floatformat:2 }}</span>
-                            {% endif %}
-                        </button></p>
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
         </div>
 
 
 
+    <div style="width:500px">
+    {% for ticker, wallets in data.items %}
+        <p>{{ ticker }}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Название кошелька</th>
+                    <th>Начальный баланс</th>
+                    <th>Доход</th>
+                    <th>Расход</th>
+                    <th>Итоговый баланс</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for wallet, wallet_data in wallets.items %}
+                    <tr>
+                        <td>{{ wallet_data.n }}</td> <!-- Порядковый номер -->
+                        <td style="text-align: center; padding: 5px 20px 5px 10px; font-weight: bold;">
+                            <a href="{% url 'home_wlt' wallet_data.wlt_pk %}">{{ wallet.w_name }}</a>
+                        </td>
+                        <td style="text-align: right;">{{ wallet_data.bal_on_date|floatformat:2 }}</td>
+                        <td style="text-align: right;">{{ wallet_data.after_dt_sum|floatformat:2 }}</td>
+                        <td style="text-align: right;">{{ wallet_data.after_ct_sum|floatformat:2 }}</td>
+                        <td style="text-align: right;">{{ wallet_data.final_bal|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+    </div>
 
-        <div id="piechart" style="width: 450px; height: 250px; position: absolute; top: 80px; left: 200px; z-index: 1;"></div>
+
+
+
+
+
+
+
+
     </body>
 </html>
