@@ -10,8 +10,8 @@ headers = {
 
 class Val_para:
     def __init__(self, website, datetime, name, buy, sell):
-        self.name = name
         self.datetime = datetime
+        self.name = name
         self.buy = buy
         self.sell = sell
         self.website = website
@@ -33,6 +33,9 @@ def get_currency_rates():
     global headers
     url = 'https://www.royalexchange.cz/kurzovni-listek/'
     page = requests.get(url, headers=headers)
+
+
+
     soup = bs(page.text, 'lxml')
     d = {}
     td = soup.find_all('td')

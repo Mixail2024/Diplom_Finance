@@ -171,7 +171,7 @@
 
 
 {% block right_side %}
-    {% if dtct_sum > 0 %}
+    {% if dtct_sum != 0 %}
         <div class="info_txt">
             <p>Init balance:  <span class="bal">{{ init_bal|floatformat:2 }}</span></p>
             <p>Turnover: <span class="d">{{ filtered_dt_sum|floatformat:2 }}</span>  /  <span class="c">{{ filtered_ct_sum|floatformat:2 }}</span> </p>

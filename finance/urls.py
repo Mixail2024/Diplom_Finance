@@ -8,6 +8,7 @@ from .views import (
     add_spending, update_spending,
     add_spending_type, update_spending_type,
     delete_filtered_dt, delete_filtered_ct,
+    update_rates
 )
 
 urlpatterns = [
@@ -38,6 +39,7 @@ urlpatterns = [
     path('home_wlt/<int:w_pk>/delete filtered ct/', delete_filtered_ct, name = 'delete_filtered_ct'),
     path('home_wlt/<int:pk>/calendar/', calendar_view, name='calendar'),
     path('home_wlt/<int:w_pk>/', home_wlt, name = 'home_wlt'),
-    path('home/transfer/', transfer_funds, name='transfer_funds'),
+    path('transfer/', transfer_funds, name='transfer_funds'),
+    path('update_rates/', update_rates, name='update_rates'),
     path('', home, name = 'home'),
     ]

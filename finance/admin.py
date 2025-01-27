@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Wallet, Income, Spending, Income_type, Spending_type, Info
+from .models import Wallet, Income, Spending, Income_type, Spending_type, Info, Rates
 
 
 class WalletAdmin(admin.ModelAdmin):
@@ -21,9 +21,13 @@ class SpendingAdmin(admin.ModelAdmin):
 class InfoAdmin(admin.ModelAdmin):
     list_display = ('init_date', 'final_date')
 
+class RatesAdmin(admin.ModelAdmin):
+    list_display = ('date', 'name', 'buy', 'sell', 'source')
+
 admin.site.register(Wallet, WalletAdmin)
 admin.site.register(Income, IncomeAdmin)
 admin.site.register(Spending, SpendingAdmin)
 admin.site.register(Income_type)
 admin.site.register(Spending_type)
 admin.site.register(Info, InfoAdmin)
+admin.site.register(Rates, RatesAdmin)

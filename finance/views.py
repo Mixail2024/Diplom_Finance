@@ -5,7 +5,7 @@ from django.db.models import Sum, ProtectedError
 from django.db import transaction
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
-from .models import Wallet, Income, Income_type, Spending, Spending_type, Info
+from .models import Wallet, Income, Income_type, Spending, Spending_type, Info, Rates
 from .forms import (
     Form_create_wlt, Form_delete_wlt,
     Form_add_income, Form_update_income,
@@ -18,7 +18,7 @@ from django.utils.timezone import now
 from datetime import timedelta, datetime
 from decimal import Decimal
 import json
-from my_exchange import get_currency_rates
+from .my_exchange import get_currency_rates
 
 
 
@@ -117,10 +117,6 @@ def home(request):
     return render(request, 'finance/home.html', context)
 
 
-def get_rates():
-    c = CurrencyRates()
-    rate = c.get_rate('EUR', 'CZK')
-    print(f"1 EUR = {rate} CZK")
 
 def home_wlt(request, w_pk):#____________________________________________HOME WLT
     current_wlt = Wallet.objects.get(pk=w_pk)
@@ -658,7 +654,31 @@ def transfer_funds(request):
     return render(request, "finance/tmplt_transfer.html", {"form": form})
 
 
-def currency():
-    rates = get_currency_rates()
-    for obj in rates:
-        print(obj.name, obj.VIP_buy, obj.VIP_sell)
+def update_rates(request):
+    try:
+        rates = get_currency_rates()
+        with transaction.atomic():  # Используем транзакцию для атомарности
+            for obj in rates:
+                # Добавляем проверку, чтобы избежать дублирования записей
+                if not Rates.objects.filter(date=obj.datetime, name=obj.name).exists():
+                    Rates.objects.create(
+                        date=obj.datetime,
+                        name=obj.name,
+                        buy=obj.buy,
+                        sell=obj.sell,
+                        source=obj.website
+                    )
+                else:
+                    # Если запись уже существует, обновляем её
+                    Rates.objects.filter(date=obj.datetime, name=obj.name).update(
+                        buy=obj.buy, sell=obj.sell, source=obj.website
+                    )
+
+        # Сообщение об успешном обновлении
+        messages.success(request, "Currency rates updated successfully.")
+
+        return redirect('home')  # Перенаправляем на главную страницу после успешного обновления
+    except Exception as e:
+        # Обрабатываем ошибки
+        messages.error(request, f"Error updating currency rates: {str(e)}")
+        return redirect('home')
