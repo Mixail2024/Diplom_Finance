@@ -91,3 +91,17 @@ class Info(models.Model):
         if not self.pk:  # Если запись новая (нет pk)
             Info.objects.all().delete()  # Удаляем все существующие записи
         super().save(*args, **kwargs)  # Сохраняем текущую запись
+
+class Rates(models.Model):
+    date = models.DateTimeField(verbose_name='date')
+    name = models.CharField(max_length=5, db_index=True, verbose_name='Currency')
+    buy = models.DecimalField(max_digits=5, decimal_places=2, verbose_name = 'Buy')
+    sell = models.DecimalField(max_digits=5, decimal_places=2, verbose_name = 'Sell')
+    source = models.URLField(max_length=150, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name = 'rate'
+        verbose_name_plural = 'rates'
+        ordering = ['date']

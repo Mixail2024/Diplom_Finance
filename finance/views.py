@@ -18,7 +18,9 @@ from django.utils.timezone import now
 from datetime import timedelta, datetime
 from decimal import Decimal
 import json
-from forex_python.converter import CurrencyRates
+from my_exchange import get_currency_rates
+
+
 
 #=========================================================================================================_H O M E
 def home(request):
@@ -655,3 +657,8 @@ def transfer_funds(request):
                     form.add_error(None, f"Transaction failed: {str(e)}")
     return render(request, "finance/tmplt_transfer.html", {"form": form})
 
+
+def currency():
+    rates = get_currency_rates()
+    for obj in rates:
+        print(obj.name, obj.VIP_buy, obj.VIP_sell)
