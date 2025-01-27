@@ -1,5 +1,6 @@
 {% extends 'layout/basic.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %} Wallets {% endblock %}
 
@@ -76,7 +77,13 @@
 
 {% block left_side %}
     {% for ticker, wallets in data.items %}
-        <p>{{ ticker }}</p>
+       <p>
+    {{ ticker }}
+    {% if ticker in rates %}
+        Buy: {{ rates|get_item:ticker|get_item:"buy" }}
+        Sell: {{ rates|get_item:ticker|get_item:"sell" }}
+    {% endif %}
+</p>
         <table>
             <thead>
                 <tr>
@@ -91,7 +98,7 @@
             <tbody>
                 {% for wallet, wallet_data in wallets.items %}
                     <tr>
-                        <td>{{ wallet_data.n }}</td> <!-- Порядковый номер -->
+                        <td>{{ wallet_data.n }}</td>
                         <td style="font-weight: bold;">
                             <a href="{% url 'home_wlt' wallet_data.wlt_pk %}calendar/?choice=period&start_date={{info_init|date:'Y-m-d'}}&end_date={{info_final|date:'Y-m-d'}}">{{ wallet.f_name }}</a>
                         </td>

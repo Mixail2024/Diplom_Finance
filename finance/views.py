@@ -97,6 +97,12 @@ def home(request):
     info_init = info_date_obj.init_date
     info_final = info_date_obj.final_date
 
+    tickers.remove('CZK')
+    rates = {}
+    for ticker in tickers:
+        last_rate = Rates.objects.filter(name=ticker).latest('date')
+        rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell)}
+    print(rates)
 
     data_chart1 = [
         ['Category', 'Percentage'],
@@ -112,7 +118,8 @@ def home(request):
         'totals': totals,
         'info_init': info_init,
         'info_final': info_final,
-        'data_chart1': data_chart1
+        'data_chart1': data_chart1,
+        'rates': rates
         }
     return render(request, 'finance/home.html', context)
 
