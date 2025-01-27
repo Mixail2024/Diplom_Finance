@@ -2,7 +2,7 @@ from django.urls import path, re_path
 from .views import (
     home, home_wlt,
     Create_wlt, Update_wlt,  delete_wlt,
-    calendar_view,
+    calendar_view, transfer_funds,
     add_income, update_income,
     add_income_type, update_income_type,
     add_spending, update_spending,
@@ -38,5 +38,6 @@ urlpatterns = [
     path('home_wlt/<int:w_pk>/delete filtered ct/', delete_filtered_ct, name = 'delete_filtered_ct'),
     path('home_wlt/<int:pk>/calendar/', calendar_view, name='calendar'),
     path('home_wlt/<int:w_pk>/', home_wlt, name = 'home_wlt'),
+    path('home/transfer/', transfer_funds, name='transfer_funds'),
     path('', home, name = 'home'),
     ]

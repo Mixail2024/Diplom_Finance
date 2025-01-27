@@ -41,7 +41,8 @@
         <div>
             <div class='nav_H'>
                 <div class="wallet">Wallets</div>
-                <button class="btn btn_add_wlt" onclick="location.href='{% url 'create_wlt' %}'">Add</button>
+                <button class="btn nav_btn btn_red" onclick="location.href='{% url 'create_wlt' %}'">Create new</button>
+                <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'transfer_funds' %}'">Transfer</button>
             </div>
 
             <form method='POST'>

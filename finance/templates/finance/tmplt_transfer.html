@@ -1,0 +1,78 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}Wallet creating{% endblock %}
+
+{% block menu %}{% endblock %}
+
+{% block header %}
+    <h1>
+        <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home' %}'"> < </button>
+        Transfer funds
+    </h1>
+{% endblock %}
+
+
+{% block left_side %}
+    <div class="container_dark">
+        <form method='POST' action="">
+            {% csrf_token %}
+            <div>
+                <label>{{ form.date.label }}</label>
+                <div class="form_view">
+                    {{ form.date }}
+                </div>
+                {% if form.date.errors %}
+                    <div style="color: red;">{{ form.date.errors }}</div>
+                {% endif %}
+                </div>
+
+             <!-- Подключение Flatpickr -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    flatpickr("#datepicker", {
+                        dateFormat: "Y-m-d",
+                    });
+                });
+            </script>
+
+
+            <div>
+                <label>{{ form.from_wallet.label }}</label>
+                <div class="form_view">{{ form.from_wallet }}</div>
+                {% if form.from_wallet.errors %}
+                    <div style="color: red;">{{ form.from_wallet.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label>{{ form.to_wallet.label }}</label>
+                <div class="form_view">{{ form.to_wallet }}</div>
+                {% if form.to_wallet.errors %}
+                    <div style="color: red;">{{ form.to_wallet.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label>{{ form.comment.label }}</label>
+                <div class="form_comment">{{ form.comment }}</div>
+                {% if form.comment.errors %}
+                    <div style="color: red;">{{ form.comment.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div>
+                <label>{{ form.amount.label }}</label>
+                <div class="form_view">{{ form.amount }}</div>
+                {% if form.amount.errors %}
+                    <div style="color: red;">{{ form.amount.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button class='btn nav_btn' type='submit' name="save">Transfer</button>
+
+        </form>
+    </div>
+{% endblock%}

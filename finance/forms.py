@@ -107,11 +107,7 @@ class Form_add_spending_type(forms.Form):#______________________________________
         required=False,
         label="Choose spending type",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
-    new_value = forms.CharField(
-        max_length=255,
-        required=False,
-        label="Add new spending type",
-        widget=forms.TextInput(attrs={'style': 'width: 150px;'}))
+
 
 
 
@@ -120,3 +116,33 @@ class Form_update_spending_type(forms.ModelForm):#______________________________
         model = Spending_type
         fields = ['name']
 
+
+class TransferForm(forms.Form):#______________________________________________________________Transfer Form
+    date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
+                           input_formats=['%Y-%m-%d'])
+    from_wallet = forms.ModelChoiceField(
+        queryset=Wallet.objects.all(),
+        required=True,
+        label="From wallet",
+        widget=forms.Select(attrs={'style': 'width: 150px;'}))
+    to_wallet = forms.ModelChoiceField(
+        queryset=Wallet.objects.all(),
+        required=True,
+        label="To wallet",
+        widget=forms.Select(attrs={'style': 'width: 150px;'}))
+    amount = forms.DecimalField(label="Amount", max_digits=10, decimal_places=2)
+    comment = forms.CharField(
+        max_length=255,
+        required=False,
+        label="Comment",
+        widget=forms.TextInput(attrs={'style': 'width: 150px;'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        amount = cleaned_data.get("amount")
+        if amount and amount <= 0:
+            raise forms.ValidationError("Amount must be greater than zero.")
+
+
+
+        return cleaned_data

@@ -185,7 +185,7 @@ input[type="text"], [type="number"], textarea {
     padding: 0px 5px 0px 10px;
     height: 22px;
     width: 100px;
-    margin: 0px 10px -5px 0px;
+    margin: 0px 10px 5px 0px;
     border: 1px solid black;
     font-size: 12px;
     border-radius: 5px;

@@ -4,19 +4,24 @@
 {% block title %}Wallet creating{% endblock %}
 
 {% block menu %}
-    <div class = 'nav'>
-        <button class="btn nav_btn" onclick="location.href='{% url 'home' %}'">Wallets</button>
-    </div>
 {% endblock %}
 
 {% block header %}
-    <h1>Wallet creating</h1>
+    <h1>
+        <button class="btn nav_btn btn_green" onclick="location.href='{% url 'home' %}'"> < </button>
+        Wallet creating
+    </h1>
 {% endblock %}
 
+
+
+
 {% block left_side %}
-    <form method='POST'>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class='btn nav_btn' type='submit'>Create</button>
-    </form>
+    <div class="container_dark">
+        <form method='POST'>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class='btn nav_btn' type='submit'>Create</button>
+        </form>
+    </div>
 {% endblock %}

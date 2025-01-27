@@ -2,6 +2,8 @@ from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.db.models import Sum, ProtectedError
+from django.db import transaction
+from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 from .models import Wallet, Income, Income_type, Spending, Spending_type, Info
 from .forms import (
@@ -10,9 +12,9 @@ from .forms import (
     Form_add_income_type, Form_update_income_type,
     Form_add_spending, Form_update_spending,
     Form_add_spending_type, Form_update_spending_type,
-    Form_set_date_init_bal,
+    Form_set_date_init_bal, TransferForm
     )
-from django.utils.timezone import datetime, now
+from django.utils.timezone import now
 from datetime import timedelta, datetime
 from decimal import Decimal
 import json
@@ -601,4 +603,55 @@ def update_spending_type(request, w_pk, pk):#___________________________________
         'w_pk': w_pk,
         'spending_type': spending_type,
     })
+
+def transfer_funds(request):
+    today_date = now().date()  # Получаем текущую дату с учётом часового пояса
+    form = TransferForm(request.POST or None, initial={"date": today_date})  # Инициализация формы с текущей датой
+
+    if request.method == "POST":
+        if form.is_valid():
+            from_wallet = form.cleaned_data["from_wallet"]
+            to_wallet = form.cleaned_data["to_wallet"]
+            amount = form.cleaned_data["amount"]
+            comment = form.cleaned_data["comment"]
+            date = form.cleaned_data["date"]
+
+            # Проверяем, чтобы кошельки не совпадали
+            if from_wallet == to_wallet:
+                form.add_error(None, "The source and destination wallets must be different.")
+            else:
+                try:
+                    with transaction.atomic():
+                        # Получаем типы операций
+                        transfer_type_spending, _ = Spending_type.objects.get_or_create(name="Transfer")
+                        transfer_type_income, _ = Income_type.objects.get_or_create(name="Transfer")
+
+                        # Создаем запись в Spending
+                        Spending.objects.create(
+                            date=date,
+                            wallet=from_wallet,
+                            credit=amount,
+                            comment=comment,
+                            spending_type=transfer_type_spending,
+                            destination=to_wallet
+                        )
+
+                        # Создаем запись в Income
+                        Income.objects.create(
+                            date=date,
+                            wallet=to_wallet,
+                            debit=amount,
+                            comment=comment,
+                            income_type=transfer_type_income,
+                            source=from_wallet
+                        )
+
+                    # Сообщение об успешной операции
+                    messages.success(request, "Funds transferred successfully!")
+                    return redirect(reverse_lazy("home"))
+
+                except Exception as e:
+                    # Сообщение об ошибке транзакции
+                    form.add_error(None, f"Transaction failed: {str(e)}")
+    return render(request, "finance/tmplt_transfer.html", {"form": form})
 
