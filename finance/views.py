@@ -46,7 +46,7 @@ def home(request):
 
     n = 0
     data = {}
-    data_pie_chart = []
+    data_chart = []
     for ticker in tickers:
         data[ticker] = {}
         for wlt in wlts:
@@ -76,7 +76,7 @@ def home(request):
                 else:
                     final_bal = bal_on_date + after_dt_sum - after_ct_sum
 
-                data_pie_chart.append([wlt, float(final_bal)])
+                data_chart.append([wlt, float(final_bal)])
                 data[ticker][wlt] = {
                     'n': n,
                     'wlt_pk': wlt.pk,
@@ -103,31 +103,60 @@ def home(request):
     info_final = info_date_obj.final_date
 
 
-    tickers.remove('CZK')#_______________rates for context
+    tickers_without_czk = tickers[:]
+    tickers_without_czk.remove('CZK')#_______________rates for context
     rates = {}
-    for ticker in tickers:
+    for ticker in tickers_without_czk:
         last_rate = Rates.objects.filter(name=ticker).latest('date')
         rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
 
-    for i in data_pie_chart:
+
+    pie_chart = data_chart[:]#_________________data for pie chart
+
+    pie_chart = []
+    for i in data_chart:
+        l=[]
         ticker = i[0].w_ticker
-        i[0] = i[0].f_name
+        l.append(i[0].f_name)
         value = i[1]
         if value >0:
             if ticker != 'CZK':
                 try:
                     rate = float(rates[ticker]['buy'])
-                    i[1] = float(value * rate)
+                    l.append(float(value * rate))
                 except KeyError:
                     print(f"Ticker {ticker} not found in rates. Skipping conversion.")
                 except Exception as e:
                     print(f"Error processing ticker {ticker}: {e}")
+            else:
+                l.append(float(value))
         else:
-            i[1] = 0
+            l.append(0)
+        pie_chart.append(l)
+    data_pie_chart = [['Wallet', 'Sum']]+ pie_chart
 
-    data_pie_chart = [['Wallet', 'Sum']]+ data_pie_chart
-    print(data_pie_chart)
 
+
+    wlts_qty = len(wlts)#_________________data for bar chart
+    wlts_lst = ['Category']
+    for wlt in wlts:
+        wlts_lst.append(wlt.f_name)
+        wlts_lst.append({'role':'annotation'})
+    lst = []
+    for ticker in tickers:
+        raw = []
+        raw.append(ticker)
+        for j in data_chart:
+            if j[0].w_ticker == ticker:
+                raw.append(float(j[1]))
+                raw.append(str(j[0].f_name) +' '+str(float(j[1])))
+        lst.append(raw)
+    for i in lst:
+        n = int(wlts_qty - ((len(i)-1)/2))
+        add = [0.00, '']*n
+        i+=add
+    data_bar_chart = [wlts_lst] + lst
+    print(data_bar_chart)
 
     context = {
         'form': form,
@@ -137,6 +166,7 @@ def home(request):
         'info_init': info_init,
         'info_final': info_final,
         'data_pie_chart': data_pie_chart,
+        'data_bar_chart': data_bar_chart,
         'rates': rates
         }
     return render(request, 'finance/home.html', context)
