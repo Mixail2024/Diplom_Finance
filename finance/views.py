@@ -112,19 +112,21 @@ def home(request):
     for i in data_pie_chart:
         ticker = i[0].w_ticker
         i[0] = i[0].f_name
-        if ticker != 'CZK':
-            try:
-                value = (i[1])
-                rate = float(rates[ticker]['buy'])
-                i[1] = float(value * rate)
-
-            except KeyError:
-                print(f"Ticker {ticker} not found in rates. Skipping conversion.")
-            except Exception as e:
-                print(f"Error processing ticker {ticker}: {e}")
+        value = i[1]
+        if value >0:
+            if ticker != 'CZK':
+                try:
+                    rate = float(rates[ticker]['buy'])
+                    i[1] = float(value * rate)
+                except KeyError:
+                    print(f"Ticker {ticker} not found in rates. Skipping conversion.")
+                except Exception as e:
+                    print(f"Error processing ticker {ticker}: {e}")
+        else:
+            i[1] = 0
 
     data_pie_chart = [['Wallet', 'Sum']]+ data_pie_chart
-    # print(data_pie_chart)
+    print(data_pie_chart)
 
 
     context = {
