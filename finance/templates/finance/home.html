@@ -13,14 +13,15 @@
 
         function drawChart() {
 
-            var data1 = google.visualization.arrayToDataTable({{ data_chart1|safe }});
+            var data1 = google.visualization.arrayToDataTable({{ data_pie_chart|safe }});
             var options = {
                 title: 'My 3D Pie Chart',
-                is3D: true,
+<!--                is3D: true,-->
                 backgroundColor: { fill: 'transparent' },
                 slices: {
-                    0: {offset: 0.1},         // Сдвиг первого сегмента
-                    1: {offset: 0.1},         // Сдвиг второго сегмента
+                    0: {offset: 0.2},         // Сдвиг первого сегмента
+                    1: {offset: 0.2},         // Сдвиг второго сегмента
+                    2: {offset: 0.2},         // Сдвиг второго сегмента
                 },
                 chartArea: {
                     left: 20,
@@ -28,7 +29,7 @@
                     width: '90%',
                     height: '80%'
                 },
-                pieSliceText: 'value',        // Отображение значений на диаграмме
+                pieSliceText: 'label percentage value',        // Отображение значений на диаграмме
             };
 
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -77,13 +78,16 @@
 
 {% block left_side %}
     {% for ticker, wallets in data.items %}
-       <p>
-    {{ ticker }}
-    {% if ticker in rates %}
-        Buy: {{ rates|get_item:ticker|get_item:"buy" }}
-        Sell: {{ rates|get_item:ticker|get_item:"sell" }}
-    {% endif %}
-</p>
+        <div style="margin:15px 0px 0px 0px;">
+        {{ ticker }}
+        {% if ticker in rates %}
+            <span style="font-size: 12px; margin:0px 0px 0px 30px; font-style: italic;">
+                Buy: <b>{{ rates|get_item:ticker|get_item:"buy" }}</b>
+                Sell: <b>{{ rates|get_item:ticker|get_item:"sell" }}</b>
+                (on date: {{ rates|get_item:ticker|get_item:"date"|date:"Y-m-d H:i" }})
+            </span>
+        {% endif %}
+        </div>
         <table>
             <thead>
                 <tr>

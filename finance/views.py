@@ -46,6 +46,7 @@ def home(request):
 
     n = 0
     data = {}
+    data_pie_chart = []
     for ticker in tickers:
         data[ticker] = {}
         for wlt in wlts:
@@ -75,6 +76,7 @@ def home(request):
                 else:
                     final_bal = bal_on_date + after_dt_sum - after_ct_sum
 
+                data_pie_chart.append([wlt, float(final_bal)])
                 data[ticker][wlt] = {
                     'n': n,
                     'wlt_pk': wlt.pk,
@@ -83,6 +85,9 @@ def home(request):
                     'after_ct_sum': after_ct_sum,
                     'final_bal': final_bal,
                 }
+
+
+
 
     totals = {}
     for ticker, wallets in data.items():
@@ -97,19 +102,30 @@ def home(request):
     info_init = info_date_obj.init_date
     info_final = info_date_obj.final_date
 
-    tickers.remove('CZK')
+
+    tickers.remove('CZK')#_______________rates for context
     rates = {}
     for ticker in tickers:
         last_rate = Rates.objects.filter(name=ticker).latest('date')
-        rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell)}
-    print(rates)
+        rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
 
-    data_chart1 = [
-        ['Category', 'Percentage'],
-        ['Category A', 30],
-        ['Category B', 45],
-        ['Category C', 25]
-    ]
+    for i in data_pie_chart:
+        ticker = i[0].w_ticker
+        i[0] = i[0].f_name
+        if ticker != 'CZK':
+            try:
+                value = (i[1])
+                rate = float(rates[ticker]['buy'])
+                i[1] = float(value * rate)
+
+            except KeyError:
+                print(f"Ticker {ticker} not found in rates. Skipping conversion.")
+            except Exception as e:
+                print(f"Error processing ticker {ticker}: {e}")
+
+    data_pie_chart = [['Wallet', 'Sum']]+ data_pie_chart
+    # print(data_pie_chart)
+
 
     context = {
         'form': form,
@@ -118,7 +134,7 @@ def home(request):
         'totals': totals,
         'info_init': info_init,
         'info_final': info_final,
-        'data_chart1': data_chart1,
+        'data_pie_chart': data_pie_chart,
         'rates': rates
         }
     return render(request, 'finance/home.html', context)
@@ -358,7 +374,7 @@ def get_data_chart(dt , ct):#______________________________________get_data_char
 
     data_chart = [types_row, dt_row, ct_row]
     data_chart = json.dumps(data_chart)
-
+    # print(data_chart)
     return data_chart
 
 
@@ -684,7 +700,7 @@ def update_rates(request):
         # Сообщение об успешном обновлении
         messages.success(request, "Currency rates updated successfully.")
 
-        return redirect('home')  # Перенаправляем на главную страницу после успешного обновления
+        return redirect('home')
     except Exception as e:
         # Обрабатываем ошибки
         messages.error(request, f"Error updating currency rates: {str(e)}")
