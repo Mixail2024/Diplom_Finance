@@ -41,7 +41,17 @@
 
             <div>
                 <label>{{ form.from_wallet.label }}</label>
-                <div class="form_view">{{ form.from_wallet }}</div>
+                <div class="form_view">
+                    <select id="id_from_wallet" name="from_wallet">
+                        <option value="" selected disabled>Choose wallet</option>  <!-- Пустое значение по умолчанию -->
+                        {% for wallet in form.from_wallet.field.queryset %}
+                            <option value="{{ wallet.id }}" data-ticker="{{ wallet.w_ticker }}"
+                                {% if wallet.id == form.from_wallet.value %}selected{% endif %}>
+                                {{ wallet }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 {% if form.from_wallet.errors %}
                     <div style="color: red;">{{ form.from_wallet.errors }}</div>
                 {% endif %}
@@ -49,11 +59,38 @@
 
             <div>
                 <label>{{ form.to_wallet.label }}</label>
-                <div class="form_view">{{ form.to_wallet }}</div>
+                <div class="form_view">
+                    <select id="id_to_wallet" name="to_wallet">
+                        <option value="" selected disabled>Choose wallet</option>  <!-- Пустое значение по умолчанию -->
+                        {% for wallet in form.to_wallet.field.queryset %}
+                            <option value="{{ wallet.id }}" data-ticker="{{ wallet.w_ticker }}"
+                                {% if wallet.id == form.to_wallet.value %}selected{% endif %}>
+                                {{ wallet }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 {% if form.to_wallet.errors %}
                     <div style="color: red;">{{ form.to_wallet.errors }}</div>
                 {% endif %}
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <div>
                 <label>{{ form.comment.label }}</label>
@@ -71,8 +108,52 @@
                 {% endif %}
             </div>
 
+            <div id="amount-field" style="display: none;">
+                <label>{{ form.amount_to.label }}</label>
+                <div class="form_view">{{ form.amount_to }}</div>
+                {% if form.amount_to.errors %}
+                    <div style="color: red;">{{ form.amount_to.errors }}</div>
+                {% endif %}
+            </div>
+
+
+
+
+
+
+
             <button class='btn nav_btn' type='submit' name="save">Transfer</button>
 
         </form>
     </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let fromWalletSelect = document.getElementById("id_from_wallet");
+        let toWalletSelect = document.getElementById("id_to_wallet");
+        let amountField = document.getElementById("amount-field");
+
+        function checkTickerDifference() {
+            let fromTicker = fromWalletSelect.options[fromWalletSelect.selectedIndex]?.getAttribute("data-ticker");
+            let toTicker = toWalletSelect.options[toWalletSelect.selectedIndex]?.getAttribute("data-ticker");
+
+            if (fromTicker && toTicker && fromTicker !== toTicker) {
+                amountField.style.display = "block";
+            } else {
+                amountField.style.display = "none";
+            }
+        }
+
+        fromWalletSelect.addEventListener("change", checkTickerDifference);
+        toWalletSelect.addEventListener("change", checkTickerDifference);
+
+        checkTickerDifference(); // Проверка при загрузке страницы
+    });
+</script>
+
+
+
+
+
+
 {% endblock%}

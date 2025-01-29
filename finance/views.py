@@ -685,14 +685,15 @@ def transfer_funds(request):
             amount = form.cleaned_data["amount"]
             comment = form.cleaned_data["comment"]
             date = form.cleaned_data["date"]
-
+            amount_to = form.cleaned_data["amount_to"]
+            print('amount_to', amount_to)
             # Проверяем, чтобы кошельки не совпадали
             if from_wallet == to_wallet:
                 form.add_error(None, "The source and destination wallets must be different.")
             else:
                 try:
-                    with transaction.atomic():
-                        # Получаем типы операций
+                    with transaction.atomic():  # Работа с транзакцией
+                        # Получаем или создаём типы операций
                         transfer_type_spending, _ = Spending_type.objects.get_or_create(name="Transfer")
                         transfer_type_income, _ = Income_type.objects.get_or_create(name="Transfer")
 
@@ -707,10 +708,12 @@ def transfer_funds(request):
                         )
 
                         # Создаем запись в Income
+                        income_amount = amount_to if amount_to !=0 else amount
+                        print(income_amount)
                         Income.objects.create(
                             date=date,
                             wallet=to_wallet,
-                            debit=amount,
+                            debit=income_amount,
                             comment=comment,
                             income_type=transfer_type_income,
                             source=from_wallet
@@ -724,7 +727,6 @@ def transfer_funds(request):
                     # Сообщение об ошибке транзакции
                     form.add_error(None, f"Transaction failed: {str(e)}")
     return render(request, "finance/tmplt_transfer.html", {"form": form})
-
 
 def update_rates(request):
     try:
