@@ -103,17 +103,16 @@ def home(request):
     info_final = info_date_obj.final_date
 
 
-    tickers_without_czk = tickers[:]
-    tickers_without_czk.remove('CZK')#_______________rates for context
+    tickers_without_czk = tickers[:]#_______________rates for context
+    tickers_without_czk.remove('CZK')
     rates = {}
     for ticker in tickers_without_czk:
         last_rate = Rates.objects.filter(name=ticker).latest('date')
         rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
 
 
-    pie_chart = data_chart[:]#_________________data for pie chart
 
-    pie_chart = []
+    pie_chart = []#_________________data for pie chart
     for i in data_chart:
         l=[]
         ticker = i[0].w_ticker
@@ -136,27 +135,45 @@ def home(request):
     data_pie_chart = [['Wallet', 'Sum']]+ pie_chart
 
 
-
-    wlts_qty = len(wlts)#_________________data for bar chart
-    wlts_lst = ['Category']
-    for wlt in wlts:
-        wlts_lst.append(wlt.f_name)
-        wlts_lst.append({'role':'annotation'})
+    wlts_lst = ['Category']#_________________data for bar chart
     lst = []
     for ticker in tickers:
+        if ticker == 'CZK':
+            rate = 1
+        else:
+            rate = float(rates[ticker]['buy'])
         raw = []
         raw.append(ticker)
         for j in data_chart:
+
             if j[0].w_ticker == ticker:
-                raw.append(float(j[1]))
-                raw.append(str(j[0].f_name) +' '+str(float(j[1])))
+                wlts_lst.append(j[0].f_name)
+                wlts_lst.append({'role': 'annotation'})
+                raw.append(float(j[1]*rate))
+                raw.append(str(j[0].f_name) +' '+str(float(j[1]*rate)))
         lst.append(raw)
+    qty_lst = []
     for i in lst:
-        n = int(wlts_qty - ((len(i)-1)/2))
-        add = [0.00, '']*n
-        i+=add
-    data_bar_chart = [wlts_lst] + lst
-    print(data_bar_chart)
+        qty_lst.append(int((len(i)-1)/2))
+    new_lst = []
+    for i in lst:
+        add_b = [0.00, '']
+        add_a = [0.00, '']
+        ind = lst.index(i)
+        before = sum(qty_lst[:ind])
+        if before == 0:
+            before = []
+            add_b = 0
+        after = sum(qty_lst[(ind + 1):])
+        if after == 0:
+            after = []
+            add_a = 0
+        ticker = i.pop(0)
+        i = (add_b * before) + i + (add_a * after)
+        i = [ticker]+i
+        new_lst.append(i)
+    data_bar_chart = [wlts_lst] + new_lst
+    # print((data_bar_chart))
 
     context = {
         'form': form,

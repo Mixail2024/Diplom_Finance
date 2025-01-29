@@ -27,10 +27,10 @@
                     2: {offset: 0.1}, // Сдвиг третьего сегмента
                 },
                 chartArea: {
-                    left: 20,
+                    left: 0,
                     top: 20,
                     width: '90%',
-                    height: '80%'
+                    height: '90%'
                 },
                 pieSliceText: 'label percentage value', // Отображение значений на диаграмме
             };
@@ -43,7 +43,8 @@
             var data2 = google.visualization.arrayToDataTable({{ data_bar_chart|safe }});
 
             var options2 = {
-                title: '',
+                title: 'All wallets, czk',
+                legend: { position: 'none' },
                 backgroundColor: { fill: 'transparent' },
                 chartArea: { left: 70, top: 20, width: '70%', height: '80%' },
                 isStacked: true,
@@ -77,6 +78,8 @@
                 <button class="btn nav_btn btn_red" onclick="location.href='{% url 'create_wlt' %}'">Create new</button>
                 <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'transfer_funds' %}'">Transfer</button>
                 <button class="btn nav_btn btn_blue" onclick="location.href='{% url 'update_rates' %}'">Update currency rates</button>
+                <input type="checkbox" id="toggleCheckbox" checked>
+                <label for="toggleCheckbox">Show diagrams</label>
             </div>
 
             <form method='POST'>
@@ -112,7 +115,7 @@
         <div style="margin:15px 0px 0px 0px;">
         {{ ticker }}
         {% if ticker in rates %}
-            <span style="font-size: 12px; margin:0px 0px 0px 30px; font-style: italic;">
+            <span style="font-size: 12px; margin:0px 0px 0px 50px; font-style: italic;">
                 Buy: <b>{{ rates|get_item:ticker|get_item:"buy" }}</b>
                 Sell: <b>{{ rates|get_item:ticker|get_item:"sell" }}</b>
                 (on date: {{ rates|get_item:ticker|get_item:"date"|date:"Y-m-d H:i" }})
@@ -161,11 +164,19 @@
 {% endblock %}
 
 {% block right_side %}
-    <div id="piechart" style="width: 300px; height: 300px;"></div>
+<div id="barchart" style="width: 700px; height: 700px;"></div>
+<script>
+    document.getElementById("toggleCheckbox").addEventListener("change", function() {
+        let piechart = document.getElementById("piechart");
+        let barchart = document.getElementById("barchart");
+        piechart.style.display = this.checked ? "block" : "none";
+        barchart.style.display = this.checked ? "block" : "none";
+    });
+</script>
 {% endblock %}
 
 {% block diagram %}
-    <div id="barchart" style="width: 700px; height: 700px;"></div>
+<div id="piechart" style="width: 300px; height: 300px;"></div>
 {% endblock%}
 
 
