@@ -21,14 +21,17 @@ import json
 from .my_exchange import get_currency_rates
 
 
-
+main_currency = 'CZK'
 #=========================================================================================================_H O M E
 def home(request):
+
+
     try:#__________________________________________________set init date
         choosen_date_obj = Info.objects.get()
     except Info.DoesNotExist:
         choosen_date_obj = None
     if request.method == 'POST':
+
         form = Form_set_date_init_bal(request.POST, instance=choosen_date_obj)
         if form.is_valid():
             form.save()
@@ -38,13 +41,13 @@ def home(request):
     choosen_init = choosen_date_obj.init_date
     choosen_final = choosen_date_obj.final_date
 
-    wlts = Wallet.objects.all()
+    wlts = Wallet.objects.all()#_______________preparing tickers
     tickers = set()
     for wlt in wlts:
         tickers.add(wlt.w_ticker)
     tickers = sorted(tickers)
 
-    n = 0
+    n = 0#______________________________________preparing data for tables and data_chart for charts
     data = {}
     data_chart = []
     for ticker in tickers:
@@ -89,7 +92,7 @@ def home(request):
 
 
 
-    totals = {}
+    totals = {}#________________________________________________totals row for tables
     for ticker, wallets in data.items():
         totals[ticker] = {
             'total_initial': sum(wallet_data['bal_on_date'] for wallet_data in wallets.values()),
@@ -112,6 +115,35 @@ def home(request):
 
 
 
+    choosen_ticker = request.GET.get("choosen_ticker")#_______________getting ticker from template
+
+
+    if choosen_ticker == None:#_____________________________________Converting currencies
+        choosen_ticker = main_currency
+
+    if choosen_ticker == main_currency:
+        for i in data_chart:
+            ticker = i[0].w_ticker
+            value = i[1]
+            if ticker == main_currency:
+               pass
+            else:
+                i[1] = round(value * float(rates[ticker]['buy']),2)
+    else:
+       for i in data_chart:
+            ticker = i[0].w_ticker
+            value = i[1]
+            if ticker != main_currency:
+                if ticker == choosen_ticker:
+                    pass
+                else:
+                    i[1] = round((value * float(rates[ticker]['buy']))/float(rates[choosen_ticker]['sell']),2)
+            else:
+                i[1] = round(value/float(rates[choosen_ticker]['sell']),2)
+
+
+
+
     pie_chart = []#_________________data for pie chart
     for i in data_chart:
         l=[]
@@ -119,16 +151,8 @@ def home(request):
         l.append(i[0].f_name)
         value = i[1]
         if value >0:
-            if ticker != 'CZK':
-                try:
-                    rate = float(rates[ticker]['buy'])
-                    l.append(float(value * rate))
-                except KeyError:
-                    print(f"Ticker {ticker} not found in rates. Skipping conversion.")
-                except Exception as e:
-                    print(f"Error processing ticker {ticker}: {e}")
-            else:
-                l.append(float(value))
+            l.append(value)
+
         else:
             l.append(0)
         pie_chart.append(l)
@@ -138,19 +162,14 @@ def home(request):
     wlts_lst = ['Category']#_________________data for bar chart
     lst = []
     for ticker in tickers:
-        if ticker == 'CZK':
-            rate = 1
-        else:
-            rate = float(rates[ticker]['buy'])
         raw = []
         raw.append(ticker)
         for j in data_chart:
-
             if j[0].w_ticker == ticker:
                 wlts_lst.append(j[0].f_name)
                 wlts_lst.append({'role': 'annotation'})
-                raw.append(float(j[1]*rate))
-                raw.append(str(j[0].f_name) +' '+str(float(j[1]*rate)))
+                raw.append(float(j[1]))
+                raw.append(str(j[0].f_name) +' '+str(float(j[1]))+' '+(str(choosen_ticker)).lower())
         lst.append(raw)
     qty_lst = []
     for i in lst:
@@ -175,16 +194,51 @@ def home(request):
     data_bar_chart = [wlts_lst] + new_lst
     # print((data_bar_chart))
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # print('choosen', choosen_ticker)
     context = {
-        'form': form,
-        'wlts': wlts,
         'data': data,
-        'totals': totals,
-        'info_init': info_init,
-        'info_final': info_final,
         'data_pie_chart': data_pie_chart,
         'data_bar_chart': data_bar_chart,
-        'rates': rates
+        'info_init': info_init,
+        'info_final': info_final,
+        'form': form,
+        'rates': rates,
+        'choosen_ticker': choosen_ticker,
+        'tickers': tickers,
+        'totals': totals,
+        'wlts': wlts,
+
+
         }
     return render(request, 'finance/home.html', context)
 
