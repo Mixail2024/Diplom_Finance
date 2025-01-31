@@ -142,6 +142,9 @@ def home(request):
                 i[1] = round(value/float(rates[choosen_ticker]['sell']),2)
 
 
+    total_amount_lst = [i[1] for i in data_chart]
+    total_amount = sum(total_amount_lst)
+
 
 
     pie_chart = []#_________________data for pie chart
@@ -192,40 +195,11 @@ def home(request):
         i = [ticker]+i
         new_lst.append(i)
     data_bar_chart = [wlts_lst] + new_lst
-    # print((data_bar_chart))
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # print('choosen', choosen_ticker)
-    context = {
+    context = {#_________________________________________________CONTEXT
         'data': data,
         'data_pie_chart': data_pie_chart,
         'data_bar_chart': data_bar_chart,
@@ -236,6 +210,7 @@ def home(request):
         'choosen_ticker': choosen_ticker,
         'tickers': tickers,
         'totals': totals,
+        'total_amount': total_amount,
         'wlts': wlts,
 
 

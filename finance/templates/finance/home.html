@@ -73,7 +73,7 @@
 
 
 {% block header %}
-        <div>
+
             <div class='nav_H'>
                 <div class="wallet">Wallets</div>
                 <button class="btn nav_btn btn_red" onclick="location.href='{% url 'create_wlt' %}'">Create new</button>
@@ -119,10 +119,12 @@
                                 </option>
                             {% endfor %}
                         </select>
+                        Total: {{ total_amount }}
                     </form>
                 </div>
+
             </div>
-        </div>
+
 
 
 
