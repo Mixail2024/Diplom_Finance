@@ -70,7 +70,7 @@
             <div>
                 <label>{{ form.spending_type.label }}</label>
                 <div class="form_view">{{ form.spending_type }}
-                    <button class='btn nav_btn' onclick="location.href='{% url  'add_spending_type' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">Edit</button>
+<!--                    <button class='btn nav_btn' onclick="location.href='{% url  'add_spending_type' current_wlt.pk %}?{% for key, value in request.GET.items %}{{ key }}={{ value }}&{% endfor %}'">Edit</button>-->
                 </div>
                 {% if form.spending_type.errors %}
                     <div style="color: red;">{{ form.spending_type.errors }}</div>

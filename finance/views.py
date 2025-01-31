@@ -22,6 +22,7 @@ from .my_exchange import get_currency_rates
 
 
 main_currency = 'CZK'
+current_date = datetime.now()
 #=========================================================================================================_H O M E
 def home(request):
 
@@ -110,8 +111,11 @@ def home(request):
     tickers_without_czk.remove('CZK')
     rates = {}
     for ticker in tickers_without_czk:
-        last_rate = Rates.objects.filter(name=ticker).latest('date')
-        rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
+        try:
+            last_rate = Rates.objects.filter(name=ticker).latest('date')
+            rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
+        except:
+            rates[ticker] = {'buy': str(1), 'sell': str(1), 'date': current_date}
 
 
 
@@ -758,6 +762,10 @@ def transfer_funds(request):
     return render(request, "finance/tmplt_transfer.html", {"form": form})
 
 def update_rates(request):
+    total_rates = Rates.objects.count()
+    if total_rates > 100:
+        old_records = Rates.objects.order_by('date')[:30]  # Получаем 30 самых старых
+        old_records.delete()
     try:
         rates = get_currency_rates()
         with transaction.atomic():  # Используем транзакцию для атомарности

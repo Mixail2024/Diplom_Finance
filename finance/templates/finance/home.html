@@ -114,7 +114,7 @@
                         <label style="margin: 0px 0px 0px 100px">Currency for diagrams</label>
                         <select name="choosen_ticker" onchange="this.form.submit()">
                             {% for item in tickers %}
-                                <option value="{{ item }}" {% if item == choosen_ticker %}selected{% endif %}>
+                               <option value="{{ item }}" {% if item == choosen_ticker %}selected="selected"{% endif %}>
                                     {{ item }}
                                 </option>
                             {% endfor %}
@@ -137,9 +137,13 @@
         {{ ticker }}
         {% if ticker in rates %}
             <span style="font-size: 12px; margin:0px 0px 0px 50px; font-style: italic;">
-                Buy: <b>{{ rates|get_item:ticker|get_item:"buy" }}</b>
-                Sell: <b>{{ rates|get_item:ticker|get_item:"sell" }}</b>
-                (on date: {{ rates|get_item:ticker|get_item:"date"|date:"Y-m-d H:i" }})
+                {% if rates|get_item:ticker|get_item:"buy" != '1' and rates|get_item:ticker|get_item:"sell" != '1' %}
+                    Buy: <b>{{ rates|get_item:ticker|get_item:"buy" }}</b>
+                    Sell: <b>{{ rates|get_item:ticker|get_item:"sell" }}</b>
+                    (on date: {{ rates|get_item:ticker|get_item:"date"|date:"Y-m-d H:i" }})
+                {% else %}
+                    no rates fo r this ticker !
+                {% endif %}
             </span>
         {% endif %}
         </div>
