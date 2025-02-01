@@ -61,7 +61,7 @@
                 <label>{{ form.to_wallet.label }}</label>
                 <div class="form_view">
                     <select id="id_to_wallet" name="to_wallet">
-                        <option value="" selected disabled>Choose wallet</option>  <!-- Пустое значение по умолчанию -->
+                        <option value="" selected disabled>Choose wallet</option>
                         {% for wallet in form.to_wallet.field.queryset %}
                             <option value="{{ wallet.id }}" data-ticker="{{ wallet.w_ticker }}"
                                 {% if wallet.id == form.to_wallet.value %}selected{% endif %}>
@@ -75,21 +75,9 @@
                 {% endif %}
             </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            <div id="wallet-warning" style="color: red; display: none;">
+                Please select a different wallet.
+            </div>
 
 
             <div>
@@ -116,12 +104,6 @@
                 {% endif %}
             </div>
 
-
-
-
-
-
-
             <button class='btn nav_btn' type='submit' name="save">Transfer</button>
 
         </form>
@@ -129,26 +111,45 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        let fromWalletSelect = document.getElementById("id_from_wallet");
-        let toWalletSelect = document.getElementById("id_to_wallet");
-        let amountField = document.getElementById("amount-field");
+    let fromWalletSelect = document.getElementById("id_from_wallet");
+    let toWalletSelect = document.getElementById("id_to_wallet");
+    let amountField = document.getElementById("amount-field");
+    let amountToInput = document.getElementById("id_amount_to");
+    let walletWarning = document.getElementById("wallet-warning");
 
-        function checkTickerDifference() {
-            let fromTicker = fromWalletSelect.options[fromWalletSelect.selectedIndex]?.getAttribute("data-ticker");
-            let toTicker = toWalletSelect.options[toWalletSelect.selectedIndex]?.getAttribute("data-ticker");
+    function checkWallets() {
+        let fromWallet = fromWalletSelect.value;
+        let toWallet = toWalletSelect.value;
 
-            if (fromTicker && toTicker && fromTicker !== toTicker) {
-                amountField.style.display = "block";
-            } else {
-                amountField.style.display = "none";
-            }
+        if (fromWallet && toWallet && fromWallet === toWallet) {
+            walletWarning.style.display = "block";
+        } else {
+            walletWarning.style.display = "none";
         }
 
-        fromWalletSelect.addEventListener("change", checkTickerDifference);
-        toWalletSelect.addEventListener("change", checkTickerDifference);
+        checkTickerDifference();
+    }
 
-        checkTickerDifference(); // Проверка при загрузке страницы
-    });
+    function checkTickerDifference() {
+        let fromTicker = fromWalletSelect.options[fromWalletSelect.selectedIndex]?.getAttribute("data-ticker");
+        let toTicker = toWalletSelect.options[toWalletSelect.selectedIndex]?.getAttribute("data-ticker");
+
+        if (fromTicker && toTicker && fromTicker !== toTicker) {
+            amountField.style.display = "block";
+            amountToInput.value = ""; // Очистить поле, чтобы пользователь вводил значение
+        } else {
+            amountField.style.display = "none";
+            amountToInput.value = "0"; // Если скрыто, то устанавливаем 0
+        }
+    }
+
+    fromWalletSelect.addEventListener("change", checkWallets);
+    toWalletSelect.addEventListener("change", checkWallets);
+
+    checkWallets(); // Проверка при загрузке страницы
+});
+
+
 </script>
 
 

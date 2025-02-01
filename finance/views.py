@@ -708,7 +708,7 @@ def update_spending_type(request, w_pk, pk):#___________________________________
     })
 
 def transfer_funds(request):
-    today_date = now().date()  # Получаем текущую дату с учётом часового пояса
+    today_date = now().date()
     form = TransferForm(request.POST or None, initial={"date": today_date})  # Инициализация формы с текущей датой
 
     if request.method == "POST":
@@ -719,46 +719,46 @@ def transfer_funds(request):
             comment = form.cleaned_data["comment"]
             date = form.cleaned_data["date"]
             amount_to = form.cleaned_data["amount_to"]
-            print('amount_to', amount_to)
+
             # Проверяем, чтобы кошельки не совпадали
-            if from_wallet == to_wallet:
-                form.add_error(None, "The source and destination wallets must be different.")
-            else:
-                try:
-                    with transaction.atomic():  # Работа с транзакцией
-                        # Получаем или создаём типы операций
-                        transfer_type_spending, _ = Spending_type.objects.get_or_create(name="Transfer")
-                        transfer_type_income, _ = Income_type.objects.get_or_create(name="Transfer")
+            # if from_wallet == to_wallet:
+            #     form.add_error(None, "The source and destination wallets must be different.")
+            # else:
+            try:
+                with transaction.atomic():  # Работа с транзакцией
+                    # Получаем или создаём типы операций
+                    transfer_type_spending, _ = Spending_type.objects.get_or_create(name="Transfer")
+                    transfer_type_income, _ = Income_type.objects.get_or_create(name="Transfer")
 
-                        # Создаем запись в Spending
-                        Spending.objects.create(
-                            date=date,
-                            wallet=from_wallet,
-                            credit=amount,
-                            comment=comment,
-                            spending_type=transfer_type_spending,
-                            destination=to_wallet
-                        )
+                    # Создаем запись в Spending
+                    Spending.objects.create(
+                        date=date,
+                        wallet=from_wallet,
+                        credit=amount,
+                        comment=comment,
+                        spending_type=transfer_type_spending,
+                        destination=to_wallet
+                    )
 
-                        # Создаем запись в Income
-                        income_amount = amount_to if amount_to !=0 else amount
-                        print(income_amount)
-                        Income.objects.create(
-                            date=date,
-                            wallet=to_wallet,
-                            debit=income_amount,
-                            comment=comment,
-                            income_type=transfer_type_income,
-                            source=from_wallet
-                        )
+                    # Создаем запись в Income
+                    income_amount = amount_to if amount_to !=0 else amount
+                    print(income_amount)
+                    Income.objects.create(
+                        date=date,
+                        wallet=to_wallet,
+                        debit=income_amount,
+                        comment=comment,
+                        income_type=transfer_type_income,
+                        source=from_wallet
+                    )
 
-                    # Сообщение об успешной операции
-                    messages.success(request, "Funds transferred successfully!")
-                    return redirect(reverse_lazy("home"))
+                # Сообщение об успешной операции
+                messages.success(request, "Funds transferred successfully!")
+                return redirect(reverse_lazy("home"))
 
-                except Exception as e:
-                    # Сообщение об ошибке транзакции
-                    form.add_error(None, f"Transaction failed: {str(e)}")
+            except Exception as e:
+                # Сообщение об ошибке транзакции
+                form.add_error(None, f"Transaction failed: {str(e)}")
     return render(request, "finance/tmplt_transfer.html", {"form": form})
 
 def update_rates(request):

@@ -133,7 +133,7 @@ class TransferForm(forms.Form):#________________________________________________
         label="To wallet",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
     amount = forms.DecimalField(label="Amount", max_digits=10, decimal_places=2)
-    amount_to = forms.DecimalField(label="Amount_to", max_digits=10, decimal_places=2, required=False, initial=0, show_hidden_initial=False)
+    amount_to = forms.DecimalField(label="Amount to", max_digits=10, decimal_places=2, required=False, show_hidden_initial=False)
 
     comment = forms.CharField(
         max_length=255,
