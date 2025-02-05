@@ -1,0 +1,23 @@
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset='UTF-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Logging in</title>
+
+    </head>
+
+    <body style="background-image: url('{% static 'finance/bg_v2.jpg' %}'); background-size: cover;">
+        <h2>To enter the WALLET app please input:</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label>Your username:</label>
+            <input type="text" name="username" required>
+            <label>Password:</label>
+            <input type="password" name="password" required>
+            <button  type="submit">Enter</button>
+        </form>
+            <p>No account? <a href="{% url 'register' %}">Registrate</a></p>
+
+    </body>
+</html>

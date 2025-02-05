@@ -15,13 +15,31 @@
 
 
 
-
 {% block left_side %}
     <div class="container_dark">
-        <form method='POST'>
+        <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button class='btn nav_btn' type='submit'>Create</button>
+
+            <p><label>Wallet Name:</label> {{ form.w_name }}</p>
+            <p><label >Currency Ticker:</label> {{ form.w_ticker }}</p>
+            <p><label >Type:</label> {{ form.w_type }}</p>
+            <p><label >Bank Name:</label> {{ form.w_bank }}</p>
+            <p><label f>Open Date:</label> {{ form.w_date }}</p>
+            <p><label >Open Balance:</label> {{ form.w_balance }}</p>
+            <p><label >Limit:</label> {{ form.w_limit }}</p>
+            <p><button class="btn nav_btn" type="submit">Create</button></p>
         </form>
     </div>
+<!-- Подключение Flatpickr -->
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                flatpickr("#datepicker", {
+                                    dateFormat: "Y-m-d",
+                                });
+                            });
+                        </script>
+
+
 {% endblock %}

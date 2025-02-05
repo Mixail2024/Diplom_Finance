@@ -15,34 +15,41 @@ from .forms import (
     Form_set_date_init_bal, TransferForm
     )
 from django.utils.timezone import now
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from decimal import Decimal
 import json
 from .my_exchange import get_currency_rates
+from django.contrib.auth.decorators import login_required
 
 
 main_currency = 'CZK'
-current_date = datetime.now()
+
+
+
+
+
+
+
 #=========================================================================================================_H O M E
+@login_required
 def home(request):
-
-
-    try:#__________________________________________________set init date
-        choosen_date_obj = Info.objects.get()
-    except Info.DoesNotExist:
-        choosen_date_obj = None
+    cd = date.today()
+    choosen_date_obj, created = Info.objects.get_or_create(user=request.user, defaults={'init_date': cd, 'final_date': cd})
     if request.method == 'POST':
-
         form = Form_set_date_init_bal(request.POST, instance=choosen_date_obj)
         if form.is_valid():
+            choosen_date_obj.user = request.user
             form.save()
     else:
-        form = Form_set_date_init_bal(instance=choosen_date_obj)#_____end
+        form = Form_set_date_init_bal(instance=choosen_date_obj)
+
+
     prev_date = choosen_date_obj.init_date - timedelta(days=1)
     choosen_init = choosen_date_obj.init_date
     choosen_final = choosen_date_obj.final_date
 
-    wlts = Wallet.objects.all()#_______________preparing tickers
+
+    wlts = Wallet.objects.filter(user=request.user)
     tickers = set()
     for wlt in wlts:
         tickers.add(wlt.w_ticker)
@@ -102,20 +109,21 @@ def home(request):
             'total_final': sum(wallet_data['final_bal'] for wallet_data in wallets.values()),
         }
 
-    info_date_obj = Info.objects.get()
-    info_init = info_date_obj.init_date
-    info_final = info_date_obj.final_date
+    # info_date_obj = Info.objects.get()
+    info_init = choosen_date_obj.init_date
+    info_final = choosen_date_obj.final_date
 
 
     tickers_without_czk = tickers[:]#_______________rates for context
-    tickers_without_czk.remove('CZK')
+    if 'CZK' in tickers:
+        tickers_without_czk.remove('CZK')
     rates = {}
     for ticker in tickers_without_czk:
         try:
             last_rate = Rates.objects.filter(name=ticker).latest('date')
             rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
         except:
-            rates[ticker] = {'buy': str(1), 'sell': str(1), 'date': current_date}
+            rates[ticker] = {'buy': str(1), 'sell': str(1), 'date': datetime.now()}
 
 
 
@@ -223,7 +231,7 @@ def home(request):
 
 
 
-def home_wlt(request, w_pk):#____________________________________________HOME WLT
+def home_wlt(request, w_pk):#=======================================================================HOME WLT
     current_wlt = Wallet.objects.get(pk=w_pk)
 
     info_date_obj = Info.objects.get()
@@ -238,13 +246,16 @@ def home_wlt(request, w_pk):#____________________________________________HOME WL
 
     return render(request, 'finance/home_wlt.html', context)
 
-#========================================================================================================W A L L E T
+#========================================================================================================W A L L E T S
 class Create_wlt(CreateView):#____________________________________________Create_wlt
     model = Wallet
     form_class = Form_create_wlt
     template_name = 'finance/tmplt_create_wlt.html'
     success_url = reverse_lazy('home')
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 class Update_wlt(UpdateView):#____________________________________________Update_wlt
     model = Wallet
@@ -297,9 +308,9 @@ def calendar_view(request, pk):
 
             single_date = request.GET.get("single_date")
             context['single_date'] = single_date
-            filtered_dt = Income.objects.filter(wallet=current_wlt, date=single_date)
+            filtered_dt = Income.objects.filter(user=request.user, wallet=current_wlt, date=single_date)#!!!!!!!!!!!!!!user added
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            filtered_ct = Spending.objects.filter(wallet=current_wlt, date=single_date)
+            filtered_ct = Spending.objects.filter(user=request.user, wallet=current_wlt, date=single_date)#!!!!!!!!!!!!!!user added
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             data_chart = get_data_chart(filtered_dt, filtered_ct)
 
@@ -308,9 +319,9 @@ def calendar_view(request, pk):
             if init_date < current_wlt.w_date:
                 init_bal = 0
             else:
-                before_obj_dt = Income.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_obj_dt = Income.objects.filter(user=request.user, wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])#!!!!!!!!!!!!!!user added
                 before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-                before_obj_ct = Spending.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_obj_ct = Spending.objects.filter(user=request.user, wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])#!!!!!!!!!!!!!!user added
                 before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
                 init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
 
@@ -320,9 +331,9 @@ def calendar_view(request, pk):
             end_date = request.GET.get("end_date")
             context['start_date'] = start_date
             context['end_date'] = end_date
-            filtered_dt = Income.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
+            filtered_dt = Income.objects.filter(user=request.user, wallet=current_wlt, date__range=[start_date, end_date])
             filtered_dt_sum = filtered_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-            filtered_ct = Spending.objects.filter(wallet=current_wlt, date__range=[start_date, end_date])
+            filtered_ct = Spending.objects.filter(user=request.user, wallet=current_wlt, date__range=[start_date, end_date])
             filtered_ct_sum = filtered_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
             data_chart = get_data_chart(filtered_dt, filtered_ct)
 
@@ -331,9 +342,9 @@ def calendar_view(request, pk):
             if init_date < current_wlt.w_date:
                 init_bal = 0
             else:
-                before_obj_dt = Income.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_obj_dt = Income.objects.filter(user=request.user, wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
                 before_dt_sum = before_obj_dt.aggregate(Sum('debit'))['debit__sum'] or Decimal('0.00')
-                before_obj_ct = Spending.objects.filter(wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
+                before_obj_ct = Spending.objects.filter(user=request.user, wallet=current_wlt, date__range=[current_wlt.w_date, prev_date])
                 before_ct_sum = before_obj_ct.aggregate(Sum('credit'))['credit__sum'] or Decimal('0.00')
                 init_bal = current_wlt.w_balance + before_dt_sum - before_ct_sum
 
@@ -462,22 +473,22 @@ def get_data_chart(dt , ct):#______________________________________get_data_char
 
 
 
-def delete_filtered_dt(request, w_pk):#_________________________________________delete_filtered_dt
+def delete_filtered_dt(request, w_pk):#===============================================delete_filtered_dt
     params = request.GET.get('params')
     params = params.replace("*", "&")
     lst = request.GET.get('ids')
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]
-    Income.objects.filter(pk__in=lst).delete()
+    Income.objects.filter(user=request.user, pk__in=lst).delete()
     return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{params}')
 
-def delete_filtered_ct(request, w_pk):#_________________________________________delete_filtered_ct
+def delete_filtered_ct(request, w_pk):#================================================delete_filtered_ct
     params = request.GET.get('params')
     params= params.replace("*", "&")
     lst = request.GET.get('ids')
     lst = lst.split('/')
     lst = [i for i in lst if i.isdigit() and int(i) > 0]
-    Spending.objects.filter(pk__in=lst).delete()
+    Spending.objects.filter(user=request.user, pk__in=lst).delete()
     return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{params}')
 
 
@@ -488,11 +499,12 @@ def add_income(request, w_pk):#_______________________________________________ad
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
     single_date = request.GET.get('single_date', now().strftime('%Y-%m-%d'))
-    form = Form_add_income(request.POST or None, prefix="form", initial={'date': single_date})
+    form = Form_add_income(request.POST or None, prefix="form", initial={'date': single_date}, user=request.user)
     if request.method == 'POST' and form.is_valid():
         income = form.save(commit=False)
         income.wallet = current_wlt
-        income.save()
+        income.user = request.user
+        income.save(user=request.user)
         get_params = request.GET.urlencode()
         if get_params:
            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
@@ -532,7 +544,7 @@ def update_income(request, w_pk, income_pk):#___________________________________
 def add_income_type(request, w_pk):#_________________________________________add_income_type
     current_wlt = get_object_or_404(Wallet, pk=w_pk)
     message = None
-    form = Form_add_income_type(request.POST or None, prefix="form")
+    form = Form_add_income_type(request.POST or None, prefix="form", user=request.user)
     if form.is_valid():
         if "delete" in request.POST:
             selected_item = form.cleaned_data.get("choices")
@@ -542,7 +554,6 @@ def add_income_type(request, w_pk):#_________________________________________add
                     message = f"'{selected_item}' deleted successfully"
                 except ProtectedError:
                     message = f"Cannot delete '{selected_item}' because it is referenced by other records!"
-
 
         elif "edit" in request.POST:
             selected_item = form.cleaned_data.get("choices")
@@ -554,10 +565,10 @@ def add_income_type(request, w_pk):#_________________________________________add
         elif "add" in request.POST:
             new_value = form.cleaned_data.get("new_value")
             if new_value:
-                if not Income_type.objects.filter(name=new_value).exists():
-                    Income_type.objects.create(name=new_value)
+                if not Income_type.objects.filter(user=request.user, name=new_value).exists():
+                    Income_type.objects.create(user=request.user, name=new_value)
                     message = f"'{new_value}' added successfully"
-                    form = Form_add_income_type(prefix="form")  # Очищаем форму после добавления
+                    form = Form_add_income_type(prefix="form", user=request.user)  # Очищаем форму после добавления
                 else:
                     message = f"'{new_value}' already exists"
 
@@ -600,11 +611,11 @@ def add_spending(request, w_pk):#_______________________________________________
     message = ''
     current_wlt = Wallet.objects.get(pk=w_pk)
     single_date = request.GET.get('single_date', now().strftime('%Y-%m-%d'))
-    form = Form_add_spending(request.POST or None, prefix="form", initial={'date': single_date})
+    form = Form_add_spending(request.POST or None, prefix="form", initial={'date': single_date}, user=request.user)
     if request.method == 'POST' and form.is_valid():
         spending = form.save(commit=False)
         spending.wallet = current_wlt
-        spending.save()
+        spending.save(user=request.user)
         get_params = request.GET.urlencode()
         if get_params:
            return redirect(f'/finance/home_wlt/{w_pk}/calendar/?{get_params}')
@@ -644,13 +655,14 @@ def update_spending(request, w_pk, spending_pk):#_______________________________
 def add_spending_type(request, w_pk):#_________________________________________add_spending_type
     current_wlt = get_object_or_404(Wallet, pk=w_pk)
     message = None
-    form = Form_add_spending_type(request.POST or None, prefix="form")
+    form = Form_add_spending_type(request.POST or None, prefix="form", user=request.user)
     if form.is_valid():
         if "delete" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
                 selected_item.delete()
                 message = f"'{selected_item}' deleted successfully"
+
         elif "edit" in request.POST:
             selected_item = form.cleaned_data.get("choices")
             if selected_item:
@@ -661,21 +673,14 @@ def add_spending_type(request, w_pk):#_________________________________________a
         elif "add" in request.POST:
             new_value = form.cleaned_data.get("new_value")
             if new_value:
-                if not Spending_type.objects.filter(name=new_value).exists():
-                    Spending_type.objects.create(name=new_value)
+                if not Spending_type.objects.filter(user=request.user, name=new_value).exists():
+                    Spending_type.objects.create(user=request.user, name=new_value)
                     message = f"'{new_value}' added successfully"
-                    form = Form_add_spending_type(prefix="form")  # Очищаем форму после добавления
+                    form = Form_add_spending_type(prefix="form", user=request.user)  # Очищаем форму после добавления
                 else:
                     message = f"'{new_value}' already exists"
-        elif "add_exit" in request.POST:
-            new_value = form.cleaned_data.get("new_value")
-            if new_value:
-                if not Spending_type.objects.filter(name=new_value).exists():
-                    Spending_type.objects.create(name=new_value)
-                    message = f"'{new_value}' added successfully"
-                else:
-                    message = f"'{new_value}' already exists"
-            return redirect('add_spending', w_pk=w_pk)
+
+
     return render(request, 'finance/tmplt_add_spending_type.html', {
         'form': form,
         'w_pk': w_pk,
@@ -762,17 +767,18 @@ def transfer_funds(request):
     return render(request, "finance/tmplt_transfer.html", {"form": form})
 
 def update_rates(request):
-    total_rates = Rates.objects.count()
+    total_rates = Rates.objects.filter(user=request.user).count()
     if total_rates > 100:
-        old_records = Rates.objects.order_by('date')[:30]  # Получаем 30 самых старых
+        old_records = Rates.objects.order_by('date')[:30]
         old_records.delete()
     try:
         rates = get_currency_rates()
-        with transaction.atomic():  # Используем транзакцию для атомарности
+        with transaction.atomic():
             for obj in rates:
                 # Добавляем проверку, чтобы избежать дублирования записей
-                if not Rates.objects.filter(date=obj.datetime, name=obj.name).exists():
+                if not Rates.objects.filter(user=request.user, date=obj.datetime, name=obj.name).exists():
                     Rates.objects.create(
+                        user=request.user,
                         date=obj.datetime,
                         name=obj.name,
                         buy=obj.buy,
@@ -781,7 +787,7 @@ def update_rates(request):
                     )
                 else:
                     # Если запись уже существует, обновляем её
-                    Rates.objects.filter(date=obj.datetime, name=obj.name).update(
+                    Rates.objects.filter(user=request.user, date=obj.datetime, name=obj.name).update(
                         buy=obj.buy, sell=obj.sell, source=obj.website
                     )
 

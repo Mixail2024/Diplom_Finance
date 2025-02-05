@@ -1,0 +1,25 @@
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset='UTF-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registration</title>
+
+    </head>
+
+    <body style="background-image: url('{% static 'finance/bg_v2.jpg' %}'); background-size: cover;">
+
+         <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Registrate</button>
+    </form>
+         <p>Already have account? <a href="{% url 'login' %}">Enter</a></p>
+
+    </body>
+</html>
+
+
+
+
+

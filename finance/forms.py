@@ -4,6 +4,10 @@ from django import forms
 
 #========================================================================================================W A L L E T S
 class Form_create_wlt(forms.ModelForm):#__________________________________________Form_create_wlt
+
+    w_date = forms.DateField(
+        widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%Y-%m-%d']
+    )
     class Meta:
         model = Wallet
         fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'w_date', 'w_balance', 'w_limit']
@@ -21,14 +25,20 @@ class Form_delete_wlt(forms.ModelForm):#________________________________________
         fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'w_date', 'w_balance', 'w_limit']
 
 
-class Form_set_date_init_bal(forms.ModelForm):#__________________________________________Set_date_init_bal
-    init_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
-                           input_formats=['%Y-%m-%d'])
-    final_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
-                                input_formats=['%Y-%m-%d'])
+class Form_set_date_init_bal(forms.ModelForm):
+    init_date = forms.DateField(
+        widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
+        input_formats=['%Y-%m-%d']
+    )
+    final_date = forms.DateField(
+        widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
+        input_formats=['%Y-%m-%d']
+    )
+
     class Meta:
         model = Info
         fields = ['init_date', 'final_date']
+
 
 #=====================================================================================================I N C O M E
 class Form_add_income(forms.ModelForm):#___________________________________________Form_add_income
@@ -37,13 +47,21 @@ class Form_add_income(forms.ModelForm):#________________________________________
     class Meta:
         model = Income
         fields = ['date', 'debit', 'source', 'comment', 'income_type']
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super(Form_add_income, self).__init__(*args, **kwargs)
+        self.user = user
         self.fields['debit'].widget.attrs.update({'style': 'width: 150px;'})
         self.fields['source'].widget.attrs.update({'style': 'width: 200px;'})
         self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height:50px; padding:5px'})
         self.fields['income_type'].widget.attrs.update({'style': 'width: 150;'})
-
+        self.fields['income_type'].queryset = Income_type.objects.filter(user=user)
+    def save(self, commit=True):
+        income = super().save(commit=False)
+        if self.user:
+            income.user = self.user  # Присваиваем пользователя
+        if commit:
+            income.save()
+        return income
 
 class Form_update_income(forms.ModelForm):#___________________________________________Form_update_income
     class Meta:
@@ -59,7 +77,7 @@ class Form_update_income(forms.ModelForm):#_____________________________________
 
 class Form_add_income_type(forms.Form):#______________________________________________Form_add_income_type
     choices = forms.ModelChoiceField(
-        queryset=Income_type.objects.all(),
+        queryset=Income_type.objects.none(),
         required=False,
         label="Choose to edit or to delete",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
@@ -68,6 +86,14 @@ class Form_add_income_type(forms.Form):#________________________________________
         required=False,
         label="Add new",
         widget=forms.TextInput(attrs={'style': 'width: 150px;'}))
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['choices'].queryset = Income_type.objects.filter(user=user)
+
+
+
 
 class Form_update_income_type(forms.ModelForm):#_______________________________________Form_update_income_type
     class Meta:
@@ -83,13 +109,21 @@ class Form_add_spending(forms.ModelForm):  # ___________________________________
     class Meta:
         model = Spending
         fields = ['date', 'credit', 'destination', 'comment', 'spending_type']
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super(Form_add_spending, self).__init__(*args, **kwargs)
+        self.user = user
         self.fields['credit'].widget.attrs.update({'style': 'width: 150px;'})
         self.fields['destination'].widget.attrs.update({'style': 'width: 200px;'})
         self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height:50px; padding:5px'})
         self.fields['spending_type'].widget.attrs.update({'style': 'width: 150;'})
-
+        self.fields['spending_type'].queryset = Spending_type.objects.filter(user=user)
+    def save(self, commit=True):
+        spending = super().save(commit=False)
+        if self.user:
+            spending.user = self.user  # Присваиваем пользователя
+        if commit:
+            spending.save()
+        return spending
 
 class Form_update_spending(forms.ModelForm):#___________________________________________Form_update_spending
     class Meta:
@@ -103,11 +137,20 @@ class Form_update_spending(forms.ModelForm):#___________________________________
 
 class Form_add_spending_type(forms.Form):#______________________________________________Form_add_spending_type
     choices = forms.ModelChoiceField(
-        queryset=Spending_type.objects.all(),
+        queryset=Spending_type.objects.none(),
         required=False,
         label="Choose spending type",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
+    new_value = forms.CharField(
+        max_length=255,
+        required=False,
+        label="Add new",
+        widget=forms.TextInput(attrs={'style': 'width: 150px;'}))
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['choices'].queryset = Spending_type.objects.filter(user=user)
 
 
 
