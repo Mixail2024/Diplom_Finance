@@ -5,6 +5,7 @@ from django.db.models import Sum, ProtectedError
 from django.db import transaction
 from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Wallet, Income, Income_type, Spending, Spending_type, Info, Rates
 from .forms import (
     Form_create_wlt, Form_delete_wlt,
@@ -109,7 +110,7 @@ def home(request):
             'total_final': sum(wallet_data['final_bal'] for wallet_data in wallets.values()),
         }
 
-    # info_date_obj = Info.objects.get()
+
     info_init = choosen_date_obj.init_date
     info_final = choosen_date_obj.final_date
 
@@ -120,7 +121,7 @@ def home(request):
     rates = {}
     for ticker in tickers_without_czk:
         try:
-            last_rate = Rates.objects.filter(name=ticker).latest('date')
+            last_rate = Rates.objects.filter(user=request.user, name=ticker).latest('date')
             rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
         except:
             rates[ticker] = {'buy': str(1), 'sell': str(1), 'date': datetime.now()}
@@ -209,8 +210,6 @@ def home(request):
     data_bar_chart = [wlts_lst] + new_lst
 
 
-
-
     context = {#_________________________________________________CONTEXT
         'data': data,
         'data_pie_chart': data_pie_chart,
@@ -225,16 +224,17 @@ def home(request):
         'total_amount': total_amount,
         'wlts': wlts,
 
-
         }
     return render(request, 'finance/home.html', context)
 
 
 
-def home_wlt(request, w_pk):#=======================================================================HOME WLT
-    current_wlt = Wallet.objects.get(pk=w_pk)
 
-    info_date_obj = Info.objects.get()
+@login_required
+def home_wlt(request, w_pk):#=======================================================================HOME WLT
+    current_wlt = Wallet.objects.get(user=request.user, pk=w_pk)
+
+    info_date_obj = Info.objects.get(user=request.user)
     info_init = info_date_obj.init_date
     info_final = info_date_obj.final_date
 
@@ -246,8 +246,14 @@ def home_wlt(request, w_pk):#===================================================
 
     return render(request, 'finance/home_wlt.html', context)
 
+
+
+
+
 #========================================================================================================W A L L E T S
-class Create_wlt(CreateView):#____________________________________________Create_wlt
+
+
+class Create_wlt(LoginRequiredMixin, CreateView):#____________________________________________Create_wlt
     model = Wallet
     form_class = Form_create_wlt
     template_name = 'finance/tmplt_create_wlt.html'
@@ -257,7 +263,9 @@ class Create_wlt(CreateView):#____________________________________________Create
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class Update_wlt(UpdateView):#____________________________________________Update_wlt
+
+
+class Update_wlt(LoginRequiredMixin, UpdateView):#____________________________________________Update_wlt
     model = Wallet
     form_class = Form_create_wlt
     template_name = 'finance/tmplt_update_wlt.html'
@@ -265,6 +273,7 @@ class Update_wlt(UpdateView):#____________________________________________Update
         w_pk = self.kwargs['pk']  # Получаем pk текущей записи из URL
         return reverse_lazy('home_wlt', kwargs={'w_pk': w_pk})
 
+@login_required
 def delete_wlt(request, pk):  # ____________________________________________________________Delete_wlt
     current_wlt = get_object_or_404(Wallet, pk=pk)
     form = Form_delete_wlt(request.POST or None, instance=current_wlt)
@@ -615,6 +624,7 @@ def add_spending(request, w_pk):#_______________________________________________
     if request.method == 'POST' and form.is_valid():
         spending = form.save(commit=False)
         spending.wallet = current_wlt
+        spending.user = request.user
         spending.save(user=request.user)
         get_params = request.GET.urlencode()
         if get_params:
@@ -714,7 +724,7 @@ def update_spending_type(request, w_pk, pk):#___________________________________
 
 def transfer_funds(request):
     today_date = now().date()
-    form = TransferForm(request.POST or None, initial={"date": today_date})  # Инициализация формы с текущей датой
+    form = TransferForm(request.POST or None, initial={"date": today_date}, user=request.user)
 
     if request.method == "POST":
         if form.is_valid():
@@ -725,15 +735,12 @@ def transfer_funds(request):
             date = form.cleaned_data["date"]
             amount_to = form.cleaned_data["amount_to"]
 
-            # Проверяем, чтобы кошельки не совпадали
-            # if from_wallet == to_wallet:
-            #     form.add_error(None, "The source and destination wallets must be different.")
-            # else:
+
             try:
                 with transaction.atomic():  # Работа с транзакцией
                     # Получаем или создаём типы операций
-                    transfer_type_spending, _ = Spending_type.objects.get_or_create(name="Transfer")
-                    transfer_type_income, _ = Income_type.objects.get_or_create(name="Transfer")
+                    transfer_type_spending, _ = Spending_type.objects.get_or_create(user=request.user, name="Transfer")
+                    transfer_type_income, _ = Income_type.objects.get_or_create(user=request.user, name="Transfer")
 
                     # Создаем запись в Spending
                     Spending.objects.create(
@@ -742,19 +749,22 @@ def transfer_funds(request):
                         credit=amount,
                         comment=comment,
                         spending_type=transfer_type_spending,
-                        destination=to_wallet
+                        destination=to_wallet,
+                        user=request.user
                     )
 
                     # Создаем запись в Income
-                    income_amount = amount_to if amount_to !=0 else amount
-                    print(income_amount)
+                    # income_amount = amount_to if amount_to !=0 else amount
+                    income_amount = amount_to if amount_to is not None and amount_to != 0 else amount
+
                     Income.objects.create(
                         date=date,
                         wallet=to_wallet,
                         debit=income_amount,
                         comment=comment,
                         income_type=transfer_type_income,
-                        source=from_wallet
+                        source=from_wallet,
+                        user=request.user
                     )
 
                 # Сообщение об успешной операции

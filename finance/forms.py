@@ -4,10 +4,7 @@ from django import forms
 
 #========================================================================================================W A L L E T S
 class Form_create_wlt(forms.ModelForm):#__________________________________________Form_create_wlt
-
-    w_date = forms.DateField(
-        widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%Y-%m-%d']
-    )
+    w_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%Y-%m-%d'])
     class Meta:
         model = Wallet
         fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'w_date', 'w_balance', 'w_limit']
@@ -19,10 +16,14 @@ class Form_create_wlt(forms.ModelForm):#________________________________________
         self.fields['w_bank'].widget.attrs.update({'style': 'width: 200;'})
 
 
+
+
 class Form_delete_wlt(forms.ModelForm):#__________________________________________Form_delete_wlt
     class Meta:
         model = Wallet
         fields = ['w_name', 'w_ticker', 'w_type', 'w_bank', 'w_date', 'w_balance', 'w_limit']
+
+
 
 
 class Form_set_date_init_bal(forms.ModelForm):
@@ -34,13 +35,14 @@ class Form_set_date_init_bal(forms.ModelForm):
         widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}),
         input_formats=['%Y-%m-%d']
     )
-
     class Meta:
         model = Info
         fields = ['init_date', 'final_date']
 
 
 #=====================================================================================================I N C O M E
+
+
 class Form_add_income(forms.ModelForm):#___________________________________________Form_add_income
     date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'placeholder': 'Choose date'}), input_formats=['%Y-%m-%d'])
     debit = forms.DecimalField(label='Sum', widget=forms.TextInput(attrs={'placeholder': 'Enter sum'}))
@@ -58,10 +60,13 @@ class Form_add_income(forms.ModelForm):#________________________________________
     def save(self, commit=True):
         income = super().save(commit=False)
         if self.user:
-            income.user = self.user  # Присваиваем пользователя
+            income.user = self.user
         if commit:
             income.save()
         return income
+
+
+
 
 class Form_update_income(forms.ModelForm):#___________________________________________Form_update_income
     class Meta:
@@ -120,7 +125,7 @@ class Form_add_spending(forms.ModelForm):  # ___________________________________
     def save(self, commit=True):
         spending = super().save(commit=False)
         if self.user:
-            spending.user = self.user  # Присваиваем пользователя
+            spending.user = self.user
         if commit:
             spending.save()
         return spending
@@ -131,7 +136,6 @@ class Form_update_spending(forms.ModelForm):#___________________________________
         fields = ['date', 'credit', 'destination', 'comment', 'spending_type']
     def __init__(self, *args, **kwargs):
         super(Form_update_spending, self).__init__(*args, **kwargs)
-        # Установка стиля для конкретного поля
         self.fields['destination'].widget.attrs.update({'style': 'width: 150px;'})
         self.fields['comment'].widget.attrs.update({'style': 'width: 200px; height: 50px'})
 
@@ -165,13 +169,13 @@ class TransferForm(forms.Form):#________________________________________________
                            input_formats=['%Y-%m-%d'])
     from_wallet = forms.ModelChoiceField(
         empty_label="Select wallet",
-        queryset=Wallet.objects.all(),
+        queryset=Wallet.objects.none(),
         required=True,
         label="From wallet",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
     to_wallet = forms.ModelChoiceField(
         empty_label="Select wallet",
-        queryset=Wallet.objects.all(),
+        queryset=Wallet.objects.none(),
         required=True,
         label="To wallet",
         widget=forms.Select(attrs={'style': 'width: 150px;'}))
@@ -184,12 +188,17 @@ class TransferForm(forms.Form):#________________________________________________
         label="Comment",
         widget=forms.TextInput(attrs={'style': 'width: 150px;'}))
 
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['from_wallet'].queryset = Wallet.objects.filter(user=user)
+            self.fields['to_wallet'].queryset = Wallet.objects.filter(user=user)
+
     def clean(self):
         cleaned_data = super().clean()
         amount = cleaned_data.get("amount")
         if amount and amount <= 0:
             raise forms.ValidationError("Amount must be greater than zero.")
-
-
 
         return cleaned_data

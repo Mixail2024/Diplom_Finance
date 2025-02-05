@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime
+
 
 
 
@@ -25,11 +25,11 @@ class Wallet(models.Model):
         super().save(*args, **kwargs)
     def __str__(self):
         return self.f_name
-
     class Meta:
         verbose_name = 'wallet'
         verbose_name_plural = 'wallets'
         ordering = ['w_name']
+
 
 
 class Income(models.Model):
@@ -73,16 +73,13 @@ class Spending(models.Model):
 
 
 
-
 class Income_type(models.Model):
     name = models.CharField(max_length=30, db_index=True, verbose_name ='income type')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     def __str__(self):
         return self.name
     class Meta:
-        # constraints = [
-        #     models.UniqueConstraint(fields=['user', 'name'], name='unique_user_name')
-        # ]
+        unique_together = ('name', 'user')
         verbose_name = 'income type'
         verbose_name_plural = 'income types'
         ordering = ['name']
@@ -91,14 +88,12 @@ class Income_type(models.Model):
 
 
 class Spending_type(models.Model):
-    name = models.CharField(max_length=30, db_index=True, unique=True,  verbose_name ='spending type')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=30, db_index=True,  verbose_name ='spending type')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     def __str__(self):
         return self.name
     class Meta:
-        # constraints = [
-        #     models.UniqueConstraint(fields=['user', 'name'], name='unique_user_name')
-        # ]
+        unique_together = ('name', 'user')
         verbose_name = 'spending type'
         verbose_name_plural = 'spending types'
         ordering = ['name']
@@ -110,12 +105,8 @@ class Info(models.Model):
     init_date = models.DateField(verbose_name='Init date')
     final_date = models.DateField(verbose_name='Final date')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-
-
     def __str__(self):
         return f"Info for {self.user} from {self.init_date} to {self.final_date}"
-
 
 
 
@@ -126,7 +117,6 @@ class Rates(models.Model):
     sell = models.DecimalField(max_digits=5, decimal_places=2, verbose_name = 'Sell')
     source = models.URLField(max_length=150, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.name
     class Meta:

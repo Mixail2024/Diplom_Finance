@@ -51,7 +51,7 @@ def get_currency_rates():
     data.append(Val_para(url, current_datetime, d[21], get_price(d[21+2]), get_price(d[21+3])))#GBP
     data.append(Val_para(url, current_datetime, d[156], get_price(d[156+2]), get_price(d[156+3])))#UAH
 
-    # print(f'{url} downloaded successful at {now_d_t}')
+    print(f'{url} downloaded successful')
 
     return data
 
