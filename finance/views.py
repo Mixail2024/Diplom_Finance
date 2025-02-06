@@ -50,7 +50,7 @@ def home(request):
     choosen_final = choosen_date_obj.final_date
 
 
-    wlts = Wallet.objects.filter(user=request.user)
+    wlts = Wallet.objects.filter(user=request.user)#______________________________________preparing tickers of wallets
     tickers = set()
     for wlt in wlts:
         tickers.add(wlt.w_ticker)
@@ -115,17 +115,16 @@ def home(request):
     info_final = choosen_date_obj.final_date
 
 
-    tickers_without_czk = tickers[:]#_______________rates for context
-    if 'CZK' in tickers:
-        tickers_without_czk.remove('CZK')
+    tickers_without_main_currency = tickers[:]#_______________rates for context
+    if main_currency in tickers:
+        tickers_without_main_currency.remove(main_currency)
     rates = {}
-    for ticker in tickers_without_czk:
+    for ticker in tickers_without_main_currency:
         try:
             last_rate = Rates.objects.filter(user=request.user, name=ticker).latest('date')
             rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
         except:
             rates[ticker] = {'buy': str(1), 'sell': str(1), 'date': datetime.now()}
-
 
 
     choosen_ticker = request.GET.get("choosen_ticker")#_______________getting ticker from template
@@ -185,7 +184,10 @@ def home(request):
                 wlts_lst.append(j[0].f_name)
                 wlts_lst.append({'role': 'annotation'})
                 raw.append(float(j[1]))
-                raw.append(str(j[0].f_name) +' '+str(float(j[1]))+' '+(str(choosen_ticker)).lower())
+
+
+
+                raw.append(str(j[0].f_name) + ' ' + str(float(j[1])) + ' ' + (str(choosen_ticker)).lower())
         lst.append(raw)
     qty_lst = []
     for i in lst:
