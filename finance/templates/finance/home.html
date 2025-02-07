@@ -141,18 +141,17 @@
 {% block left_side %}
     {% for ticker, wallets in data.items %}
         <div style="margin:15px 0px 0px 0px;">
-        {{ ticker }}
-        {% if ticker in rates %}
-            <span style="font-size: 12px; margin:0px 0px 0px 50px; font-style: italic;">
-                {% if rates|get_item:ticker|get_item:"buy" != '1' and rates|get_item:ticker|get_item:"sell" != '1' %}
+            {{ ticker }}
+            {% if ticker in tickers_of_rates_available %}
+                <span style="font-size: 12px; margin:0px 0px 0px 50px; font-style: italic;">
                     Buy: <b>{{ rates|get_item:ticker|get_item:"buy" }}</b>
                     Sell: <b>{{ rates|get_item:ticker|get_item:"sell" }}</b>
-                    (on date: {{ rates|get_item:ticker|get_item:"date"|date:"Y-m-d H:i" }})
-                {% else %}
+                    (on date: {{ rates|get_item:ticker|get_item:"date"|date:"Y-m-d H:i" }}</span>
+            {% else %}
+                <span style="font-size: 12px; margin:0px 0px 0px 50px; font-style: italic;">
                     no rates for this ticker !
-                {% endif %}
-            </span>
-        {% endif %}
+                </span>
+            {% endif %}
         </div>
         <table>
             <thead>

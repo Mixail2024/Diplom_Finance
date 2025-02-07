@@ -55,6 +55,23 @@ def home(request):
     for wlt in wlts:
         tickers.add(wlt.w_ticker)
     tickers = sorted(tickers)
+    print(tickers)
+
+    tickers_of_rates_available = [i.name for i in Rates.objects.filter(user=request.user)]#____________preparing rates
+    print(tickers_of_rates_available)
+    rates = {}
+    for ticker in tickers:
+        if ticker in tickers_of_rates_available:
+            last_rate = Rates.objects.filter(user=request.user, name=ticker).latest('date')
+            rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date': last_rate.date}
+
+    print(rates)
+
+
+
+
+
+
 
     n = 0#______________________________________preparing data for tables and data_chart for charts
     data = {}
@@ -115,16 +132,6 @@ def home(request):
     info_final = choosen_date_obj.final_date
 
 
-    tickers_without_main_currency = tickers[:]#_______________rates for context
-    if main_currency in tickers:
-        tickers_without_main_currency.remove(main_currency)
-    rates = {}
-    for ticker in tickers_without_main_currency:
-        try:
-            last_rate = Rates.objects.filter(user=request.user, name=ticker).latest('date')
-            rates[ticker] = {'buy': str(last_rate.buy), 'sell': str(last_rate.sell), 'date':last_rate.date}
-        except:
-            rates[ticker] = {'buy': str(1), 'sell': str(1), 'date': datetime.now()}
 
 
     choosen_ticker = request.GET.get("choosen_ticker")#_______________getting ticker from template
@@ -139,6 +146,10 @@ def home(request):
             value = i[1]
             if ticker == main_currency:
                pass
+
+            elif ticker not in tickers_of_rates_available:
+                pass
+
             else:
                 i[1] = round(value * float(rates[ticker]['buy']),2)
     else:
@@ -149,7 +160,10 @@ def home(request):
                 if ticker == choosen_ticker:
                     pass
                 else:
-                    i[1] = round((value * float(rates[ticker]['buy']))/float(rates[choosen_ticker]['sell']),2)
+                    if ticker in tickers_of_rates_available:
+                        i[1] = round((value * float(rates[ticker]['buy']))/float(rates[choosen_ticker]['sell']),2)
+                    else:
+                        pass
             else:
                 i[1] = round(value/float(rates[choosen_ticker]['sell']),2)
 
@@ -184,10 +198,10 @@ def home(request):
                 wlts_lst.append(j[0].f_name)
                 wlts_lst.append({'role': 'annotation'})
                 raw.append(float(j[1]))
-
-
-
-                raw.append(str(j[0].f_name) + ' ' + str(float(j[1])) + ' ' + (str(choosen_ticker)).lower())
+                if j[0].w_ticker in tickers_of_rates_available or j[0].w_ticker==main_currency:
+                    raw.append(str(j[0].f_name) + '\n' + str(float(j[1])) + ' ' + (str(choosen_ticker)).lower())
+                else:
+                    raw.append(str(j[0].f_name) + '\n' + str(float(j[1])) + ' ' + (str(j[0].w_ticker).lower()))
         lst.append(raw)
     qty_lst = []
     for i in lst:
@@ -222,6 +236,7 @@ def home(request):
         'rates': rates,
         'choosen_ticker': choosen_ticker,
         'tickers': tickers,
+         'tickers_of_rates_available': tickers_of_rates_available,
         'totals': totals,
         'total_amount': total_amount,
         'wlts': wlts,
